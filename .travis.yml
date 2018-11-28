@@ -1,0 +1,14 @@
+language: python
+python:
+  - "3.5"
+  - "3.6"
+  - "3.7"
+  - "nightly"
+before_install:
+  - pip install coverage coveralls
+install:
+  - pip install .
+script:
+  - nosetests --detailed-errors --with-coverage
+after_success:
+  - coveralls
