@@ -13,10 +13,10 @@ def __readme():
 tests_require = [
 
     # Mock HTTP server
-    'httpretty==0.9.6',
+    'httpretty>=0.9.6,<1.0',
 
     # Running tests
-    'pytest==4.0.1',
+    'pytest>=2.8',
 
 ]
 
@@ -34,20 +34,19 @@ setup(
     install_requires=[
 
         # No dunder methods
-        'attrs==18.2.0',
+        'attrs>=17.4.0',
 
         # Parsing arbitrary dates (sitemap date format is standardized but some implementations take liberties)
-        'python-dateutil==2.7.5',
+        'python-dateutil>=2.1,<3.0.0',
 
         # Making HTTP requests
-        'requests==2.20.1',
-        'idna==2.7',
+        'requests>=2.2.1',
 
     ],
     setup_requires=[
 
         # Running tests as part of setup.py
-        'pytest-runner==4.2',
+        'pytest-runner>=4.2,<5.0',
 
     ],
     tests_require=tests_require,
