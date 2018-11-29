@@ -36,6 +36,8 @@ Features
 Installation
 ============
 
+.. code:: sh
+
     pip install ultimate_sitemap_parser
 
 
