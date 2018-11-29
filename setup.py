@@ -32,6 +32,7 @@ setup(
     keywords="sitemap sitemap-xml parser",
     packages=find_packages(exclude=['tests']),
     zip_safe=True,
+    python_requires='>=3.5',
     install_requires=[
 
         # No dunder methods
