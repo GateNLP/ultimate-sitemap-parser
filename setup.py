@@ -36,7 +36,7 @@ setup(
     install_requires=[
 
         # No dunder methods
-        'attrs>=17.4.0',
+        'attrs>=18.0.0',
 
         # Parsing arbitrary dates (sitemap date format is standardized but some implementations take liberties)
         'python-dateutil>=2.1,<3.0.0',
