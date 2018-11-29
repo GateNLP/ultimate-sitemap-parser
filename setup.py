@@ -10,6 +10,16 @@ def __readme():
         return f.read()
 
 
+tests_require = [
+
+    # Mock HTTP server
+    'httpretty==0.9.6',
+
+    # Running tests
+    'pytest==4.0.1',
+
+]
+
 setup(
     name='ultimate_sitemap_parser',
     version=__version__,
@@ -40,15 +50,10 @@ setup(
         'pytest-runner==4.2',
 
     ],
-    tests_require=[
-
-        # Mock HTTP server
-        'httpretty==0.9.6',
-
-        # Running tests
-        'pytest==4.0.1',
-
-    ],
+    tests_require=tests_require,
+    extras_require={
+        'test': tests_require,
+    },
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

@@ -9,6 +9,8 @@ before_install:
 install:
   - pip install .
 script:
-  - nosetests --detailed-errors --with-coverage
+  - pip install .[test]
+  - coverage run --source=usp --verbose setup.py test
 after_success:
   - coveralls
+

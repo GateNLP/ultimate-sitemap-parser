@@ -6,6 +6,11 @@
     :target: https://ultimate-sitemap-parser.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://coveralls.io/repos/github/berkmancenter/mediacloud-ultimate_sitemap_parser/badge.svg?branch=develop
+    :target: https://coveralls.io/github/berkmancenter/mediacloud-ultimate_sitemap_parser?branch=develop
+    :alt: Coverage Status
+
+
 Website sitemap parser for Python 3.5+.
 
 
