@@ -51,4 +51,5 @@ Usage
     tree = sitemap_tree_for_homepage('https://www.nytimes.com/')
     print(tree.all_pages())
 
-Check out the API reference in the documentation for more details.
+Check out the `API reference in the documentation <https://ultimate-sitemap-parser.readthedocs.io/en/latest/>`_ for more details.
+
