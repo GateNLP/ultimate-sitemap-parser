@@ -158,7 +158,7 @@ def ungzipped_response_content(url: str, response: AbstractWebClientResponse) ->
             log.error("Unable to gunzip response {}: {}".format(response, ex))
 
     # FIXME other encodings
-    data = data.decode('utf-8', errors='replace')
+    data = data.decode('utf-8-sig', errors='replace')
 
     assert isinstance(data, str)
 

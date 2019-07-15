@@ -830,3 +830,61 @@ class TestSitemapTree(TestCase):
 
         actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
         assert len(actual_sitemap_tree.all_pages()) == 1
+
+    def test_sitemap_tree_for_homepage_utf8_bom(self):
+        """Test sitemap_tree_for_homepage() with UTF-8 BOM in both robots.txt and sitemap."""
+
+        robots_txt_body = textwrap.dedent("""
+            User-agent: *
+            Disallow: /whatever
+
+            Sitemap: {base_url}/sitemap.xml
+        """.format(base_url=self.TEST_BASE_URL)).strip()
+
+        sitemap_xml_body = textwrap.dedent("""
+            <?xml version="1.0" encoding="UTF-8"?>
+            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+                    xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+                <url>
+                    <loc>{base_url}/news/first.html</loc>
+                    <news:news>
+                        <news:publication>
+                            <news:name>{publication_name}</news:name>
+                            <news:language>{publication_language}</news:language>
+                        </news:publication>
+                        <news:publication_date>{publication_date}</news:publication_date>
+                        <news:title>First story</news:title>
+                    </news:news>
+                </url>
+            </urlset>
+        """.format(
+            base_url=self.TEST_BASE_URL,
+            publication_name=self.TEST_PUBLICATION_NAME,
+            publication_language=self.TEST_PUBLICATION_LANGUAGE,
+            publication_date=self.TEST_DATE_STR,
+        )).strip()
+
+        robots_txt_body = robots_txt_body.encode('utf-8-sig')
+        sitemap_xml_body = sitemap_xml_body.encode('utf-8-sig')
+
+        httpretty.register_uri(
+            httpretty.GET,
+            self.TEST_BASE_URL + '/',
+            body='This is a homepage.',
+        )
+
+        httpretty.register_uri(
+            httpretty.GET,
+            self.TEST_BASE_URL + '/robots.txt',
+            adding_headers={'Content-Type': 'text/plain'},
+            body=robots_txt_body,
+        )
+
+        httpretty.register_uri(
+            httpretty.GET,
+            self.TEST_BASE_URL + '/sitemap.xml',
+            body=sitemap_xml_body,
+        )
+
+        actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
+        assert len(actual_sitemap_tree.all_pages()) == 1
