@@ -149,7 +149,7 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
 
     def sitemap(self) -> AbstractSitemap:
 
-        # Serves as an ordered set because we want to deduplicate URLs but
+        # Serves as an ordered set because we want to deduplicate URLs but also retain the order
         sitemap_urls = OrderedDict()
 
         for robots_txt_line in self._content.splitlines():
