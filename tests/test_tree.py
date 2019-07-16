@@ -43,10 +43,23 @@ class TestSitemapTree(TestCase):
     TEST_PUBLICATION_NAME = 'Test publication'
     TEST_PUBLICATION_LANGUAGE = 'en'
 
+    @staticmethod
+    def fallback_to_404_not_found_matcher(request):
+        """Reply with "404 Not Found" to unmatched URLs instead of throwing NoMockAddress."""
+        return requests_mock.create_response(
+            request,
+            status_code=HTTPStatus.NOT_FOUND.value,
+            reason=HTTPStatus.NOT_FOUND.phrase,
+            headers={'Content-Type': 'text/html'},
+            text="<h1>404 Not Found!</h1>",
+        )
+
     def test_sitemap_tree_for_homepage(self):
         """Test sitemap_tree_for_homepage()."""
 
         with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
             m.get(
                 self.TEST_BASE_URL + '/',
                 text='This is a homepage.',
@@ -366,6 +379,8 @@ class TestSitemapTree(TestCase):
         """Test sitemap_tree_for_homepage() with gzipped sitemaps."""
 
         with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
             m.get(
                 self.TEST_BASE_URL + '/',
                 text='This is a homepage.',
@@ -456,6 +471,8 @@ class TestSitemapTree(TestCase):
         """Test sitemap_tree_for_homepage() with plain text sitemaps."""
 
         with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
             m.get(
                 self.TEST_BASE_URL + '/',
                 text='This is a homepage.',
@@ -526,6 +543,8 @@ class TestSitemapTree(TestCase):
         """
 
         with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
             m.get(
                 self.TEST_BASE_URL + '/',
                 text='This is a homepage.',
@@ -601,6 +620,8 @@ class TestSitemapTree(TestCase):
         """Test sitemap_tree_for_homepage() with no sitemaps listed in robots.txt."""
 
         with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
             m.get(
                 self.TEST_BASE_URL + '/',
                 text='This is a homepage.',
@@ -629,6 +650,8 @@ class TestSitemapTree(TestCase):
         """Test sitemap_tree_for_homepage() with no Content-Type in robots.txt."""
 
         with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
             m.get(
                 self.TEST_BASE_URL + '/',
                 text='This is a homepage.',
@@ -657,6 +680,8 @@ class TestSitemapTree(TestCase):
         """Test sitemap_tree_for_homepage() with no robots.txt."""
 
         with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
             m.get(
                 self.TEST_BASE_URL + '/',
                 text='This is a homepage.',
@@ -726,6 +751,8 @@ class TestSitemapTree(TestCase):
         sitemap_xml += "</urlset>"
 
         with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
             m.get(
                 self.TEST_BASE_URL + '/',
                 text='This is a homepage.',
@@ -756,6 +783,8 @@ class TestSitemapTree(TestCase):
         """Test sitemap_tree_for_homepage() with weird (but valid) spacing."""
 
         with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
             m.get(
                 self.TEST_BASE_URL + '/',
                 text='This is a homepage.',
@@ -838,6 +867,8 @@ class TestSitemapTree(TestCase):
         sitemap_xml_body_encoded = sitemap_xml_body.encode('utf-8-sig')
 
         with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
             m.get(
                 self.TEST_BASE_URL + '/',
                 text='This is a homepage.',
