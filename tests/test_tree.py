@@ -18,6 +18,7 @@ from usp.objects import (
     SitemapNewsStory,
     SitemapPageChangeFrequency,
     PagesTextSitemap,
+    IndexWebsiteSitemap,
 )
 from usp.tree import sitemap_tree_for_homepage
 
@@ -196,7 +197,7 @@ class TestSitemapTree(TestCase):
     
                         <!-- Nonexistent sitemap -->
                         <sitemap>
-                            <loc>{base_url}/sitemap_news_nonexistent.xml</loc>
+                            <loc>{base_url}/sitemap_news_missing.xml</loc>
                             <lastmod>{last_modified}</lastmod>
                         </sitemap>
     
@@ -260,7 +261,7 @@ class TestSitemapTree(TestCase):
 
             # Nonexistent sitemap
             m.get(
-                self.TEST_BASE_URL + '/sitemap_news_nonexistent.xml',
+                self.TEST_BASE_URL + '/sitemap_news_missing.xml',
                 status_code=HTTPStatus.NOT_FOUND.value,
                 reason=HTTPStatus.NOT_FOUND.phrase,
                 headers={'Content-Type': 'text/html'},
@@ -268,65 +269,51 @@ class TestSitemapTree(TestCase):
             )
 
             # noinspection PyArgumentList
-            expected_sitemap_tree = IndexRobotsTxtSitemap(
-                url='{}/robots.txt'.format(self.TEST_BASE_URL),
+            expected_sitemap_tree = IndexWebsiteSitemap(
+                url='{}/'.format(self.TEST_BASE_URL),
                 sub_sitemaps=[
-                    PagesXMLSitemap(
-                        url='{}/sitemap_pages.xml'.format(self.TEST_BASE_URL),
-                        pages=[
-                            SitemapPage(
-                                url='{}/about.html'.format(self.TEST_BASE_URL),
-                                last_modified=self.TEST_DATE_DATETIME,
-                                news_story=None,
-                                change_frequency=SitemapPageChangeFrequency.MONTHLY,
-                                priority=Decimal('0.8'),
-                            ),
-                            SitemapPage(
-                                url='{}/contact.html'.format(self.TEST_BASE_URL),
-                                last_modified=self.TEST_DATE_DATETIME,
-                                news_story=None,
-
-                                # Invalid input -- should be reset to "always"
-                                change_frequency=SitemapPageChangeFrequency.ALWAYS,
-
-                                # Invalid input -- should be reset to 0.5 (the default as per the spec)
-                                priority=Decimal('0.5'),
-
-                            )
-                        ],
-                    ),
-                    IndexXMLSitemap(
-                        url='{}/sitemap_news_index_1.xml'.format(self.TEST_BASE_URL),
+                    IndexRobotsTxtSitemap(
+                        url='{}/robots.txt'.format(self.TEST_BASE_URL),
                         sub_sitemaps=[
                             PagesXMLSitemap(
-                                url='{}/sitemap_news_1.xml'.format(self.TEST_BASE_URL),
+                                url='{}/sitemap_pages.xml'.format(self.TEST_BASE_URL),
                                 pages=[
                                     SitemapPage(
-                                        url='{}/news/foo.html'.format(self.TEST_BASE_URL),
-                                        news_story=SitemapNewsStory(
-                                            title='Foo <foo>',
-                                            publish_date=self.TEST_DATE_DATETIME,
-                                            publication_name=self.TEST_PUBLICATION_NAME,
-                                            publication_language=self.TEST_PUBLICATION_LANGUAGE,
-                                        ),
+                                        url='{}/about.html'.format(self.TEST_BASE_URL),
+                                        last_modified=self.TEST_DATE_DATETIME,
+                                        news_story=None,
+                                        change_frequency=SitemapPageChangeFrequency.MONTHLY,
+                                        priority=Decimal('0.8'),
                                     ),
                                     SitemapPage(
-                                        url='{}/news/bar.html'.format(self.TEST_BASE_URL),
-                                        news_story=SitemapNewsStory(
-                                            title='Bar & bar',
-                                            publish_date=self.TEST_DATE_DATETIME,
-                                            publication_name=self.TEST_PUBLICATION_NAME,
-                                            publication_language=self.TEST_PUBLICATION_LANGUAGE,
-                                        ),
-                                    ),
-                                ]
+                                        url='{}/contact.html'.format(self.TEST_BASE_URL),
+                                        last_modified=self.TEST_DATE_DATETIME,
+                                        news_story=None,
+
+                                        # Invalid input -- should be reset to "always"
+                                        change_frequency=SitemapPageChangeFrequency.ALWAYS,
+
+                                        # Invalid input -- should be reset to 0.5 (the default as per the spec)
+                                        priority=Decimal('0.5'),
+
+                                    )
+                                ],
                             ),
                             IndexXMLSitemap(
-                                url='{}/sitemap_news_index_2.xml'.format(self.TEST_BASE_URL),
+                                url='{}/sitemap_news_index_1.xml'.format(self.TEST_BASE_URL),
                                 sub_sitemaps=[
                                     PagesXMLSitemap(
-                                        url='{}/sitemap_news_2.xml'.format(self.TEST_BASE_URL),
+                                        url='{}/sitemap_news_1.xml'.format(self.TEST_BASE_URL),
                                         pages=[
+                                            SitemapPage(
+                                                url='{}/news/foo.html'.format(self.TEST_BASE_URL),
+                                                news_story=SitemapNewsStory(
+                                                    title='Foo <foo>',
+                                                    publish_date=self.TEST_DATE_DATETIME,
+                                                    publication_name=self.TEST_PUBLICATION_NAME,
+                                                    publication_language=self.TEST_PUBLICATION_LANGUAGE,
+                                                ),
+                                            ),
                                             SitemapPage(
                                                 url='{}/news/bar.html'.format(self.TEST_BASE_URL),
                                                 news_story=SitemapNewsStory(
@@ -336,29 +323,48 @@ class TestSitemapTree(TestCase):
                                                     publication_language=self.TEST_PUBLICATION_LANGUAGE,
                                                 ),
                                             ),
-                                            SitemapPage(
-                                                url='{}/news/baz.html'.format(self.TEST_BASE_URL),
-                                                news_story=SitemapNewsStory(
-                                                    title='Bąž',
-                                                    publish_date=self.TEST_DATE_DATETIME,
-                                                    publication_name=self.TEST_PUBLICATION_NAME,
-                                                    publication_language=self.TEST_PUBLICATION_LANGUAGE,
-                                                ),
+                                        ]
+                                    ),
+                                    IndexXMLSitemap(
+                                        url='{}/sitemap_news_index_2.xml'.format(self.TEST_BASE_URL),
+                                        sub_sitemaps=[
+                                            PagesXMLSitemap(
+                                                url='{}/sitemap_news_2.xml'.format(self.TEST_BASE_URL),
+                                                pages=[
+                                                    SitemapPage(
+                                                        url='{}/news/bar.html'.format(self.TEST_BASE_URL),
+                                                        news_story=SitemapNewsStory(
+                                                            title='Bar & bar',
+                                                            publish_date=self.TEST_DATE_DATETIME,
+                                                            publication_name=self.TEST_PUBLICATION_NAME,
+                                                            publication_language=self.TEST_PUBLICATION_LANGUAGE,
+                                                        ),
+                                                    ),
+                                                    SitemapPage(
+                                                        url='{}/news/baz.html'.format(self.TEST_BASE_URL),
+                                                        news_story=SitemapNewsStory(
+                                                            title='Bąž',
+                                                            publish_date=self.TEST_DATE_DATETIME,
+                                                            publication_name=self.TEST_PUBLICATION_NAME,
+                                                            publication_language=self.TEST_PUBLICATION_LANGUAGE,
+                                                        ),
+                                                    ),
+                                                ],
+                                            ),
+                                            InvalidSitemap(
+                                                url='{}/sitemap_news_missing.xml'.format(self.TEST_BASE_URL),
+                                                reason=(
+                                                    'Unable to fetch sitemap from {base_url}/sitemap_news_missing.xml: '
+                                                    '404 Not Found'
+                                                ).format(base_url=self.TEST_BASE_URL),
                                             ),
                                         ],
-                                    ),
-                                    InvalidSitemap(
-                                        url='{}/sitemap_news_nonexistent.xml'.format(self.TEST_BASE_URL),
-                                        reason=(
-                                            'Unable to fetch sitemap from {base_url}/sitemap_news_nonexistent.xml: '
-                                            '404 Not Found'
-                                        ).format(base_url=self.TEST_BASE_URL),
                                     ),
                                 ],
                             ),
                         ],
-                    ),
-                ],
+                    )
+                ]
             )
 
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
@@ -456,14 +462,17 @@ class TestSitemapTree(TestCase):
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
 
             # Don't do an in-depth check, we just need to make sure that gunzip works
-            assert isinstance(actual_sitemap_tree, IndexRobotsTxtSitemap)
-            assert len(actual_sitemap_tree.sub_sitemaps) == 2
+            assert isinstance(actual_sitemap_tree, IndexWebsiteSitemap)
+            assert len(actual_sitemap_tree.sub_sitemaps) == 1
 
-            sitemap_1 = actual_sitemap_tree.sub_sitemaps[0]
+            assert isinstance(actual_sitemap_tree.sub_sitemaps[0], IndexRobotsTxtSitemap)
+            assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 2
+
+            sitemap_1 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[0]
             assert isinstance(sitemap_1, PagesXMLSitemap)
             assert len(sitemap_1.pages) == 1
 
-            sitemap_2 = actual_sitemap_tree.sub_sitemaps[1]
+            sitemap_2 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[1]
             assert isinstance(sitemap_2, PagesXMLSitemap)
             assert len(sitemap_2.pages) == 1
 
@@ -516,14 +525,17 @@ class TestSitemapTree(TestCase):
 
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
 
-            assert isinstance(actual_sitemap_tree, IndexRobotsTxtSitemap)
-            assert len(actual_sitemap_tree.sub_sitemaps) == 2
+            assert isinstance(actual_sitemap_tree, IndexWebsiteSitemap)
+            assert len(actual_sitemap_tree.sub_sitemaps) == 1
 
-            sitemap_1 = actual_sitemap_tree.sub_sitemaps[0]
+            assert isinstance(actual_sitemap_tree.sub_sitemaps[0], IndexRobotsTxtSitemap)
+            assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 2
+
+            sitemap_1 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[0]
             assert isinstance(sitemap_1, PagesTextSitemap)
             assert len(sitemap_1.pages) == 2
 
-            sitemap_2 = actual_sitemap_tree.sub_sitemaps[1]
+            sitemap_2 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[1]
             assert isinstance(sitemap_2, PagesTextSitemap)
             assert len(sitemap_2.pages) == 2
 
@@ -609,10 +621,13 @@ class TestSitemapTree(TestCase):
 
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
 
-            assert isinstance(actual_sitemap_tree, IndexRobotsTxtSitemap)
+            assert isinstance(actual_sitemap_tree, IndexWebsiteSitemap)
             assert len(actual_sitemap_tree.sub_sitemaps) == 1
 
-            sitemap = actual_sitemap_tree.sub_sitemaps[0]
+            assert isinstance(actual_sitemap_tree.sub_sitemaps[0], IndexRobotsTxtSitemap)
+            assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 1
+
+            sitemap = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[0]
             assert isinstance(sitemap, PagesXMLSitemap)
             assert len(sitemap.pages) == 2
 
@@ -637,9 +652,103 @@ class TestSitemapTree(TestCase):
             )
 
             # noinspection PyArgumentList
-            expected_sitemap_tree = IndexRobotsTxtSitemap(
-                url='{}/robots.txt'.format(self.TEST_BASE_URL),
-                sub_sitemaps=[],
+            expected_sitemap_tree = IndexWebsiteSitemap(
+                url='{}/'.format(self.TEST_BASE_URL),
+                sub_sitemaps=[
+                    IndexRobotsTxtSitemap(
+                        url='{}/robots.txt'.format(self.TEST_BASE_URL),
+                        sub_sitemaps=[],
+                    )
+                ]
+            )
+
+            actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
+
+            assert expected_sitemap_tree == actual_sitemap_tree
+
+    def test_sitemap_tree_for_homepage_unpublished_sitemap(self):
+        """Test sitemap_tree_for_homepage() with some sitemaps not published in robots.txt."""
+
+        with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
+            m.get(
+                self.TEST_BASE_URL + '/',
+                text='This is a homepage.',
+            )
+
+            m.get(
+                self.TEST_BASE_URL + '/robots.txt',
+                headers={'Content-Type': 'text/plain'},
+                text=textwrap.dedent("""
+                    User-agent: *
+                    Disallow: /whatever
+                    
+                    Sitemap: {base_url}/sitemap_public.xml
+                """.format(base_url=self.TEST_BASE_URL)).strip(),
+            )
+
+            # Public sitemap (linked to from robots.txt)
+            m.get(
+                self.TEST_BASE_URL + '/sitemap_public.xml',
+                text=textwrap.dedent("""
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                        <url>
+                            <loc>{base_url}/news/public.html</loc>
+                        </url>
+                    </urlset>
+                """.format(
+                    base_url=self.TEST_BASE_URL,
+                    publication_name=self.TEST_PUBLICATION_NAME,
+                    publication_language=self.TEST_PUBLICATION_LANGUAGE,
+                    publication_date=self.TEST_DATE_STR,
+                )).strip(),
+            )
+
+            # Private sitemap (to be discovered by trying out a few paths)
+            m.get(
+                self.TEST_BASE_URL + '/sitemap_index.xml',
+                text=textwrap.dedent("""
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                        <url>
+                            <loc>{base_url}/news/private.html</loc>
+                        </url>
+                    </urlset>
+                """.format(
+                    base_url=self.TEST_BASE_URL,
+                    publication_name=self.TEST_PUBLICATION_NAME,
+                    publication_language=self.TEST_PUBLICATION_LANGUAGE,
+                    publication_date=self.TEST_DATE_STR,
+                )).strip(),
+            )
+
+            expected_sitemap_tree = IndexWebsiteSitemap(
+                url='{}/'.format(self.TEST_BASE_URL),
+                sub_sitemaps=[
+                    IndexRobotsTxtSitemap(
+                        url='{}/robots.txt'.format(self.TEST_BASE_URL),
+                        sub_sitemaps=[
+                            PagesXMLSitemap(
+                                url='{}/sitemap_public.xml'.format(self.TEST_BASE_URL),
+                                pages=[
+                                    SitemapPage(
+                                        url='{}/news/public.html'.format(self.TEST_BASE_URL),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                    PagesXMLSitemap(
+                        url='{}/sitemap_index.xml'.format(self.TEST_BASE_URL),
+                        pages=[
+                            SitemapPage(
+                                url='{}/news/private.html'.format(self.TEST_BASE_URL),
+                            ),
+                        ],
+                    ),
+                ]
             )
 
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
@@ -667,9 +776,14 @@ class TestSitemapTree(TestCase):
             )
 
             # noinspection PyArgumentList
-            expected_sitemap_tree = IndexRobotsTxtSitemap(
-                url='{}/robots.txt'.format(self.TEST_BASE_URL),
-                sub_sitemaps=[],
+            expected_sitemap_tree = IndexWebsiteSitemap(
+                url='{}/'.format(self.TEST_BASE_URL),
+                sub_sitemaps=[
+                    IndexRobotsTxtSitemap(
+                        url='{}/robots.txt'.format(self.TEST_BASE_URL),
+                        sub_sitemaps=[],
+                    )
+                ]
             )
 
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
@@ -697,11 +811,16 @@ class TestSitemapTree(TestCase):
             )
 
             # noinspection PyArgumentList
-            expected_sitemap_tree = InvalidSitemap(
-                url='{}/robots.txt'.format(self.TEST_BASE_URL),
-                reason=(
-                    'Unable to fetch sitemap from {base_url}/robots.txt: 404 Not Found'
-                ).format(base_url=self.TEST_BASE_URL),
+            expected_sitemap_tree = IndexWebsiteSitemap(
+                url='{}/'.format(self.TEST_BASE_URL),
+                sub_sitemaps=[
+                    InvalidSitemap(
+                        url='{}/robots.txt'.format(self.TEST_BASE_URL),
+                        reason=(
+                            'Unable to fetch sitemap from {base_url}/robots.txt: 404 Not Found'
+                        ).format(base_url=self.TEST_BASE_URL),
+                    )
+                ]
             )
 
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)

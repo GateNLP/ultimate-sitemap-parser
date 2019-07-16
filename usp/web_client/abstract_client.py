@@ -24,7 +24,7 @@ class AbstractWebClientResponse(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def raw_data(self) -> bytes:
-        """Return undecoded raw data of the response."""
+        """Return encoded raw data of the response."""
         raise NotImplementedError("Abstract method.")
 
     def is_success(self) -> bool:

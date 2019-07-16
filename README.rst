@@ -26,6 +26,7 @@ Features
 
 - Field-tested with ~1 million URLs as part of the `Media Cloud project <https://mediacloud.org/>`_
 - Error-tolerant with more common sitemap bugs
+- Tries to find sitemaps not listed in ``robots.txt``
 - Uses fast and memory efficient Expat XML parsing
 - Provides a generated sitemap tree as easy to use object tree
 - Supports using a custom web client

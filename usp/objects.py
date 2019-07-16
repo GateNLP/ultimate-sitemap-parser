@@ -148,6 +148,12 @@ class AbstractIndexSitemap(AbstractSitemap):
 
 
 @attr.s(slots=True, frozen=True)
+class IndexWebsiteSitemap(AbstractIndexSitemap):
+    """Website's root sitemaps, including robots.txt and extra ones."""
+    pass
+
+
+@attr.s(slots=True, frozen=True)
 class IndexXMLSitemap(AbstractIndexSitemap):
     """XML sitemap with URLs to other sitemaps."""
     pass
