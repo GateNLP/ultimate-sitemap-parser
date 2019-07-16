@@ -1,0 +1,5 @@
+include *.rst
+include *.txt
+include setup.*
+recursive-include usp *.py
+include MANIFEST.in
