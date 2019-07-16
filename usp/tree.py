@@ -3,7 +3,7 @@ from typing import Optional
 
 from usp.web_client.abstract_client import AbstractWebClient
 from .exceptions import SitemapException
-from .fetchers import SitemapFetcher
+from .fetch_parse import SitemapFetcher
 from .helpers import is_http_url, strip_url_to_homepage
 from .log import create_logger
 from .objects import AbstractSitemap, InvalidSitemap, IndexWebsiteSitemap, IndexRobotsTxtSitemap
