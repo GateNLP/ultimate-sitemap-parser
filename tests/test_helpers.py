@@ -3,7 +3,7 @@ import datetime
 import pytest
 
 from usp.exceptions import StripURLToHomepageException
-from usp.helpers import html_unescape_strip, parse_iso8601_date, is_http_url, strip_url_to_homepage
+from usp.helpers import html_unescape_strip, parse_iso8601_date, is_http_url, strip_url_to_homepage, parse_rfc2822_date
 
 
 def test_html_unescape_strip():
@@ -29,6 +29,18 @@ def test_parse_iso8601_date():
     # "Z" timezone instead of "+\d\d:\d\d"
     assert parse_iso8601_date("2018-01-12T21:57:27Z") == datetime.datetime(
         year=2018, month=1, day=12, hour=21, minute=57, second=27, tzinfo=datetime.timezone.utc,
+    )
+
+
+def test_parse_rfc2822_date():
+    assert parse_rfc2822_date("Tue, 10 Aug 2010 20:43:53 -0000") == datetime.datetime(
+        year=2010, month=8, day=10, hour=20, minute=43, second=53, microsecond=0,
+        tzinfo=datetime.timezone(datetime.timedelta(seconds=0)),
+    )
+
+    assert parse_rfc2822_date("Thu, 17 Dec 2009 12:04:56 +0200") == datetime.datetime(
+        year=2009, month=12, day=17, hour=12, minute=4, second=56, microsecond=0,
+        tzinfo=datetime.timezone(datetime.timedelta(seconds=7200)),
     )
 
 
