@@ -12,11 +12,11 @@ import attr
 from .exceptions import SitemapException, SitemapXMLParsingException
 from .helpers import (
     html_unescape_strip,
-    parse_sitemap_publication_date,
+    parse_iso8601_date,
     get_url_retry_on_client_errors,
     ungzipped_response_content,
     is_http_url,
-    parse_rss_atom_publication_date,
+    parse_rfc2822_date,
 )
 from .log import create_logger
 from .objects import (
@@ -461,7 +461,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
 
             last_modified = html_unescape_strip(self.last_modified)
             if last_modified:
-                last_modified = parse_sitemap_publication_date(last_modified)
+                last_modified = parse_iso8601_date(last_modified)
 
             change_frequency = html_unescape_strip(self.change_frequency)
             if change_frequency:
@@ -493,7 +493,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
 
             news_publish_date = html_unescape_strip(self.news_publish_date)
             if news_publish_date:
-                news_publish_date = parse_sitemap_publication_date(date_string=news_publish_date)
+                news_publish_date = parse_iso8601_date(date_string=news_publish_date)
 
             news_publication_name = html_unescape_strip(self.news_publication_name)
             news_publication_language = html_unescape_strip(self.news_publication_language)
@@ -670,7 +670,7 @@ class PagesRSSSitemapParser(AbstractXMLSitemapParser):
 
             publication_date = html_unescape_strip(self.publication_date)
             if publication_date:
-                publication_date = parse_rss_atom_publication_date(publication_date)
+                publication_date = parse_rfc2822_date(publication_date)
 
             return SitemapPage(
                 url=link,
@@ -789,7 +789,7 @@ class PagesAtomSitemapParser(AbstractXMLSitemapParser):
 
             publication_date = html_unescape_strip(self.publication_date)
             if publication_date:
-                publication_date = parse_rss_atom_publication_date(publication_date)
+                publication_date = parse_rfc2822_date(publication_date)
 
             return SitemapPage(
                 url=link,
