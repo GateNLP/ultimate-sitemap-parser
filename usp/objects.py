@@ -134,6 +134,18 @@ class PagesTextSitemap(AbstractPagesSitemap):
 
 
 @attr.s(slots=True, frozen=True)
+class PagesRSSSitemap(AbstractPagesSitemap):
+    """RSS 2.0 sitemap that contains URLs to pages."""
+    pass
+
+
+@attr.s(slots=True, frozen=True)
+class PagesAtomSitemap(AbstractPagesSitemap):
+    """RSS 0.3 / 1.0 sitemap that contains URLs to pages."""
+    pass
+
+
+@attr.s(slots=True, frozen=True)
 class AbstractIndexSitemap(AbstractSitemap):
     """Abstract sitemap with URLs to other sitemaps."""
 

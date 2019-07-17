@@ -1,6 +1,8 @@
 import datetime
+import difflib
 import textwrap
 from decimal import Decimal
+from email.utils import formatdate
 from http import HTTPStatus
 from unittest import TestCase
 
@@ -19,6 +21,8 @@ from usp.objects import (
     SitemapPageChangeFrequency,
     PagesTextSitemap,
     IndexWebsiteSitemap,
+    PagesRSSSitemap,
+    PagesAtomSitemap,
 )
 from usp.tree import sitemap_tree_for_homepage
 
@@ -39,7 +43,11 @@ class TestSitemapTree(TestCase):
         year=2009, month=12, day=17, hour=12, minute=4, second=56,
         tzinfo=dateutil.tz.tzoffset(None, 7200),
     )
-    TEST_DATE_STR = TEST_DATE_DATETIME.isoformat()
+    TEST_DATE_STR_ISO8601 = TEST_DATE_DATETIME.isoformat()
+    """Test string date formatted as ISO 8601 (for XML and Atom 0.3 / 1.0 sitemaps)."""
+
+    TEST_DATE_STR_RFC2822 = formatdate(float(TEST_DATE_DATETIME.strftime('%s')), localtime=True)
+    """Test string date formatted as RFC 2822 (for RSS 2.0 sitemaps)."""
 
     TEST_PUBLICATION_NAME = 'Test publication'
     TEST_PUBLICATION_LANGUAGE = 'en'
@@ -103,7 +111,7 @@ class TestSitemapTree(TestCase):
     
                         </url>
                     </urlset>
-                """.format(base_url=self.TEST_BASE_URL, last_modified_date=self.TEST_DATE_STR)).strip(),
+                """.format(base_url=self.TEST_BASE_URL, last_modified_date=self.TEST_DATE_STR_ISO8601)).strip(),
             )
 
             # Index sitemap pointing to sitemaps with stories
@@ -122,7 +130,7 @@ class TestSitemapTree(TestCase):
                             <lastmod>{last_modified}</lastmod>
                         </sitemap>
                     </sitemapindex>
-                """.format(base_url=self.TEST_BASE_URL, last_modified=self.TEST_DATE_STR)).strip(),
+                """.format(base_url=self.TEST_BASE_URL, last_modified=self.TEST_DATE_STR_ISO8601)).strip(),
             )
 
             # First sitemap with actual stories
@@ -177,7 +185,7 @@ class TestSitemapTree(TestCase):
                     base_url=self.TEST_BASE_URL,
                     publication_name=self.TEST_PUBLICATION_NAME,
                     publication_language=self.TEST_PUBLICATION_LANGUAGE,
-                    publication_date=self.TEST_DATE_STR,
+                    publication_date=self.TEST_DATE_STR_ISO8601,
                 )).strip(),
             )
 
@@ -202,7 +210,7 @@ class TestSitemapTree(TestCase):
                         </sitemap>
     
                     </sitemapindex>
-                """.format(base_url=self.TEST_BASE_URL, last_modified=self.TEST_DATE_STR)).strip(),
+                """.format(base_url=self.TEST_BASE_URL, last_modified=self.TEST_DATE_STR_ISO8601)).strip(),
             )
 
             # Second sitemap with actual stories
@@ -255,7 +263,7 @@ class TestSitemapTree(TestCase):
                     base_url=self.TEST_BASE_URL,
                     publication_name=self.TEST_PUBLICATION_NAME,
                     publication_language=self.TEST_PUBLICATION_LANGUAGE,
-                    publication_date=self.TEST_DATE_STR,
+                    publication_date=self.TEST_DATE_STR_ISO8601,
                 )).strip(),
             )
 
@@ -369,15 +377,12 @@ class TestSitemapTree(TestCase):
 
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
 
-            # PyCharm is not that great at formatting object diffs, so uncomment the following and set a breakpoint:
-            #
-            # expected_lines = str(expected_sitemap_tree).split()
-            # actual_lines = str(actual_sitemap_tree).split()
-            # diff = difflib.ndiff(expected_lines, actual_lines)
-            # diff_str = '\n'.join(diff)
-            # assert expected_lines == actual_lines
+            expected_lines = str(expected_sitemap_tree).split()
+            actual_lines = str(actual_sitemap_tree).split()
+            diff = difflib.ndiff(expected_lines, actual_lines)
+            diff_str = '\n'.join(diff)
 
-            assert expected_sitemap_tree == actual_sitemap_tree
+            assert expected_sitemap_tree == actual_sitemap_tree, diff_str
 
             assert len(actual_sitemap_tree.all_pages()) == 5
 
@@ -427,7 +432,7 @@ class TestSitemapTree(TestCase):
                     base_url=self.TEST_BASE_URL,
                     publication_name=self.TEST_PUBLICATION_NAME,
                     publication_language=self.TEST_PUBLICATION_LANGUAGE,
-                    publication_date=self.TEST_DATE_STR,
+                    publication_date=self.TEST_DATE_STR_ISO8601,
                 )).strip()),
             )
 
@@ -455,7 +460,7 @@ class TestSitemapTree(TestCase):
                     base_url=self.TEST_BASE_URL,
                     publication_name=self.TEST_PUBLICATION_NAME,
                     publication_language=self.TEST_PUBLICATION_LANGUAGE,
-                    publication_date=self.TEST_DATE_STR,
+                    publication_date=self.TEST_DATE_STR_ISO8601,
                 )).strip()),
             )
 
@@ -546,6 +551,329 @@ class TestSitemapTree(TestCase):
             assert SitemapPage(url='{}/news/bar.html'.format(self.TEST_BASE_URL)) in pages
             assert SitemapPage(url='{}/news/baz.html'.format(self.TEST_BASE_URL)) in pages
 
+    def test_sitemap_tree_for_homepage_rss_atom(self):
+        """Test sitemap_tree_for_homepage() with RSS 2.0 / Atom 0.3 / Atom 1.0 feeds."""
+
+        with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
+            m.get(
+                self.TEST_BASE_URL + '/',
+                text='This is a homepage.',
+            )
+
+            m.get(
+                self.TEST_BASE_URL + '/robots.txt',
+                headers={'Content-Type': 'text/plain'},
+                text=textwrap.dedent("""
+                    User-agent: *
+                    Disallow: /whatever
+
+                    Sitemap: {base_url}/sitemap_rss.xml
+                    Sitemap: {base_url}/sitemap_atom_0_3.xml
+                    Sitemap: {base_url}/sitemap_atom_1_0.xml
+                """.format(base_url=self.TEST_BASE_URL)).strip(),
+            )
+
+            # RSS 2.0 sitemap
+            m.get(
+                self.TEST_BASE_URL + '/sitemap_rss.xml',
+                headers={'Content-Type': 'application/rss+xml'},
+                text=textwrap.dedent("""
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <rss version="2.0">
+                        <channel>
+                            <title>Test RSS 2.0 feed</title>
+                            <description>This is a test RSS 2.0 feed.</description>
+                            <link>{base_url}</link>
+                            <pubDate>{pub_date}</pubDate>
+
+                            <item>
+                                <title>Test RSS 2.0 story #1</title>
+                                <description>This is a test RSS 2.0 story #1.</description>
+                                <link>{base_url}/rss_story_1.html</link>
+                                <guid isPermaLink="true">{base_url}/rss_story_1.html</guid>
+                                <pubDate>{pub_date}</pubDate>
+                            </item>
+
+                            <item>
+                                <title>Test RSS 2.0 story #2</title>
+                                <description>This is a test RSS 2.0 story #2.</description>
+                                <link>{base_url}/rss_story_2.html</link>
+                                <guid isPermaLink="true">{base_url}/rss_story_2.html</guid>
+                                <pubDate>{pub_date}</pubDate>
+                            </item>
+
+                        </channel>
+                    </rss>
+                """.format(base_url=self.TEST_BASE_URL, pub_date=self.TEST_DATE_STR_RFC2822)).strip(),
+            )
+
+            # Atom 0.3 sitemap
+            m.get(
+                self.TEST_BASE_URL + '/sitemap_atom_0_3.xml',
+                headers={'Content-Type': 'application/atom+xml'},
+                text=textwrap.dedent("""
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <feed version="0.3" xmlns="http://purl.org/atom/ns#">
+                        <title>Test Atom 0.3 feed</title>
+                        <link rel="alternate" type="text/html" href="{base_url}" />
+                        <modified>{pub_date}</modified>
+
+                        <entry>
+                            <title>Test Atom 0.3 story #1</title>
+                            <link rel="alternate" type="text/html" href="{base_url}/atom_0_3_story_1.html" />
+                            <id>{base_url}/atom_0_3_story_1.html</id>
+                            <issued>{pub_date}</issued>
+                        </entry>
+
+                        <entry>
+                            <title>Test Atom 0.3 story #2</title>
+                            <link rel="alternate" type="text/html" href="{base_url}/atom_0_3_story_2.html" />
+                            <id>{base_url}/atom_0_3_story_2.html</id>
+                            <issued>{pub_date}</issued>
+                        </entry>
+
+                    </feed>
+                """.format(base_url=self.TEST_BASE_URL, pub_date=self.TEST_DATE_STR_ISO8601)).strip(),
+            )
+
+            # Atom 1.0 sitemap
+            m.get(
+                self.TEST_BASE_URL + '/sitemap_atom_1_0.xml',
+                headers={'Content-Type': 'application/atom+xml'},
+                text=textwrap.dedent("""
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <feed xmlns="http://www.w3.org/2005/Atom">
+                        <title>Test Atom 1.0 feed</title>
+                        <subtitle>This is a test Atom 1.0 feed.</subtitle>
+                        <link href="{base_url}/sitemap_atom_1_0.xml" rel="self" />
+                        <link href="{base_url}" />
+                        <id>{base_url}</id>
+                        <updated>{pub_date}</updated>
+
+                        <entry>
+                            <title>Test Atom 1.0 story #1</title>
+                            <link href="{base_url}/atom_1_0_story_1.html" />
+                            <link rel="alternate" type="text/html" href="{base_url}/atom_1_0_story_1.html?alt" />
+                            <link rel="edit" href="{base_url}/atom_1_0_story_1.html?edit" />
+                            <id>{base_url}/atom_1_0_story_1.html</id>
+                            <updated>{pub_date}</updated>
+                            <summary>This is test atom 1.0 story #1.</summary>
+                            <content type="xhtml">
+                                <div xmlns="http://www.w3.org/1999/xhtml">
+                                    <p>This is test atom 1.0 story #1.</p>
+                                </div>
+                            </content>
+                            <author>
+                                <name>John Doe</name>
+                                <email>johndoe@example.com</email>
+                            </author>
+                        </entry>
+
+                        <entry>
+                            <title>Test Atom 1.0 story #2</title>
+                            <link href="{base_url}/atom_1_0_story_2.html" />
+                            <link rel="alternate" type="text/html" href="{base_url}/atom_1_0_story_2.html?alt" />
+                            <link rel="edit" href="{base_url}/atom_1_0_story_2.html?edit" />
+                            <id>{base_url}/atom_1_0_story_2.html</id>
+                            <updated>{pub_date}</updated>
+                            <summary>This is test atom 1.0 story #2.</summary>
+                            <content type="xhtml">
+                                <div xmlns="http://www.w3.org/1999/xhtml">
+                                    <p>This is test atom 1.0 story #2.</p>
+                                </div>
+                            </content>
+                            <author>
+                                <name>John Doe</name>
+                                <email>johndoe@example.com</email>
+                            </author>
+                        </entry>
+
+                    </feed>
+                """.format(base_url=self.TEST_BASE_URL, pub_date=self.TEST_DATE_STR_ISO8601)).strip(),
+            )
+
+            expected_sitemap_tree = IndexWebsiteSitemap(
+                url='{}/'.format(self.TEST_BASE_URL),
+                sub_sitemaps=[
+                    IndexRobotsTxtSitemap(
+                        url='{}/robots.txt'.format(self.TEST_BASE_URL),
+                        sub_sitemaps=[
+                            PagesRSSSitemap(
+                                url='{}/sitemap_rss.xml'.format(self.TEST_BASE_URL),
+                                pages=[
+                                    SitemapPage(
+                                        url='{}/rss_story_1.html'.format(self.TEST_BASE_URL),
+                                        news_story=SitemapNewsStory(
+                                            title='Test RSS 2.0 story #1',
+                                            publish_date=self.TEST_DATE_DATETIME,
+                                        ),
+                                    ),
+                                    SitemapPage(
+                                        url='{}/rss_story_2.html'.format(self.TEST_BASE_URL),
+                                        news_story=SitemapNewsStory(
+                                            title='Test RSS 2.0 story #2',
+                                            publish_date=self.TEST_DATE_DATETIME,
+                                        )
+                                    )
+                                ]
+                            ),
+                            PagesAtomSitemap(
+                                url='{}/sitemap_atom_0_3.xml'.format(self.TEST_BASE_URL),
+                                pages=[
+                                    SitemapPage(
+                                        url='{}/atom_0_3_story_1.html'.format(self.TEST_BASE_URL),
+                                        news_story=SitemapNewsStory(
+                                            title='Test Atom 0.3 story #1',
+                                            publish_date=self.TEST_DATE_DATETIME,
+                                        ),
+                                    ),
+                                    SitemapPage(
+                                        url='{}/atom_0_3_story_2.html'.format(self.TEST_BASE_URL),
+                                        news_story=SitemapNewsStory(
+                                            title='Test Atom 0.3 story #2',
+                                            publish_date=self.TEST_DATE_DATETIME,
+                                        )
+                                    )
+                                ]
+                            ),
+                            PagesAtomSitemap(
+                                url='{}/sitemap_atom_1_0.xml'.format(self.TEST_BASE_URL),
+                                pages=[
+                                    SitemapPage(
+                                        url='{}/atom_1_0_story_1.html'.format(self.TEST_BASE_URL),
+                                        news_story=SitemapNewsStory(
+                                            title='Test Atom 1.0 story #1',
+                                            publish_date=self.TEST_DATE_DATETIME,
+                                        ),
+                                    ),
+                                    SitemapPage(
+                                        url='{}/atom_1_0_story_2.html'.format(self.TEST_BASE_URL),
+                                        news_story=SitemapNewsStory(
+                                            title='Test Atom 1.0 story #2',
+                                            publish_date=self.TEST_DATE_DATETIME,
+                                        )
+                                    )
+                                ]
+                            ),
+                        ]
+                    )
+                ]
+            )
+
+            actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
+
+            expected_lines = str(expected_sitemap_tree).split()
+            actual_lines = str(actual_sitemap_tree).split()
+            diff = difflib.ndiff(expected_lines, actual_lines)
+            diff_str = '\n'.join(diff)
+
+            assert expected_sitemap_tree == actual_sitemap_tree, diff_str
+
+            assert len(actual_sitemap_tree.all_pages()) == 6
+
+    def test_sitemap_tree_for_homepage_rss_atom_empty(self):
+        """Test sitemap_tree_for_homepage() with empty RSS 2.0 / Atom 0.3 / Atom 1.0 feeds."""
+
+        with requests_mock.Mocker() as m:
+            m.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+
+            m.get(
+                self.TEST_BASE_URL + '/',
+                text='This is a homepage.',
+            )
+
+            m.get(
+                self.TEST_BASE_URL + '/robots.txt',
+                headers={'Content-Type': 'text/plain'},
+                text=textwrap.dedent("""
+                    User-agent: *
+                    Disallow: /whatever
+
+                    Sitemap: {base_url}/sitemap_rss.xml
+                    Sitemap: {base_url}/sitemap_atom_0_3.xml
+                    Sitemap: {base_url}/sitemap_atom_1_0.xml
+                """.format(base_url=self.TEST_BASE_URL)).strip(),
+            )
+
+            # RSS 2.0 sitemap
+            m.get(
+                self.TEST_BASE_URL + '/sitemap_rss.xml',
+                headers={'Content-Type': 'application/rss+xml'},
+                text=textwrap.dedent("""
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <rss version="2.0">
+                        <channel>
+                            <title>Test RSS 2.0 feed</title>
+                            <description>This is a test RSS 2.0 feed.</description>
+                            <link>{base_url}</link>
+                            <pubDate>{pub_date}</pubDate>
+                        </channel>
+                    </rss>
+                """.format(base_url=self.TEST_BASE_URL, pub_date=self.TEST_DATE_STR_RFC2822)).strip(),
+            )
+
+            # Atom 0.3 sitemap
+            m.get(
+                self.TEST_BASE_URL + '/sitemap_atom_0_3.xml',
+                headers={'Content-Type': 'application/atom+xml'},
+                text=textwrap.dedent("""
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <feed version="0.3" xmlns="http://purl.org/atom/ns#">
+                        <title>Test Atom 0.3 feed</title>
+                        <link rel="alternate" type="text/html" href="{base_url}" />
+                        <modified>{pub_date}</modified>
+                    </feed>
+                """.format(base_url=self.TEST_BASE_URL, pub_date=self.TEST_DATE_STR_ISO8601)).strip(),
+            )
+
+            # Atom 1.0 sitemap
+            m.get(
+                self.TEST_BASE_URL + '/sitemap_atom_1_0.xml',
+                headers={'Content-Type': 'application/atom+xml'},
+                text=textwrap.dedent("""
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <feed xmlns="http://www.w3.org/2005/Atom">
+                        <title>Test Atom 1.0 feed</title>
+                        <subtitle>This is a test Atom 1.0 feed.</subtitle>
+                        <link href="{base_url}/sitemap_atom_1_0.xml" rel="self" />
+                        <link href="{base_url}" />
+                        <id>{base_url}</id>
+                        <updated>{pub_date}</updated>
+                    </feed>
+                """.format(base_url=self.TEST_BASE_URL, pub_date=self.TEST_DATE_STR_ISO8601)).strip(),
+            )
+
+            expected_sitemap_tree = IndexWebsiteSitemap(
+                url='{}/'.format(self.TEST_BASE_URL),
+                sub_sitemaps=[
+                    IndexRobotsTxtSitemap(
+                        url='{}/robots.txt'.format(self.TEST_BASE_URL),
+                        sub_sitemaps=[
+                            PagesRSSSitemap(
+                                url='{}/sitemap_rss.xml'.format(self.TEST_BASE_URL),
+                                pages=[]
+                            ),
+                            PagesAtomSitemap(
+                                url='{}/sitemap_atom_0_3.xml'.format(self.TEST_BASE_URL),
+                                pages=[]
+                            ),
+                            PagesAtomSitemap(
+                                url='{}/sitemap_atom_1_0.xml'.format(self.TEST_BASE_URL),
+                                pages=[]
+                            ),
+                        ]
+                    )
+                ]
+            )
+
+            actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
+
+            assert expected_sitemap_tree == actual_sitemap_tree
+
+            assert len(actual_sitemap_tree.all_pages()) == 0
+
     def test_sitemap_tree_for_homepage_prematurely_ending_xml(self):
         """Test sitemap_tree_for_homepage() with clipped XML.
 
@@ -615,7 +943,7 @@ class TestSitemapTree(TestCase):
                     base_url=self.TEST_BASE_URL,
                     publication_name=self.TEST_PUBLICATION_NAME,
                     publication_language=self.TEST_PUBLICATION_LANGUAGE,
-                    publication_date=self.TEST_DATE_STR,
+                    publication_date=self.TEST_DATE_STR_ISO8601,
                 )).strip(),
             )
 
@@ -702,7 +1030,7 @@ class TestSitemapTree(TestCase):
                     base_url=self.TEST_BASE_URL,
                     publication_name=self.TEST_PUBLICATION_NAME,
                     publication_language=self.TEST_PUBLICATION_LANGUAGE,
-                    publication_date=self.TEST_DATE_STR,
+                    publication_date=self.TEST_DATE_STR_ISO8601,
                 )).strip(),
             )
 
@@ -720,7 +1048,7 @@ class TestSitemapTree(TestCase):
                     base_url=self.TEST_BASE_URL,
                     publication_name=self.TEST_PUBLICATION_NAME,
                     publication_language=self.TEST_PUBLICATION_LANGUAGE,
-                    publication_date=self.TEST_DATE_STR,
+                    publication_date=self.TEST_DATE_STR_ISO8601,
                 )).strip(),
             )
 
@@ -864,7 +1192,7 @@ class TestSitemapTree(TestCase):
                 base_url=self.TEST_BASE_URL,
                 publication_name=self.TEST_PUBLICATION_NAME,
                 publication_language=self.TEST_PUBLICATION_LANGUAGE,
-                publication_date=self.TEST_DATE_STR,
+                publication_date=self.TEST_DATE_STR_ISO8601,
             )
 
         sitemap_xml += "</urlset>"
@@ -942,7 +1270,7 @@ class TestSitemapTree(TestCase):
                     base_url=self.TEST_BASE_URL,
                     publication_name=self.TEST_PUBLICATION_NAME,
                     publication_language=self.TEST_PUBLICATION_LANGUAGE,
-                    publication_date=self.TEST_DATE_STR,
+                    publication_date=self.TEST_DATE_STR_ISO8601,
                 )).strip(),
             )
 
@@ -979,7 +1307,7 @@ class TestSitemapTree(TestCase):
             base_url=self.TEST_BASE_URL,
             publication_name=self.TEST_PUBLICATION_NAME,
             publication_language=self.TEST_PUBLICATION_LANGUAGE,
-            publication_date=self.TEST_DATE_STR,
+            publication_date=self.TEST_DATE_STR_ISO8601,
         )).strip()
 
         robots_txt_body_encoded = robots_txt_body.encode('utf-8-sig')
