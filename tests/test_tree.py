@@ -470,12 +470,15 @@ class TestSitemapTree(TestCase):
             assert len(actual_sitemap_tree.sub_sitemaps) == 1
 
             assert isinstance(actual_sitemap_tree.sub_sitemaps[0], IndexRobotsTxtSitemap)
+            # noinspection PyUnresolvedReferences
             assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 2
 
+            # noinspection PyUnresolvedReferences
             sitemap_1 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[0]
             assert isinstance(sitemap_1, PagesXMLSitemap)
             assert len(sitemap_1.pages) == 1
 
+            # noinspection PyUnresolvedReferences
             sitemap_2 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[1]
             assert isinstance(sitemap_2, PagesXMLSitemap)
             assert len(sitemap_2.pages) == 1
@@ -533,12 +536,15 @@ class TestSitemapTree(TestCase):
             assert len(actual_sitemap_tree.sub_sitemaps) == 1
 
             assert isinstance(actual_sitemap_tree.sub_sitemaps[0], IndexRobotsTxtSitemap)
+            # noinspection PyUnresolvedReferences
             assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 2
 
+            # noinspection PyUnresolvedReferences
             sitemap_1 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[0]
             assert isinstance(sitemap_1, PagesTextSitemap)
             assert len(sitemap_1.pages) == 2
 
+            # noinspection PyUnresolvedReferences
             sitemap_2 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[1]
             assert isinstance(sitemap_2, PagesTextSitemap)
             assert len(sitemap_2.pages) == 2
@@ -952,8 +958,10 @@ class TestSitemapTree(TestCase):
             assert len(actual_sitemap_tree.sub_sitemaps) == 1
 
             assert isinstance(actual_sitemap_tree.sub_sitemaps[0], IndexRobotsTxtSitemap)
+            # noinspection PyUnresolvedReferences
             assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 1
 
+            # noinspection PyUnresolvedReferences
             sitemap = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[0]
             assert isinstance(sitemap, PagesXMLSitemap)
             assert len(sitemap.pages) == 2
