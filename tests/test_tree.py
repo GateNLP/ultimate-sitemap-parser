@@ -46,7 +46,7 @@ class TestSitemapTree(TestCase):
     TEST_DATE_STR_ISO8601 = TEST_DATE_DATETIME.isoformat()
     """Test string date formatted as ISO 8601 (for XML and Atom 0.3 / 1.0 sitemaps)."""
 
-    TEST_DATE_STR_RFC2822 = formatdate(float(TEST_DATE_DATETIME.strftime('%s')))
+    TEST_DATE_STR_RFC2822 = formatdate(float(TEST_DATE_DATETIME.strftime('%s')), localtime=True)
     """Test string date formatted as RFC 2822 (for RSS 2.0 sitemaps)."""
 
     TEST_PUBLICATION_NAME = 'Test publication'
