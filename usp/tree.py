@@ -1,12 +1,12 @@
 """Function to generate a sitemap tree."""
 from typing import Optional
 
-from usp.web_client.abstract_client import AbstractWebClient
 from .exceptions import SitemapException
 from .fetch_parse import SitemapFetcher
 from .helpers import is_http_url, strip_url_to_homepage
 from .log import create_logger
 from .objects import AbstractSitemap, InvalidSitemap, IndexWebsiteSitemap, IndexRobotsTxtSitemap
+from .web_client.abstract_client import AbstractWebClient
 
 log = create_logger(__name__)
 

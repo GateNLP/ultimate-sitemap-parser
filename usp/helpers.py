@@ -67,7 +67,7 @@ def html_unescape_strip(string: Optional[str]) -> Optional[str]:
     return string
 
 
-def parse_sitemap_publication_date(date_string: str) -> datetime.datetime:
+def parse_iso8601_date(date_string: str) -> datetime.datetime:
     """Parse sitemap's <publication_date> into datetime.datetime object."""
     # FIXME parse known date formats faster
 
@@ -79,10 +79,10 @@ def parse_sitemap_publication_date(date_string: str) -> datetime.datetime:
     return date
 
 
-def parse_rss_atom_publication_date(date_string: str) -> datetime.datetime:
+def parse_rfc2822_date(date_string: str) -> datetime.datetime:
     """Parse RSS / Atom feed's <pubDate> into datetime.datetime object."""
     # FIXME parse known date formats faster
-    return parse_sitemap_publication_date(date_string)
+    return parse_iso8601_date(date_string)
 
 
 def get_url_retry_on_client_errors(url: str,

@@ -10,6 +10,10 @@
     :target: https://coveralls.io/github/berkmancenter/mediacloud-ultimate_sitemap_parser?branch=develop
     :alt: Coverage Status
 
+.. image:: https://badge.fury.io/py/ultimate-sitemap-parser.svg
+    :target: https://badge.fury.io/py/ultimate-sitemap-parser
+    :alt: PyPI package
+
 
 Website sitemap parser for Python 3.5+.
 
