@@ -16,6 +16,7 @@ from .helpers import (
     get_url_retry_on_client_errors,
     ungzipped_response_content,
     is_http_url,
+    parse_rss_atom_publication_date,
 )
 from .log import create_logger
 from .objects import (
@@ -27,6 +28,8 @@ from .objects import (
     IndexXMLSitemap,
     PagesXMLSitemap,
     PagesTextSitemap,
+    PagesRSSSitemap,
+    PagesAtomSitemap,
     SitemapPageChangeFrequency,
     SITEMAP_PAGE_DEFAULT_PRIORITY,
 )
@@ -74,7 +77,6 @@ class SitemapFetcher(object):
         log.info("Fetching level {} sitemap from {}...".format(self._recursion_level, self._url))
         response = get_url_retry_on_client_errors(url=self._url, web_client=self._web_client)
         if not response.is_success():
-            # noinspection PyArgumentList
             return InvalidSitemap(
                 url=self._url,
                 reason="Unable to fetch sitemap from {}: {} {}".format(
@@ -175,7 +177,6 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
             fetched_sitemap = fetcher.sitemap()
             sub_sitemaps.append(fetched_sitemap)
 
-        # noinspection PyArgumentList
         index_sitemap = IndexRobotsTxtSitemap(url=self._url, sub_sitemaps=sub_sitemaps)
 
         return index_sitemap
@@ -202,7 +203,6 @@ class PlainTextSitemapParser(AbstractSitemapParser):
             page = SitemapPage(url=page_url)
             pages.append(page)
 
-        # noinspection PyArgumentList
         text_sitemap = PagesTextSitemap(url=self._url, pages=pages)
 
         return text_sitemap
@@ -239,7 +239,6 @@ class XMLSitemapParser(AbstractSitemapParser):
             log.error("Parsing sitemap from URL {} failed: {}".format(self._url, ex))
 
         if not self._concrete_parser:
-            # noinspection PyArgumentList
             return InvalidSitemap(
                 url=self._url,
                 reason="No parsers support sitemap from {}".format(self._url),
@@ -303,6 +302,17 @@ class XMLSitemapParser(AbstractSitemapParser):
                     web_client=self._web_client,
                     recursion_level=self._recursion_level,
                 )
+
+            elif name == 'rss':
+                self._concrete_parser = PagesRSSSitemapParser(
+                    url=self._url,
+                )
+
+            elif name == 'feed':
+                self._concrete_parser = PagesAtomSitemapParser(
+                    url=self._url,
+                )
+
             else:
                 raise SitemapXMLParsingException("Unsupported root element '{}'.".format(name))
 
@@ -409,7 +419,6 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
                                          web_client=self._web_client)
                 fetched_sitemap = fetcher.sitemap()
             except Exception as ex:
-                # noinspection PyArgumentList
                 fetched_sitemap = InvalidSitemap(
                     url=sub_sitemap_url,
                     reason="Unable to add sub-sitemap from URL {}: {}".format(sub_sitemap_url, str(ex)),
@@ -417,7 +426,6 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
 
             sub_sitemaps.append(fetched_sitemap)
 
-        # noinspection PyArgumentList
         index_sitemap = IndexXMLSitemap(url=self._url, sub_sitemaps=sub_sitemaps)
 
         return index_sitemap
@@ -625,7 +633,253 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
             if page:
                 pages.append(page)
 
-        # noinspection PyArgumentList
         pages_sitemap = PagesXMLSitemap(url=self._url, pages=pages)
+
+        return pages_sitemap
+
+
+class PagesRSSSitemapParser(AbstractXMLSitemapParser):
+    """
+    Pages RSS 2.0 sitemap parser.
+
+    https://validator.w3.org/feed/docs/rss2.html
+    """
+
+    @attr.s(slots=True)
+    class Page(object):
+        """Simple data class for holding various properties for a single <item> entry while parsing."""
+        link = attr.ib(type=str, default=None, hash=True)
+        title = attr.ib(type=Optional[str], default=None, hash=False)
+        description = attr.ib(type=Optional[str], default=None, hash=False)
+        publication_date = attr.ib(type=Optional[str], default=None, hash=False)
+
+        def page(self) -> Optional[SitemapPage]:
+            """Return constructed sitemap page if one has been completed, otherwise None."""
+
+            # Required
+            link = html_unescape_strip(self.link)
+            if not link:
+                log.error("Link is unset")
+                return None
+
+            title = html_unescape_strip(self.title)
+            description = html_unescape_strip(self.description)
+            if not (title or description):
+                log.error("Both title and description are unset")
+                return None
+
+            publication_date = html_unescape_strip(self.publication_date)
+            if publication_date:
+                publication_date = parse_rss_atom_publication_date(publication_date)
+
+            return SitemapPage(
+                url=link,
+                news_story=SitemapNewsStory(
+                    title=title or description,
+                    publish_date=publication_date,
+                ),
+            )
+
+    __slots__ = [
+        '_current_page',
+        '_pages',
+    ]
+
+    def __init__(self, url: str):
+        super().__init__(url=url)
+
+        self._current_page = None
+        self._pages = []
+
+    def xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
+
+        super().xml_element_start(name=name, attrs=attrs)
+
+        if name == 'item':
+            if self._current_page:
+                raise SitemapXMLParsingException("Page is expected to be unset by <item>.")
+            self._current_page = self.Page()
+
+    def __require_last_char_data_to_be_set(self, name: str) -> None:
+        if not self._last_char_data:
+            raise SitemapXMLParsingException(
+                "Character data is expected to be set at the end of <{}>.".format(name)
+            )
+
+    def xml_element_end(self, name: str) -> None:
+
+        # If within <item> already
+        if self._current_page:
+
+            if name == 'item':
+                if self._current_page not in self._pages:
+                    self._pages.append(self._current_page)
+                self._current_page = None
+
+            else:
+
+                if name == 'link':
+                    # Every entry must have <link>
+                    self.__require_last_char_data_to_be_set(name=name)
+                    self._current_page.link = self._last_char_data
+
+                elif name == 'title':
+                    # Title (if set) can't be empty
+                    self.__require_last_char_data_to_be_set(name=name)
+                    self._current_page.title = self._last_char_data
+
+                elif name == 'description':
+                    # Description (if set) can't be empty
+                    self.__require_last_char_data_to_be_set(name=name)
+                    self._current_page.description = self._last_char_data
+
+                elif name == 'pubDate':
+                    # Element might be present but character data might be empty
+                    self._current_page.publication_date = self._last_char_data
+
+        super().xml_element_end(name=name)
+
+    def sitemap(self) -> AbstractSitemap:
+
+        pages = []
+
+        for page_row in self._pages:
+            page = page_row.page()
+            if page:
+                pages.append(page)
+
+        pages_sitemap = PagesRSSSitemap(url=self._url, pages=pages)
+
+        return pages_sitemap
+
+
+class PagesAtomSitemapParser(AbstractXMLSitemapParser):
+    """
+    Pages Atom 0.3 / 1.0 sitemap parser.
+
+    https://github.com/simplepie/simplepie-ng/wiki/Spec:-Atom-0.3
+    https://www.ietf.org/rfc/rfc4287.txt
+    http://rakaz.nl/2005/07/moving-from-atom-03-to-10.html
+    """
+
+    # FIXME merge with RSS parser class as there are too many similarities
+
+    @attr.s(slots=True)
+    class Page(object):
+        """Simple data class for holding various properties for a single <entry> entry while parsing."""
+        link = attr.ib(type=str, default=None, hash=True)
+        title = attr.ib(type=Optional[str], default=None, hash=False)
+        description = attr.ib(type=Optional[str], default=None, hash=False)
+        publication_date = attr.ib(type=Optional[str], default=None, hash=False)
+
+        def page(self) -> Optional[SitemapPage]:
+            """Return constructed sitemap page if one has been completed, otherwise None."""
+
+            # Required
+            link = html_unescape_strip(self.link)
+            if not link:
+                log.error("Link is unset")
+                return None
+
+            title = html_unescape_strip(self.title)
+            description = html_unescape_strip(self.description)
+            if not (title or description):
+                log.error("Both title and description are unset")
+                return None
+
+            publication_date = html_unescape_strip(self.publication_date)
+            if publication_date:
+                publication_date = parse_rss_atom_publication_date(publication_date)
+
+            return SitemapPage(
+                url=link,
+                news_story=SitemapNewsStory(
+                    title=title or description,
+                    publish_date=publication_date,
+                ),
+            )
+
+    __slots__ = [
+        '_current_page',
+        '_pages',
+        '_last_link_rel_self_href',
+    ]
+
+    def __init__(self, url: str):
+        super().__init__(url=url)
+
+        self._current_page = None
+        self._pages = []
+        self._last_link_rel_self_href = None
+
+    def xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
+
+        super().xml_element_start(name=name, attrs=attrs)
+
+        if name == 'entry':
+            if self._current_page:
+                raise SitemapXMLParsingException("Page is expected to be unset by <entry>.")
+            self._current_page = self.Page()
+
+        elif name == 'link':
+            if self._current_page:
+                if attrs.get('rel', 'self').lower() == 'self' or self._last_link_rel_self_href is None:
+                    self._last_link_rel_self_href = attrs.get('href', None)
+
+    def __require_last_char_data_to_be_set(self, name: str) -> None:
+        if not self._last_char_data:
+            raise SitemapXMLParsingException(
+                "Character data is expected to be set at the end of <{}>.".format(name)
+            )
+
+    def xml_element_end(self, name: str) -> None:
+
+        # If within <entry> already
+        if self._current_page:
+
+            if name == 'entry':
+
+                if self._last_link_rel_self_href:
+                    self._current_page.link = self._last_link_rel_self_href
+                    self._last_link_rel_self_href = None
+
+                    if self._current_page not in self._pages:
+                        self._pages.append(self._current_page)
+
+                self._current_page = None
+
+            else:
+
+                if name == 'title':
+                    # Title (if set) can't be empty
+                    self.__require_last_char_data_to_be_set(name=name)
+                    self._current_page.title = self._last_char_data
+
+                elif name == 'tagline' or name == 'summary':
+                    # Description (if set) can't be empty
+                    self.__require_last_char_data_to_be_set(name=name)
+                    self._current_page.description = self._last_char_data
+
+                elif name == 'issued' or name == 'published':
+                    # Element might be present but character data might be empty
+                    self._current_page.publication_date = self._last_char_data
+
+                elif name == 'updated':
+                    # No 'issued' or 'published' were set before
+                    if not self._current_page.publication_date:
+                        self._current_page.publication_date = self._last_char_data
+
+        super().xml_element_end(name=name)
+
+    def sitemap(self) -> AbstractSitemap:
+
+        pages = []
+
+        for page_row in self._pages:
+            page = page_row.page()
+            if page:
+                pages.append(page)
+
+        pages_sitemap = PagesAtomSitemap(url=self._url, pages=pages)
 
         return pages_sitemap

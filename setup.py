@@ -13,7 +13,7 @@ def __readme():
 tests_require = [
 
     # Mock HTTP server
-    'httpretty>=0.9.6,<1.0',
+    'requests_mock>=1.6.0,<2.0',
 
     # Running tests
     'pytest>=2.8',

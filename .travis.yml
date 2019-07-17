@@ -19,6 +19,7 @@ after_success:
 - coveralls
 deploy:
   provider: pypi
+  skip_existing: true
   user: mediacloud-travis
   on:
     tags: true

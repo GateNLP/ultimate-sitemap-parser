@@ -3,12 +3,23 @@ from typing import Optional
 
 from usp.web_client.abstract_client import AbstractWebClient
 from .exceptions import SitemapException
-from .fetchers import SitemapFetcher
+from .fetch_parse import SitemapFetcher
 from .helpers import is_http_url, strip_url_to_homepage
 from .log import create_logger
-from .objects import AbstractSitemap
+from .objects import AbstractSitemap, InvalidSitemap, IndexWebsiteSitemap, IndexRobotsTxtSitemap
 
 log = create_logger(__name__)
+
+_UNPUBLISHED_SITEMAP_PATHS = {
+    'sitemap.xml',
+    'sitemap.xml.gz',
+    'sitemap_index.xml',
+    '.sitemap.xml',
+    'sitemap',
+    'admin/config/search/xmlsitemap',
+    'sitemap/sitemap-index.xml',
+}
+"""Paths which are not exposed in robots.txt but might still contain a sitemap."""
 
 
 def sitemap_tree_for_homepage(homepage_url: str, web_client: Optional[AbstractWebClient] = None) -> AbstractSitemap:
@@ -26,6 +37,34 @@ def sitemap_tree_for_homepage(homepage_url: str, web_client: Optional[AbstractWe
         homepage_url += '/'
     robots_txt_url = homepage_url + 'robots.txt'
 
+    sitemaps = []
+
     robots_txt_fetcher = SitemapFetcher(url=robots_txt_url, web_client=web_client, recursion_level=0)
-    sitemap_tree = robots_txt_fetcher.sitemap()
-    return sitemap_tree
+    robots_txt_sitemap = robots_txt_fetcher.sitemap()
+    sitemaps.append(robots_txt_sitemap)
+
+    sitemap_urls_found_in_robots_txt = set()
+    if isinstance(robots_txt_sitemap, IndexRobotsTxtSitemap):
+        for sub_sitemap in robots_txt_sitemap.sub_sitemaps:
+            sitemap_urls_found_in_robots_txt.add(sub_sitemap.url)
+
+    for unpublished_sitemap_path in _UNPUBLISHED_SITEMAP_PATHS:
+        unpublished_sitemap_url = homepage_url + unpublished_sitemap_path
+
+        # Don't refetch URLs already found in robots.txt
+        if unpublished_sitemap_url not in sitemap_urls_found_in_robots_txt:
+
+            unpublished_sitemap_fetcher = SitemapFetcher(
+                url=unpublished_sitemap_url,
+                web_client=web_client,
+                recursion_level=0,
+            )
+            unpublished_sitemap = unpublished_sitemap_fetcher.sitemap()
+
+            # Skip the ones that weren't found
+            if not isinstance(unpublished_sitemap, InvalidSitemap):
+                sitemaps.append(unpublished_sitemap)
+
+    index_sitemap = IndexWebsiteSitemap(url=homepage_url, sub_sitemaps=sitemaps)
+
+    return index_sitemap
