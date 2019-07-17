@@ -77,7 +77,6 @@ class SitemapFetcher(object):
         log.info("Fetching level {} sitemap from {}...".format(self._recursion_level, self._url))
         response = get_url_retry_on_client_errors(url=self._url, web_client=self._web_client)
         if not response.is_success():
-            # noinspection PyArgumentList
             return InvalidSitemap(
                 url=self._url,
                 reason="Unable to fetch sitemap from {}: {} {}".format(
@@ -178,7 +177,6 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
             fetched_sitemap = fetcher.sitemap()
             sub_sitemaps.append(fetched_sitemap)
 
-        # noinspection PyArgumentList
         index_sitemap = IndexRobotsTxtSitemap(url=self._url, sub_sitemaps=sub_sitemaps)
 
         return index_sitemap
@@ -205,7 +203,6 @@ class PlainTextSitemapParser(AbstractSitemapParser):
             page = SitemapPage(url=page_url)
             pages.append(page)
 
-        # noinspection PyArgumentList
         text_sitemap = PagesTextSitemap(url=self._url, pages=pages)
 
         return text_sitemap
@@ -242,7 +239,6 @@ class XMLSitemapParser(AbstractSitemapParser):
             log.error("Parsing sitemap from URL {} failed: {}".format(self._url, ex))
 
         if not self._concrete_parser:
-            # noinspection PyArgumentList
             return InvalidSitemap(
                 url=self._url,
                 reason="No parsers support sitemap from {}".format(self._url),
@@ -423,7 +419,6 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
                                          web_client=self._web_client)
                 fetched_sitemap = fetcher.sitemap()
             except Exception as ex:
-                # noinspection PyArgumentList
                 fetched_sitemap = InvalidSitemap(
                     url=sub_sitemap_url,
                     reason="Unable to add sub-sitemap from URL {}: {}".format(sub_sitemap_url, str(ex)),
@@ -431,7 +426,6 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
 
             sub_sitemaps.append(fetched_sitemap)
 
-        # noinspection PyArgumentList
         index_sitemap = IndexXMLSitemap(url=self._url, sub_sitemaps=sub_sitemaps)
 
         return index_sitemap
@@ -639,7 +633,6 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
             if page:
                 pages.append(page)
 
-        # noinspection PyArgumentList
         pages_sitemap = PagesXMLSitemap(url=self._url, pages=pages)
 
         return pages_sitemap
@@ -755,7 +748,6 @@ class PagesRSSSitemapParser(AbstractXMLSitemapParser):
             if page:
                 pages.append(page)
 
-        # noinspection PyArgumentList
         pages_sitemap = PagesRSSSitemap(url=self._url, pages=pages)
 
         return pages_sitemap
@@ -888,7 +880,6 @@ class PagesAtomSitemapParser(AbstractXMLSitemapParser):
             if page:
                 pages.append(page)
 
-        # noinspection PyArgumentList
         pages_sitemap = PagesAtomSitemap(url=self._url, pages=pages)
 
         return pages_sitemap

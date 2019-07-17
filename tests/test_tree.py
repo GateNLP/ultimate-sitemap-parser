@@ -276,7 +276,6 @@ class TestSitemapTree(TestCase):
                 text="<h1>404 Not Found!</h1>",
             )
 
-            # noinspection PyArgumentList
             expected_sitemap_tree = IndexWebsiteSitemap(
                 url='{}/'.format(self.TEST_BASE_URL),
                 sub_sitemaps=[
@@ -979,7 +978,6 @@ class TestSitemapTree(TestCase):
                 """.format(base_url=self.TEST_BASE_URL)).strip(),
             )
 
-            # noinspection PyArgumentList
             expected_sitemap_tree = IndexWebsiteSitemap(
                 url='{}/'.format(self.TEST_BASE_URL),
                 sub_sitemaps=[
@@ -1103,7 +1101,6 @@ class TestSitemapTree(TestCase):
                 """.format(base_url=self.TEST_BASE_URL)).strip(),
             )
 
-            # noinspection PyArgumentList
             expected_sitemap_tree = IndexWebsiteSitemap(
                 url='{}/'.format(self.TEST_BASE_URL),
                 sub_sitemaps=[
@@ -1138,7 +1135,6 @@ class TestSitemapTree(TestCase):
                 text="<h1>404 Not Found!</h1>",
             )
 
-            # noinspection PyArgumentList
             expected_sitemap_tree = IndexWebsiteSitemap(
                 url='{}/'.format(self.TEST_BASE_URL),
                 sub_sitemaps=[
