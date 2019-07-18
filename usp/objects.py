@@ -86,7 +86,7 @@ class SitemapNewsStory(object):
         if self.keywords != other.keywords:
             return False
 
-        if self.stock_tickets != other.stock_tickets:
+        if self.stock_tickers != other.stock_tickers:
             return False
 
         return True
@@ -100,7 +100,7 @@ class SitemapNewsStory(object):
             self.access,
             self.genres,
             self.keywords,
-            self.stock_tickets,
+            self.stock_tickers,
         ))
 
     def __repr__(self):
@@ -182,7 +182,7 @@ class SitemapNewsStory(object):
         return self.__keywords
 
     @property
-    def stock_tickets(self) -> List[str]:
+    def stock_tickers(self) -> List[str]:
         """
         Return list of up to 5 stock tickers that are the main subject of the article.
 
