@@ -383,7 +383,7 @@ class TestSitemapTree(TestCase):
 
             assert expected_sitemap_tree == actual_sitemap_tree, diff_str
 
-            assert len(actual_sitemap_tree.all_pages()) == 5
+            assert len(list(actual_sitemap_tree.all_pages())) == 6
 
     def test_sitemap_tree_for_homepage_gzip(self):
         """Test sitemap_tree_for_homepage() with gzipped sitemaps."""
@@ -470,12 +470,15 @@ class TestSitemapTree(TestCase):
             assert len(actual_sitemap_tree.sub_sitemaps) == 1
 
             assert isinstance(actual_sitemap_tree.sub_sitemaps[0], IndexRobotsTxtSitemap)
+            # noinspection PyUnresolvedReferences
             assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 2
 
+            # noinspection PyUnresolvedReferences
             sitemap_1 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[0]
             assert isinstance(sitemap_1, PagesXMLSitemap)
             assert len(sitemap_1.pages) == 1
 
+            # noinspection PyUnresolvedReferences
             sitemap_2 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[1]
             assert isinstance(sitemap_2, PagesXMLSitemap)
             assert len(sitemap_2.pages) == 1
@@ -533,19 +536,21 @@ class TestSitemapTree(TestCase):
             assert len(actual_sitemap_tree.sub_sitemaps) == 1
 
             assert isinstance(actual_sitemap_tree.sub_sitemaps[0], IndexRobotsTxtSitemap)
+            # noinspection PyUnresolvedReferences
             assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 2
 
+            # noinspection PyUnresolvedReferences
             sitemap_1 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[0]
             assert isinstance(sitemap_1, PagesTextSitemap)
             assert len(sitemap_1.pages) == 2
 
+            # noinspection PyUnresolvedReferences
             sitemap_2 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[1]
             assert isinstance(sitemap_2, PagesTextSitemap)
             assert len(sitemap_2.pages) == 2
 
-            pages = actual_sitemap_tree.all_pages()
-            assert len(pages) == 3
-            print(pages)
+            pages = list(actual_sitemap_tree.all_pages())
+            assert len(pages) == 4
             assert SitemapPage(url='{}/news/foo.html'.format(self.TEST_BASE_URL)) in pages
             assert SitemapPage(url='{}/news/bar.html'.format(self.TEST_BASE_URL)) in pages
             assert SitemapPage(url='{}/news/baz.html'.format(self.TEST_BASE_URL)) in pages
@@ -770,7 +775,7 @@ class TestSitemapTree(TestCase):
 
             assert expected_sitemap_tree == actual_sitemap_tree, diff_str
 
-            assert len(actual_sitemap_tree.all_pages()) == 6
+            assert len(list(actual_sitemap_tree.all_pages())) == 6
 
     def test_sitemap_tree_for_homepage_rss_atom_empty(self):
         """Test sitemap_tree_for_homepage() with empty RSS 2.0 / Atom 0.3 / Atom 1.0 feeds."""
@@ -871,7 +876,7 @@ class TestSitemapTree(TestCase):
 
             assert expected_sitemap_tree == actual_sitemap_tree
 
-            assert len(actual_sitemap_tree.all_pages()) == 0
+            assert len(list(actual_sitemap_tree.all_pages())) == 0
 
     def test_sitemap_tree_for_homepage_prematurely_ending_xml(self):
         """Test sitemap_tree_for_homepage() with clipped XML.
@@ -952,8 +957,10 @@ class TestSitemapTree(TestCase):
             assert len(actual_sitemap_tree.sub_sitemaps) == 1
 
             assert isinstance(actual_sitemap_tree.sub_sitemaps[0], IndexRobotsTxtSitemap)
+            # noinspection PyUnresolvedReferences
             assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 1
 
+            # noinspection PyUnresolvedReferences
             sitemap = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[0]
             assert isinstance(sitemap, PagesXMLSitemap)
             assert len(sitemap.pages) == 2
@@ -1220,7 +1227,7 @@ class TestSitemapTree(TestCase):
 
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
 
-            assert len(actual_sitemap_tree.all_pages()) == page_count
+            assert len(list(actual_sitemap_tree.all_pages())) == page_count
 
     def test_sitemap_tree_for_homepage_robots_txt_weird_spacing(self):
         """Test sitemap_tree_for_homepage() with weird (but valid) spacing."""
@@ -1271,7 +1278,7 @@ class TestSitemapTree(TestCase):
             )
 
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
-            assert len(actual_sitemap_tree.all_pages()) == 1
+            assert len(list(actual_sitemap_tree.all_pages())) == 1
 
     def test_sitemap_tree_for_homepage_utf8_bom(self):
         """Test sitemap_tree_for_homepage() with UTF-8 BOM in both robots.txt and sitemap."""
@@ -1329,4 +1336,4 @@ class TestSitemapTree(TestCase):
             )
 
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
-            assert len(actual_sitemap_tree.all_pages()) == 1
+            assert len(list(actual_sitemap_tree.all_pages())) == 1

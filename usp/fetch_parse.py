@@ -7,8 +7,6 @@ from collections import OrderedDict
 from decimal import Decimal
 from typing import Optional, Dict
 
-import attr
-
 from .exceptions import SitemapException, SitemapXMLParsingException
 from .helpers import (
     html_unescape_strip,
@@ -434,21 +432,43 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
 class PagesXMLSitemapParser(AbstractXMLSitemapParser):
     """Pages XML sitemap parser."""
 
-    @attr.s(slots=True)
     class Page(object):
         """Simple data class for holding various properties for a single <url> entry while parsing."""
-        url = attr.ib(type=str, default=None, hash=True)
-        last_modified = attr.ib(type=Optional[str], default=None, hash=False)
-        change_frequency = attr.ib(type=Optional[str], default=None, hash=False)
-        priority = attr.ib(type=Optional[str], default=None, hash=False)
-        news_title = attr.ib(type=Optional[str], default=None, hash=False)
-        news_publish_date = attr.ib(type=Optional[str], default=None, hash=False)
-        news_publication_name = attr.ib(type=Optional[str], default=None, hash=False)
-        news_publication_language = attr.ib(type=Optional[str], default=None, hash=False)
-        news_access = attr.ib(type=Optional[str], default=None, hash=False)
-        news_genres = attr.ib(type=Optional[str], default=None, hash=False)
-        news_keywords = attr.ib(type=Optional[str], default=None, hash=False)
-        news_stock_tickers = attr.ib(type=Optional[str], default=None, hash=False)
+
+        __slots__ = [
+            'url',
+            'last_modified',
+            'change_frequency',
+            'priority',
+            'news_title',
+            'news_publish_date',
+            'news_publication_name',
+            'news_publication_language',
+            'news_access',
+            'news_genres',
+            'news_keywords',
+            'news_stock_tickers',
+        ]
+
+        def __init__(self):
+            self.url = None
+            self.last_modified = None
+            self.change_frequency = None
+            self.priority = None
+            self.news_title = None
+            self.news_publish_date = None
+            self.news_publication_name = None
+            self.news_publication_language = None
+            self.news_access = None
+            self.news_genres = None
+            self.news_keywords = None
+            self.news_stock_tickers = None
+
+        def __hash__(self):
+            return hash((
+                # Hash only the URL to be able to find unique ones
+                self.url,
+            ))
 
         def page(self) -> Optional[SitemapPage]:
             """Return constructed sitemap page if one has been completed, otherwise None."""
@@ -645,13 +665,27 @@ class PagesRSSSitemapParser(AbstractXMLSitemapParser):
     https://validator.w3.org/feed/docs/rss2.html
     """
 
-    @attr.s(slots=True)
     class Page(object):
         """Simple data class for holding various properties for a single <item> entry while parsing."""
-        link = attr.ib(type=str, default=None, hash=True)
-        title = attr.ib(type=Optional[str], default=None, hash=False)
-        description = attr.ib(type=Optional[str], default=None, hash=False)
-        publication_date = attr.ib(type=Optional[str], default=None, hash=False)
+
+        __slots__ = [
+            'link',
+            'title',
+            'description',
+            'publication_date',
+        ]
+
+        def __init__(self):
+            self.link = None
+            self.title = None
+            self.description = None
+            self.publication_date = None
+
+        def __hash__(self):
+            return hash((
+                # Hash only the URL
+                self.link,
+            ))
 
         def page(self) -> Optional[SitemapPage]:
             """Return constructed sitemap page if one has been completed, otherwise None."""
@@ -764,13 +798,27 @@ class PagesAtomSitemapParser(AbstractXMLSitemapParser):
 
     # FIXME merge with RSS parser class as there are too many similarities
 
-    @attr.s(slots=True)
     class Page(object):
         """Simple data class for holding various properties for a single <entry> entry while parsing."""
-        link = attr.ib(type=str, default=None, hash=True)
-        title = attr.ib(type=Optional[str], default=None, hash=False)
-        description = attr.ib(type=Optional[str], default=None, hash=False)
-        publication_date = attr.ib(type=Optional[str], default=None, hash=False)
+
+        __slots__ = [
+            'link',
+            'title',
+            'description',
+            'publication_date',
+        ]
+
+        def __init__(self):
+            self.link = None
+            self.title = None
+            self.description = None
+            self.publication_date = None
+
+        def __hash__(self):
+            return hash((
+                # Hash only the URL
+                self.link,
+            ))
 
         def page(self) -> Optional[SitemapPage]:
             """Return constructed sitemap page if one has been completed, otherwise None."""
