@@ -33,7 +33,7 @@ Features
 - Error-tolerant with more common sitemap bugs
 - Tries to find sitemaps not listed in ``robots.txt``
 - Uses fast and memory efficient Expat XML parsing
-- Don't consume much memory even with massive sitemap hierarchies
+- Doesn't consume much memory even with massive sitemap hierarchies
 - Provides a generated sitemap tree as easy to use object tree
 - Supports using a custom web client
 - Uses a small number of actively maintained third-party modules
