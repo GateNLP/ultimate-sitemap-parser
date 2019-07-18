@@ -6,7 +6,9 @@ from typing import Optional
 
 
 class AbstractWebClientResponse(object, metaclass=abc.ABCMeta):
-    """Abstract web client response."""
+    """
+    Abstract web client response.
+    """
 
     _RETRYABLE_HTTP_STATUS_CODES = {
 
@@ -72,42 +74,78 @@ class AbstractWebClientResponse(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def status_code(self) -> int:
-        """Return HTTP status code of the response."""
+        """
+        Return HTTP status code of the response.
+
+        :return: HTTP status code of the response, e.g. 200.
+        """
         raise NotImplementedError("Abstract method.")
 
     @abc.abstractmethod
     def status_message(self) -> str:
-        """Return HTTP status message of the response."""
+        """
+        Return HTTP status message of the response.
+
+        :return: HTTP status message of the response, e.g. "OK".
+        """
         raise NotImplementedError("Abstract method.")
 
     @abc.abstractmethod
     def header(self, case_insensitive_name: str) -> Optional[str]:
-        """Return HTTP header value for a given case-insensitive name, or None if such header wasn't set."""
+        """
+        Return HTTP header value for a given case-insensitive name, or None if such header wasn't set.
+
+        :param case_insensitive_name: HTTP header's name, e.g. "Content-Type".
+        :return: HTTP header's value, or None if it was unset.
+        """
         raise NotImplementedError("Abstract method.")
 
     @abc.abstractmethod
     def raw_data(self) -> bytes:
-        """Return encoded raw data of the response."""
+        """
+        Return encoded raw data of the response.
+
+        :return: Encoded raw data of the response.
+        """
         raise NotImplementedError("Abstract method.")
 
     def is_success(self) -> bool:
-        """Return True if the request succeeded."""
+        """
+        Return True if the request succeeded.
+
+        :return: True if request has succeeded.
+        """
         return 200 <= self.status_code() < 300
 
     def is_retryable_error(self) -> bool:
-        """Return True if encountered HTTP error which should be retried."""
+        """
+        Return True if encountered HTTP error which should be retried.
+
+        :return: True if encountered HTTP error which should be retried.
+        """
         return self.status_code() in self._RETRYABLE_HTTP_STATUS_CODES
 
 
 class AbstractWebClient(object, metaclass=abc.ABCMeta):
-    """Abstract web client to be used by the sitemap fetcher."""
+    """
+    Abstract web client to be used by the sitemap fetcher.
+    """
 
     @abc.abstractmethod
-    def set_max_response_data_length(self, max_response_data_length: int):
-        """Initialize web client with max. response length in bytes."""
+    def set_max_response_data_length(self, max_response_data_length: int) -> None:
+        """
+        Set the maximum number of bytes that the web client will fetch.
+
+        :param max_response_data_length: Maximum number of bytes that the web client will fetch.
+        """
         raise NotImplementedError("Abstract method.")
 
     @abc.abstractmethod
     def get(self, url: str) -> AbstractWebClientResponse:
-        """GET an URL and return a response."""
+        """
+        Fetch an URL and return a response.
+
+        :param url: URL to fetch.
+        :return: Response object.
+        """
         raise NotImplementedError("Abstract method.")

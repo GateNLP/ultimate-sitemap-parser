@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+    usp.objects
     usp.web_client
 
 Submodules
@@ -15,14 +16,6 @@ usp.exceptions module
 ---------------------
 
 .. automodule:: usp.exceptions
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-usp.objects module
-------------------
-
-.. automodule:: usp.objects
     :members:
     :undoc-members:
     :show-inheritance:

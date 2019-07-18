@@ -21,7 +21,12 @@ __URL_REGEX = re.compile(r'^https?://[^\s/$.?#].[^\s]*$', re.IGNORECASE)
 
 
 def is_http_url(url: str) -> bool:
-    """Returns true if URL is in the "http" ("https") scheme."""
+    """
+    Returns true if URL is of the "http" ("https") scheme.
+
+    :param url: URL to test.
+    :return: True if argument URL is of the "http" ("https") scheme.
+    """
     if url is None:
         log.debug("URL is None")
         return False
@@ -58,7 +63,12 @@ def is_http_url(url: str) -> bool:
 
 
 def html_unescape_strip(string: Optional[str]) -> Optional[str]:
-    """Decode HTML entities, strip string, set to None if it's empty; ignore None as input."""
+    """
+    Decode HTML entities, strip string, set to None if it's empty; ignore None as input.
+
+    :param string: String to decode HTML entities in.
+    :return: Stripped string with HTML entities decoded; None if parameter string was empty or None.
+    """
     if string:
         string = html.unescape(string)
         string = string.strip()
@@ -68,7 +78,12 @@ def html_unescape_strip(string: Optional[str]) -> Optional[str]:
 
 
 def parse_iso8601_date(date_string: str) -> datetime.datetime:
-    """Parse sitemap's <publication_date> into datetime.datetime object."""
+    """
+    Parse ISO 8601 date (e.g. from sitemap's <publication_date>) into datetime.datetime object.
+
+    :param date_string: ISO 8601 date, e.g. "2018-01-12T21:57:27Z" or "1997-07-16T19:20:30+01:00".
+    :return: datetime.datetime object of a parsed date.
+    """
     # FIXME parse known date formats faster
 
     if not date_string:
@@ -80,7 +95,12 @@ def parse_iso8601_date(date_string: str) -> datetime.datetime:
 
 
 def parse_rfc2822_date(date_string: str) -> datetime.datetime:
-    """Parse RSS / Atom feed's <pubDate> into datetime.datetime object."""
+    """
+    Parse RFC 2822 date (e.g. from Atom's <issued>) into datetime.datetime object.
+
+    :param date_string: RFC 2822 date, e.g. "Tue, 10 Aug 2010 20:43:53 -0000".
+    :return: datetime.datetime object of a parsed date.
+    """
     # FIXME parse known date formats faster
     return parse_iso8601_date(date_string)
 
@@ -89,7 +109,15 @@ def get_url_retry_on_client_errors(url: str,
                                    web_client: AbstractWebClient,
                                    retry_count: int = 5,
                                    sleep_between_retries: int = 1) -> AbstractWebClientResponse:
-    """Fetch URL, retry on client errors (which, as per implementation, might be request timeouts too)."""
+    """
+    Fetch URL, retry on retryable errors.
+
+    :param url: URL to fetch.
+    :param web_client: Web client object to use for fetching.
+    :param retry_count: How many times to retry fetching the same URL.
+    :param sleep_between_retries: How long to sleep between retries, in seconds.
+    :return: Web client response object.
+    """
     assert retry_count > 0, "Retry count must be positive."
 
     response = None
@@ -114,7 +142,13 @@ def get_url_retry_on_client_errors(url: str,
 
 
 def __response_is_gzipped_data(url: str, response: AbstractWebClientResponse) -> bool:
-    """Return True if Response looks like it's gzipped."""
+    """
+    Return True if Response looks like it's gzipped.
+
+    :param url: URL the response was fetched from.
+    :param response: Response object.
+    :return: True if response looks like it might contain gzipped data.
+    """
     uri = urlparse(url)
     url_path = unquote_plus(uri.path)
     content_type = response.header('content-type') or ''
@@ -126,8 +160,13 @@ def __response_is_gzipped_data(url: str, response: AbstractWebClientResponse) ->
         return False
 
 
-def __gunzip(data: bytes) -> bytes:
-    """Gunzip data."""
+def gunzip(data: bytes) -> bytes:
+    """
+    Gunzip data.
+
+    :param data: Gzipped data.
+    :return: Gunzipped data.
+    """
 
     if data is None:
         raise GunzipException("Data is None.")
@@ -153,13 +192,19 @@ def __gunzip(data: bytes) -> bytes:
 
 
 def ungzipped_response_content(url: str, response: AbstractWebClientResponse) -> str:
-    """Return HTTP response's decoded content, gunzip it if necessary."""
+    """
+    Return HTTP response's decoded content, gunzip it if necessary.
+
+    :param url: URL the response was fetched from.
+    :param response: Response object.
+    :return: Decoded and (if necessary) gunzipped response string.
+    """
 
     data = response.raw_data()
 
     if __response_is_gzipped_data(url=url, response=response):
         try:
-            data = __gunzip(data)
+            data = gunzip(data)
         except GunzipException as ex:
             log.error("Unable to gunzip response {}: {}".format(response, ex))
 
@@ -172,7 +217,12 @@ def ungzipped_response_content(url: str, response: AbstractWebClientResponse) ->
 
 
 def strip_url_to_homepage(url: str) -> str:
-    """Strip URL (e.g. http://www.example.com/page.html) to its homepage (e.g. http://www.example.com/)."""
+    """
+    Strip URL to its homepage.
+
+    :param url: URL to strip, e.g. "http://www.example.com/page.html".
+    :return: Stripped homepage URL, e.g. "http://www.example.com/"
+    """
     if not url:
         raise StripURLToHomepageException("URL is empty.")
 
