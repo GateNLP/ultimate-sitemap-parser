@@ -17,9 +17,13 @@ from .helpers import (
     parse_rfc2822_date,
 )
 from .log import create_logger
-from .objects import (
+from .objects.page import (
     SitemapPage,
     SitemapNewsStory,
+    SitemapPageChangeFrequency,
+    SITEMAP_PAGE_DEFAULT_PRIORITY,
+)
+from .objects.sitemap import (
     AbstractSitemap,
     InvalidSitemap,
     IndexRobotsTxtSitemap,
@@ -28,8 +32,6 @@ from .objects import (
     PagesTextSitemap,
     PagesRSSSitemap,
     PagesAtomSitemap,
-    SitemapPageChangeFrequency,
-    SITEMAP_PAGE_DEFAULT_PRIORITY,
 )
 from .web_client.abstract_client import AbstractWebClient
 from .web_client.requests_client import RequestsWebClient

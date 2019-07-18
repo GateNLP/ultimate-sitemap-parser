@@ -11,14 +11,16 @@ import requests_mock
 
 from tests.helpers import gzip
 from usp.log import create_logger
-from usp.objects import (
+from usp.objects.page import (
+    SitemapPage,
+    SitemapNewsStory,
+    SitemapPageChangeFrequency,
+)
+from usp.objects.sitemap import (
     IndexRobotsTxtSitemap,
     PagesXMLSitemap,
     IndexXMLSitemap,
-    SitemapPage,
     InvalidSitemap,
-    SitemapNewsStory,
-    SitemapPageChangeFrequency,
     PagesTextSitemap,
     IndexWebsiteSitemap,
     PagesRSSSitemap,
