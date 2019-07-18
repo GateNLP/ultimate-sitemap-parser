@@ -7,7 +7,7 @@ import pickle
 import tempfile
 from decimal import Decimal
 from enum import Enum, unique
-from typing import List, Optional, Set
+from typing import List, Optional, Iterator
 
 SITEMAP_PAGE_DEFAULT_PRIORITY = Decimal('0.5')
 """Default sitemap page priority, as per the spec."""
@@ -369,7 +369,7 @@ class AbstractSitemap(object, metaclass=abc.ABCMeta):
         return self.__url
 
     @abc.abstractmethod
-    def all_pages(self) -> Set[SitemapPage]:
+    def all_pages(self) -> Iterator[SitemapPage]:
         """Recursively return all stories from this sitemap and linked sitemaps."""
         raise NotImplementedError("Abstract method")
 
@@ -418,8 +418,8 @@ class InvalidSitemap(AbstractSitemap):
         """
         return self.__reason
 
-    def all_pages(self) -> Set[SitemapPage]:
-        return set()
+    def all_pages(self) -> Iterator[SitemapPage]:
+        yield from []
 
 
 class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
@@ -474,8 +474,9 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
             pages = pickle.load(tmp)
         return pages
 
-    def all_pages(self) -> Set[SitemapPage]:
-        return set(self.pages)
+    def all_pages(self) -> Iterator[SitemapPage]:
+        for page in self.pages:
+            yield page
 
 
 class PagesXMLSitemap(AbstractPagesSitemap):
@@ -541,11 +542,10 @@ class AbstractIndexSitemap(AbstractSitemap):
         """
         return self.__sub_sitemaps
 
-    def all_pages(self) -> Set[SitemapPage]:
-        pages = set()
+    def all_pages(self) -> Iterator[SitemapPage]:
         for sub_sitemap in self.sub_sitemaps:
-            pages |= sub_sitemap.all_pages()
-        return pages
+            for page in sub_sitemap.all_pages():
+                yield page
 
 
 class IndexWebsiteSitemap(AbstractIndexSitemap):
