@@ -56,10 +56,17 @@ Usage
     from usp.tree import sitemap_tree_for_homepage
 
     tree = sitemap_tree_for_homepage('https://www.nytimes.com/')
+    print(tree)
+
+``sitemap_tree_for_homepage()`` will return a tree of ``AbstractSitemap`` subclass objects that represent the sitemap
+hierarchy found on the website; see a `reference of AbstractSitemap subclasses <https://ultimate-sitemap-parser.readthedocs.io/en/latest/usp.objects.html#module-usp.objects.sitemap>`_.
+
+If you'd like to just list all the pages found in all of the sitemaps within the website, consider using ``all_pages()`` method:
+
+.. code:: python
 
     # all_pages() returns an Iterator
     for page in tree.all_pages():
         print(page)
 
-Check out the `API reference in the documentation <https://ultimate-sitemap-parser.readthedocs.io/en/latest/>`_ for more details.
-
+``all_pages()`` method will return an iterator yielding ``SitemapPage`` objects; see a `reference of SitemapPage <https://ultimate-sitemap-parser.readthedocs.io/en/latest/usp.objects.html#module-usp.objects.page>`_.
