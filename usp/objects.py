@@ -14,7 +14,9 @@ SITEMAP_PAGE_DEFAULT_PRIORITY = Decimal('0.5')
 
 
 class SitemapNewsStory(object):
-    """Single story derived from Google News XML sitemap."""
+    """
+    Single story derived from Google News XML sitemap.
+    """
 
     __slots__ = [
         '__title',
@@ -199,6 +201,7 @@ class SitemapNewsStory(object):
 @unique
 class SitemapPageChangeFrequency(Enum):
     """Change frequency of a sitemap URL."""
+
     ALWAYS = 'always'
     HOURLY = 'hourly'
     DAILY = 'daily'
@@ -330,7 +333,9 @@ class SitemapPage(object):
 
 
 class AbstractSitemap(object, metaclass=abc.ABCMeta):
-    """Abstract sitemap."""
+    """
+    Abstract sitemap.
+    """
 
     __slots__ = [
         '__url',
@@ -376,7 +381,11 @@ class AbstractSitemap(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def all_pages(self) -> Iterator[SitemapPage]:
-        """Recursively return all stories from this sitemap and linked sitemaps."""
+        """
+        Return iterator which yields all pages of this sitemap and linked sitemaps (if any).
+
+        :return: Iterator which yields all pages of this sitemap and linked sitemaps (if any).
+        """
         raise NotImplementedError("Abstract method")
 
 
@@ -427,6 +436,11 @@ class InvalidSitemap(AbstractSitemap):
         return self.__reason
 
     def all_pages(self) -> Iterator[SitemapPage]:
+        """
+        Return iterator which yields all pages of this sitemap and linked sitemaps (if any).
+
+        :return: Iterator which yields all pages of this sitemap and linked sitemaps (if any).
+        """
         yield from []
 
 
@@ -485,32 +499,47 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         return pages
 
     def all_pages(self) -> Iterator[SitemapPage]:
+        """
+        Return iterator which yields all pages of this sitemap and linked sitemaps (if any).
+
+        :return: Iterator which yields all pages of this sitemap and linked sitemaps (if any).
+        """
         for page in self.pages:
             yield page
 
 
 class PagesXMLSitemap(AbstractPagesSitemap):
-    """XML sitemap that contains URLs to pages."""
+    """
+    XML sitemap that contains URLs to pages.
+    """
     pass
 
 
 class PagesTextSitemap(AbstractPagesSitemap):
-    """Plain text sitemap that contains URLs to pages."""
+    """
+    Plain text sitemap that contains URLs to pages.
+    """
     pass
 
 
 class PagesRSSSitemap(AbstractPagesSitemap):
-    """RSS 2.0 sitemap that contains URLs to pages."""
+    """
+    RSS 2.0 sitemap that contains URLs to pages.
+    """
     pass
 
 
 class PagesAtomSitemap(AbstractPagesSitemap):
-    """RSS 0.3 / 1.0 sitemap that contains URLs to pages."""
+    """
+    RSS 0.3 / 1.0 sitemap that contains URLs to pages.
+    """
     pass
 
 
 class AbstractIndexSitemap(AbstractSitemap):
-    """Abstract sitemap with URLs to other sitemaps."""
+    """
+    Abstract sitemap with URLs to other sitemaps.
+    """
 
     __slots__ = [
         '__sub_sitemaps',
@@ -550,26 +579,38 @@ class AbstractIndexSitemap(AbstractSitemap):
     def sub_sitemaps(self) -> List[AbstractSitemap]:
         """
         Return sub-sitemaps that are linked to from this sitemap.
+
         :return: Sub-sitemaps that are linked to from this sitemap.
         """
         return self.__sub_sitemaps
 
     def all_pages(self) -> Iterator[SitemapPage]:
+        """
+        Return iterator which yields all pages of this sitemap and linked sitemaps (if any).
+
+        :return: Iterator which yields all pages of this sitemap and linked sitemaps (if any).
+        """
         for sub_sitemap in self.sub_sitemaps:
             for page in sub_sitemap.all_pages():
                 yield page
 
 
 class IndexWebsiteSitemap(AbstractIndexSitemap):
-    """Website's root sitemaps, including robots.txt and extra ones."""
+    """
+    Website's root sitemaps, including robots.txt and extra ones.
+    """
     pass
 
 
 class IndexXMLSitemap(AbstractIndexSitemap):
-    """XML sitemap with URLs to other sitemaps."""
+    """
+    XML sitemap with URLs to other sitemaps.
+    """
     pass
 
 
 class IndexRobotsTxtSitemap(AbstractIndexSitemap):
-    """robots.txt sitemap with URLs to other sitemaps."""
+    """
+    robots.txt sitemap with URLs to other sitemaps.
+    """
     pass

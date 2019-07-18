@@ -2,20 +2,28 @@
 
 
 class SitemapException(Exception):
-    """Problem due to which we can't run further, e.g. wrong input parameters."""
+    """
+    Problem due to which we can't run further, e.g. wrong input parameters.
+    """
     pass
 
 
 class SitemapXMLParsingException(Exception):
-    """XML parsing exception to be handled gracefully."""
+    """
+    XML parsing exception to be handled gracefully.
+    """
     pass
 
 
 class GunzipException(Exception):
-    """gunzip() exception."""
+    """
+    gunzip() exception.
+    """
     pass
 
 
 class StripURLToHomepageException(Exception):
-    """strip_url_to_homepage() exception."""
+    """
+    strip_url_to_homepage() exception.
+    """
     pass

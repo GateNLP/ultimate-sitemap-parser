@@ -246,7 +246,8 @@ class XMLSitemapParser(AbstractSitemapParser):
 
     @classmethod
     def __normalize_xml_element_name(cls, name: str):
-        """Replace the namespace URL in the argument element name with internal namespace.
+        """
+        Replace the namespace URL in the argument element name with internal namespace.
 
         * Elements from http://www.sitemaps.org/schemas/sitemap/0.9 namespace will be prefixed with "sitemap:",
           e.g. "<loc>" will become "<sitemap:loc>"
@@ -254,7 +255,11 @@ class XMLSitemapParser(AbstractSitemapParser):
         * Elements from http://www.google.com/schemas/sitemap-news/0.9 namespace will be prefixed with "news:",
           e.g. "<publication>" will become "<news:publication>"
 
-        For non-sitemap namespaces, return the element name with the namespace stripped."""
+        For non-sitemap namespaces, return the element name with the namespace stripped.
+
+        :param name: Namespace URL plus XML element name, e.g. "http://www.sitemaps.org/schemas/sitemap/0.9 loc"
+        :return: Internal namespace name plus element name, e.g. "sitemap loc"
+        """
 
         name_parts = name.split(cls.__XML_NAMESPACE_SEPARATOR)
 
@@ -332,7 +337,9 @@ class XMLSitemapParser(AbstractSitemapParser):
 
 
 class AbstractXMLSitemapParser(object, metaclass=abc.ABCMeta):
-    """Abstract XML sitemap parser."""
+    """
+    Abstract XML sitemap parser.
+    """
 
     __slots__ = [
         # URL of the sitemap that is being parsed
@@ -374,7 +381,9 @@ class AbstractXMLSitemapParser(object, metaclass=abc.ABCMeta):
 
 
 class IndexXMLSitemapParser(AbstractXMLSitemapParser):
-    """Index XML sitemap parser."""
+    """
+    Index XML sitemap parser.
+    """
 
     __slots__ = [
         '_web_client',
@@ -430,7 +439,9 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
 
 
 class PagesXMLSitemapParser(AbstractXMLSitemapParser):
-    """Pages XML sitemap parser."""
+    """
+    Pages XML sitemap parser.
+    """
 
     class Page(object):
         """Simple data class for holding various properties for a single <url> entry while parsing."""
@@ -666,7 +677,9 @@ class PagesRSSSitemapParser(AbstractXMLSitemapParser):
     """
 
     class Page(object):
-        """Simple data class for holding various properties for a single <item> entry while parsing."""
+        """
+        Simple data class for holding various properties for a single <item> entry while parsing.
+        """
 
         __slots__ = [
             'link',

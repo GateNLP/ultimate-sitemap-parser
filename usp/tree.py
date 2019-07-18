@@ -1,4 +1,5 @@
-"""Function to generate a sitemap tree."""
+"""Helpers to generate a sitemap tree."""
+
 from typing import Optional
 
 from .exceptions import SitemapException
@@ -26,7 +27,13 @@ _UNPUBLISHED_SITEMAP_PATHS = {
 
 
 def sitemap_tree_for_homepage(homepage_url: str, web_client: Optional[AbstractWebClient] = None) -> AbstractSitemap:
-    """Using a homepage URL, fetch the tree of sitemaps and its stories."""
+    """
+    Using a homepage URL, fetch the tree of sitemaps and pages listed in them.
+
+    :param homepage_url: Homepage URL of a website to fetch the sitemap tree for, e.g. "http://www.example.com/".
+    :param web_client: Web client implementation to use for fetching sitemaps.
+    :return: Root sitemap object of the fetched sitemap tree.
+    """
 
     if not is_http_url(homepage_url):
         raise SitemapException("URL {} is not a HTTP(s) URL.".format(homepage_url))
