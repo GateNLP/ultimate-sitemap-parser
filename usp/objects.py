@@ -104,16 +104,18 @@ class SitemapNewsStory(object):
         ))
 
     def __repr__(self):
-        return {
-            'title': self.title,
-            'publish_date': self.publish_date,
-            'publication_name': self.publication_name,
-            'publication_language': self.publication_language,
-            'access': self.access,
-            'genres': self.genres,
-            'keywords': self.keywords,
-            'stock_tickers': self.stock_tickets,
-        }.__repr__()
+        return (
+            "{self.__class__.__name__}("
+            "title={self.title}, "
+            "publish_date={self.publish_date}, "
+            "publication_name={self.publication_name}, "
+            "publication_language={self.publication_language}, "
+            "access={self.access}, "
+            "genres={self.genres}, "
+            "keywords={self.keywords}, "
+            "stock_tickers={self.stock_tickers}"
+            ")"
+        ).format(self=self)
 
     @property
     def title(self) -> str:
@@ -271,13 +273,15 @@ class SitemapPage(object):
         ))
 
     def __repr__(self):
-        return {
-            'url': self.url,
-            'priority': self.priority,
-            'last_modified': self.last_modified,
-            'change_frequency': self.change_frequency,
-            'news_story': self.news_story,
-        }.__repr__()
+        return (
+            "{self.__class__.__name__}("
+            "url={self.url}, "
+            "priority={self.priority}, "
+            "last_modified={self.last_modified}, "
+            "change_frequency={self.change_frequency}, "
+            "news_story={self.news_story}"
+            ")"
+        ).format(self=self)
 
     @property
     def url(self) -> str:
@@ -355,9 +359,11 @@ class AbstractSitemap(object, metaclass=abc.ABCMeta):
         ))
 
     def __repr__(self):
-        return {
-            'url': self.url,
-        }.__repr__()
+        return (
+            "{self.__class__.__name__}("
+            "url={self.url}"
+            ")"
+        ).format(self=self)
 
     @property
     def url(self) -> str:
@@ -404,10 +410,12 @@ class InvalidSitemap(AbstractSitemap):
         return True
 
     def __repr__(self):
-        return {
-            'url': self.url,
-            'reason': self.reason,
-        }.__repr__()
+        return (
+            "{self.__class__.__name__}("
+            "url={self.url}, "
+            "reason={self.reason}"
+            ")"
+        ).format(self=self)
 
     @property
     def reason(self) -> str:
@@ -458,10 +466,12 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         return True
 
     def __repr__(self):
-        return {
-            'url': self.url,
-            'pages': self.pages,
-        }.__repr__()
+        return (
+            "{self.__class__.__name__}("
+            "url={self.url}, "
+            "pages={self.pages}"
+            ")"
+        ).format(self=self)
 
     @property
     def pages(self) -> List[SitemapPage]:
@@ -529,10 +539,12 @@ class AbstractIndexSitemap(AbstractSitemap):
         return True
 
     def __repr__(self):
-        return {
-            'url': self.url,
-            'sub_sitemaps': self.sub_sitemaps,
-        }.__repr__()
+        return (
+            "{self.__class__.__name__}("
+            "url={self.url}, "
+            "sub_sitemaps={self.sub_sitemaps}"
+            ")"
+        ).format(self=self)
 
     @property
     def sub_sitemaps(self) -> List[AbstractSitemap]:
