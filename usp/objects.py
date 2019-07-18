@@ -2,6 +2,9 @@
 
 import abc
 import datetime
+import os
+import pickle
+import tempfile
 from decimal import Decimal
 from enum import Enum, unique
 from typing import List, Optional, Set
@@ -423,7 +426,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
     """Abstract sitemap that contains URLs to pages."""
 
     __slots__ = [
-        '__pages',
+        '__pages_temp_file_path',
     ]
 
     def __init__(self, url: str, pages: List[SitemapPage]):
@@ -434,7 +437,13 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         :param pages: List of pages found in a sitemap.
         """
         super().__init__(url=url)
-        self.__pages = pages
+
+        temp_file, self.__pages_temp_file_path = tempfile.mkstemp()
+        with os.fdopen(temp_file, 'wb') as tmp:
+            pickle.dump(pages, tmp, protocol=pickle.HIGHEST_PROTOCOL)
+
+    def __del__(self):
+        os.unlink(self.__pages_temp_file_path)
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, AbstractPagesSitemap):
@@ -461,7 +470,9 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
 
         :return: List of pages found in a sitemap.
         """
-        return self.__pages
+        with open(self.__pages_temp_file_path, 'rb') as tmp:
+            pages = pickle.load(tmp)
+        return pages
 
     def all_pages(self) -> Set[SitemapPage]:
         return set(self.pages)
