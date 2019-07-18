@@ -2,8 +2,9 @@ import datetime
 
 import pytest
 
-from usp.exceptions import StripURLToHomepageException
-from usp.helpers import html_unescape_strip, parse_iso8601_date, is_http_url, strip_url_to_homepage, parse_rfc2822_date
+from usp.exceptions import StripURLToHomepageException, SitemapException, GunzipException
+from usp.helpers import html_unescape_strip, parse_iso8601_date, is_http_url, strip_url_to_homepage, parse_rfc2822_date, \
+    gunzip
 
 
 def test_html_unescape_strip():
@@ -12,6 +13,14 @@ def test_html_unescape_strip():
 
 
 def test_parse_iso8601_date():
+
+    with pytest.raises(SitemapException):
+        # noinspection PyTypeChecker
+        parse_iso8601_date(None)
+
+    with pytest.raises(SitemapException):
+        parse_iso8601_date('')
+
     assert parse_iso8601_date("1997-07-16") == datetime.datetime(year=1997, month=7, day=16)
     assert parse_iso8601_date("1997-07-16T19:20+01:00") == datetime.datetime(
         year=1997, month=7, day=16, hour=19, minute=20,
@@ -108,3 +117,21 @@ def test_strip_url_to_homepage():
 
     with pytest.raises(StripURLToHomepageException):
         strip_url_to_homepage('not an URL')
+
+
+def test_gunzip():
+    with pytest.raises(GunzipException):
+        # noinspection PyTypeChecker
+        gunzip(None)
+    with pytest.raises(GunzipException):
+        # noinspection PyTypeChecker
+        gunzip('')
+    with pytest.raises(GunzipException):
+        # noinspection PyTypeChecker
+        gunzip(b'')
+    with pytest.raises(GunzipException):
+        # noinspection PyTypeChecker
+        gunzip('foo')
+    with pytest.raises(GunzipException):
+        # noinspection PyTypeChecker
+        gunzip(b'foo')

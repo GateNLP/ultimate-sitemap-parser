@@ -160,7 +160,7 @@ def __response_is_gzipped_data(url: str, response: AbstractWebClientResponse) ->
         return False
 
 
-def __gunzip(data: bytes) -> bytes:
+def gunzip(data: bytes) -> bytes:
     """
     Gunzip data.
 
@@ -204,7 +204,7 @@ def ungzipped_response_content(url: str, response: AbstractWebClientResponse) ->
 
     if __response_is_gzipped_data(url=url, response=response):
         try:
-            data = __gunzip(data)
+            data = gunzip(data)
         except GunzipException as ex:
             log.error("Unable to gunzip response {}: {}".format(response, ex))
 
