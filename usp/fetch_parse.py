@@ -156,7 +156,7 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
             robots_txt_line = robots_txt_line.strip()
             # robots.txt is supposed to be case sensitive but who cares in these Node.js times?
             robots_txt_line = robots_txt_line.lower()
-            sitemap_match = re.search(r'^sitemap:\s*(.+?)$', robots_txt_line, flags=re.IGNORECASE)
+            sitemap_match = re.search(r'^site-?map:\s*(.+?)$', robots_txt_line, flags=re.IGNORECASE)
             if sitemap_match:
                 sitemap_url = sitemap_match.group(1)
                 if is_http_url(sitemap_url):

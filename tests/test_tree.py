@@ -82,7 +82,10 @@ class TestSitemapTree(TestCase):
                     Disallow: /whatever
     
                     Sitemap: {base_url}/sitemap_pages.xml
-                    Sitemap: {base_url}/sitemap_news_index_1.xml
+                    
+                    # Intentionally spelled as "Site-map" as Google tolerates this:
+                    # https://github.com/google/robotstxt/blob/master/robots.cc#L703 
+                    Site-map: {base_url}/sitemap_news_index_1.xml
                 """.format(base_url=self.TEST_BASE_URL)).strip(),
             )
 
