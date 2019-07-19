@@ -210,7 +210,8 @@ def ungzipped_response_content(url: str, response: AbstractWebClientResponse) ->
         try:
             data = gunzip(data)
         except GunzipException as ex:
-            log.error("Unable to gunzip response {}: {}".format(response, ex))
+            # In case of an error, just assume that it's one of the non-gzipped sitemaps with ".gz" extension
+            log.error("Unable to gunzip response {}, maybe it's a non-gzipped sitemap: {}".format(response, ex))
 
     # FIXME other encodings
     data = data.decode('utf-8-sig', errors='replace')
