@@ -127,7 +127,11 @@ def get_url_retry_on_client_errors(url: str,
         if response.is_success():
             return response
         else:
-            log.warning("Request for URL {} failed: {}".format(url, response.status_message()))
+            log.warning(
+                "Request for URL {} failed: {} {}".format(
+                    url, response.status_code(), response.status_message(),
+                )
+            )
 
             if response.is_retryable_error():
                 log.info("Retrying URL {} in {} seconds...".format(url, sleep_between_retries))
