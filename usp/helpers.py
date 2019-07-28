@@ -127,7 +127,11 @@ def get_url_retry_on_client_errors(url: str,
         if response.is_success():
             return response
         else:
-            log.warning("Request for URL {} failed: {}".format(url, response.status_message()))
+            log.warning(
+                "Request for URL {} failed: {} {}".format(
+                    url, response.status_code(), response.status_message(),
+                )
+            )
 
             if response.is_retryable_error():
                 log.info("Retrying URL {} in {} seconds...".format(url, sleep_between_retries))
@@ -206,7 +210,8 @@ def ungzipped_response_content(url: str, response: AbstractWebClientResponse) ->
         try:
             data = gunzip(data)
         except GunzipException as ex:
-            log.error("Unable to gunzip response {}: {}".format(response, ex))
+            # In case of an error, just assume that it's one of the non-gzipped sitemaps with ".gz" extension
+            log.error("Unable to gunzip response {}, maybe it's a non-gzipped sitemap: {}".format(response, ex))
 
     # FIXME other encodings
     data = data.decode('utf-8-sig', errors='replace')
