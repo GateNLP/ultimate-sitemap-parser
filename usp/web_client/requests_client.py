@@ -19,7 +19,7 @@ class RequestsWebClientResponse(AbstractWebClientResponse):
         '__max_response_data_length',
     ]
 
-    def __init__(self, requests_response: Response, max_response_data_length: Optional[int]):
+    def __init__(self, requests_response: Response, max_response_data_length: Optional[int] = None):
         self.__requests_response = requests_response
         self.__max_response_data_length = max_response_data_length
 
