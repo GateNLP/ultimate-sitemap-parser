@@ -4,6 +4,7 @@ from typing import Optional
 
 import requests
 from requests import Response
+from requests import exceptions
 
 from .abstract_client import AbstractWebClientResponse, AbstractWebClient
 from usp.__about__ import __version__
@@ -64,13 +65,18 @@ class RequestsWebClient(AbstractWebClient):
         self.__max_response_data_length = max_response_data_length
 
     def get(self, url: str) -> RequestsWebClientResponse:
-        response = requests.get(
-            url,
-            timeout=self.__HTTP_REQUEST_TIMEOUT,
-            stream=True,
-            headers={'User-Agent': self.__USER_AGENT},
-        )
+        try:
+            response = requests.get(
+                url,
+                timeout=self.__HTTP_REQUEST_TIMEOUT,
+                stream=True,
+                headers={'User-Agent': self.__USER_AGENT},
+            )
+        except exceptions.ConnectionError as conn_error:
+            response = Response()
+            response.status_code = 444
         return RequestsWebClientResponse(
             requests_response=response,
             max_response_data_length=self.__max_response_data_length,
         )
+            
