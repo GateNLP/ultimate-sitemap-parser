@@ -21,13 +21,13 @@ tests_require = [
 ]
 
 setup(
-    name='ultimate_sitemap_parser',
+    name='ultimate-sitemap-parser',
     version=__version__,
     description='Ultimate Sitemap Parser',
     long_description=__readme(),
     author='Linas Valiukas, Hal Roberts, Media Cloud project',
     author_email='linas@media.mit.edu, hroberts@cyber.law.harvard.edu',
-    url='https://github.com/berkmancenter/mediacloud-ultimate_sitemap_parser',
+    url='https://github.com/berkmancenter/mediacloud-ultimate-sitemap-parser',
     license='GPLv3+',
     keywords="sitemap sitemap-xml parser",
     packages=find_packages(exclude=['tests']),

@@ -1,13 +1,13 @@
-.. image:: https://travis-ci.org/berkmancenter/mediacloud-ultimate_sitemap_parser.svg?branch=develop
-    :target: https://travis-ci.org/berkmancenter/mediacloud-ultimate_sitemap_parser
+.. image:: https://travis-ci.org/berkmancenter/mediacloud-ultimate-sitemap-parser.svg?branch=develop
+    :target: https://travis-ci.org/berkmancenter/mediacloud-ultimate-sitemap-parser
     :alt: Build Status
 
 .. image:: https://readthedocs.org/projects/ultimate-sitemap-parser/badge/?version=latest
     :target: https://ultimate-sitemap-parser.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://coveralls.io/repos/github/berkmancenter/mediacloud-ultimate_sitemap_parser/badge.svg?branch=develop
-    :target: https://coveralls.io/github/berkmancenter/mediacloud-ultimate_sitemap_parser?branch=develop
+.. image:: https://coveralls.io/repos/github/berkmancenter/mediacloud-ultimate-sitemap-parser/badge.svg?branch=develop
+    :target: https://coveralls.io/github/berkmancenter/mediacloud-ultimate-sitemap-parser?branch=develop
     :alt: Coverage Status
 
 .. image:: https://badge.fury.io/py/ultimate-sitemap-parser.svg
@@ -49,7 +49,7 @@ Installation
 
 .. code:: sh
 
-    pip install ultimate_sitemap_parser
+    pip install ultimate-sitemap-parser
 
 
 Usage

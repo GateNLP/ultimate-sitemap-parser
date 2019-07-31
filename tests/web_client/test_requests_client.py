@@ -13,7 +13,7 @@ from usp.web_client.requests_client import RequestsWebClient
 
 
 class TestRequestsClient(TestCase):
-    TEST_BASE_URL = 'http://test_ultimate_sitemap_parser.com'  # mocked by HTTPretty
+    TEST_BASE_URL = 'http://test-ultimate-sitemap-parser.com'  # mocked by HTTPretty
     TEST_CONTENT_TYPE = 'text/html'
 
     __slots__ = [
@@ -66,7 +66,7 @@ class TestRequestsClient(TestCase):
             assert isinstance(response, AbstractWebClientSuccessResponse)
 
             content = response.raw_data().decode('utf-8')
-            assert content == 'ultimate_sitemap_parser/{}'.format(__version__)
+            assert content == 'ultimate-sitemap-parser/{}'.format(__version__)
 
     def test_get_not_found(self):
         with requests_mock.Mocker() as m:
