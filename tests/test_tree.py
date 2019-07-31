@@ -38,7 +38,7 @@ log = create_logger(__name__)
 
 
 class TestSitemapTree(TestCase):
-    TEST_BASE_URL = 'http://test_ultimate_sitemap_parser.com'  # mocked by HTTPretty
+    TEST_BASE_URL = 'http://test_ultimate-sitemap-parser.com'  # mocked by HTTPretty
 
     # Publication / "last modified" date
     TEST_DATE_DATETIME = datetime.datetime(

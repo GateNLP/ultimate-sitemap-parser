@@ -60,7 +60,7 @@ class RequestsWebClientErrorResponse(WebClientErrorResponse):
 class RequestsWebClient(AbstractWebClient):
     """requests-based web client to be used by the sitemap fetcher."""
 
-    __USER_AGENT = 'ultimate_sitemap_parser/{}'.format(__version__)
+    __USER_AGENT = 'ultimate-sitemap-parser/{}'.format(__version__)
 
     __HTTP_REQUEST_TIMEOUT = 60
     """
