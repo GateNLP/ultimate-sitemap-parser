@@ -91,6 +91,22 @@ class TestSitemapTree(TestCase):
                 """.format(base_url=self.TEST_BASE_URL)).strip(),
             )
 
+            m.get(
+                self.TEST_BASE_URL + '/robots.txt',
+                headers={'Content-Type': 'text/plain'},
+                text=textwrap.dedent("""
+                    User-agent: *
+                    Disallow: /whatever
+                    Crawl-delay: 5
+
+                    Sitemap: {base_url}/sitemap_pages.xml
+                    
+                    # Intentionally spelled as "Site-map" as Google tolerates this:
+                    # https://github.com/google/robotstxt/blob/master/robots.cc#L703 
+                    Site-map: {base_url}/sitemap_news_index_1.xml
+                """.format(base_url=self.TEST_BASE_URL)).strip(),
+            )
+
             # One sitemap for random static pages
             m.get(
                 self.TEST_BASE_URL + '/sitemap_pages.xml',
@@ -407,6 +423,20 @@ class TestSitemapTree(TestCase):
                 text=textwrap.dedent("""
                     User-agent: *
                     Disallow: /whatever
+    
+                    Sitemap: {base_url}/sitemap_1.gz
+                    Sitemap: {base_url}/sitemap_2.dat
+                    Sitemap: {base_url}/sitemap_3.xml.gz
+                """.format(base_url=self.TEST_BASE_URL)).strip(),
+            )
+
+            m.get(
+                self.TEST_BASE_URL + '/robots.txt',
+                headers={'Content-Type': 'text/plain'},
+                text=textwrap.dedent("""
+                    User-agent: *
+                    Disallow: /whatever
+                    Crawl-delay: 5
     
                     Sitemap: {base_url}/sitemap_1.gz
                     Sitemap: {base_url}/sitemap_2.dat
