@@ -3,8 +3,14 @@ import datetime
 import pytest
 
 from usp.exceptions import StripURLToHomepageException, SitemapException, GunzipException
-from usp.helpers import html_unescape_strip, parse_iso8601_date, is_http_url, strip_url_to_homepage, parse_rfc2822_date, \
-    gunzip
+from usp.helpers import (
+    html_unescape_strip,
+    parse_iso8601_date,
+    is_http_url,
+    strip_url_to_homepage,
+    parse_rfc2822_date,
+    gunzip,
+)
 
 
 def test_html_unescape_strip():
@@ -13,7 +19,6 @@ def test_html_unescape_strip():
 
 
 def test_parse_iso8601_date():
-
     with pytest.raises(SitemapException):
         # noinspection PyTypeChecker
         parse_iso8601_date(None)

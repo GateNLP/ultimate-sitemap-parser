@@ -33,7 +33,11 @@ from .objects.sitemap import (
     PagesRSSSitemap,
     PagesAtomSitemap,
 )
-from .web_client.abstract_client import AbstractWebClient
+from .web_client.abstract_client import (
+    AbstractWebClient,
+    AbstractWebClientSuccessResponse,
+    WebClientErrorResponse,
+)
 from .web_client.requests_client import RequestsWebClient
 
 log = create_logger(__name__)
@@ -76,13 +80,14 @@ class SitemapFetcher(object):
     def sitemap(self) -> AbstractSitemap:
         log.info("Fetching level {} sitemap from {}...".format(self._recursion_level, self._url))
         response = get_url_retry_on_client_errors(url=self._url, web_client=self._web_client)
-        if not response.is_success():
+
+        if isinstance(response, WebClientErrorResponse):
             return InvalidSitemap(
                 url=self._url,
-                reason="Unable to fetch sitemap from {}: {} {}".format(
-                    self._url, response.status_code(), response.status_message(),
-                ),
+                reason="Unable to fetch sitemap from {}: {}".format(self._url, response.message()),
             )
+
+        assert isinstance(response, AbstractWebClientSuccessResponse)
 
         response_content = ungzipped_response_content(url=self._url, response=response)
 

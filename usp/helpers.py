@@ -12,7 +12,12 @@ from dateutil.parser import parse as dateutil_parse
 
 from .exceptions import SitemapException, GunzipException, StripURLToHomepageException
 from .log import create_logger
-from .web_client.abstract_client import AbstractWebClient, AbstractWebClientResponse
+from .web_client.abstract_client import (
+    AbstractWebClient,
+    AbstractWebClientSuccessResponse,
+    WebClientErrorResponse,
+    AbstractWebClientResponse,
+)
 
 log = create_logger(__name__)
 
@@ -124,16 +129,15 @@ def get_url_retry_on_client_errors(url: str,
     for retry in range(0, retry_count):
         log.info("Fetching URL {}...".format(url))
         response = web_client.get(url)
-        if response.is_success():
-            return response
-        else:
+
+        if isinstance(response, WebClientErrorResponse):
             log.warning(
-                "Request for URL {} failed: {} {}".format(
-                    url, response.status_code(), response.status_message(),
+                "Request for URL {} failed: {}".format(
+                    url, response.message()
                 )
             )
 
-            if response.is_retryable_error():
+            if response.retryable():
                 log.info("Retrying URL {} in {} seconds...".format(url, sleep_between_retries))
                 time.sleep(sleep_between_retries)
 
@@ -141,11 +145,14 @@ def get_url_retry_on_client_errors(url: str,
                 log.info("Not retrying for URL {}".format(url))
                 return response
 
+        else:
+            return response
+
     log.info("Giving up on URL {}".format(url))
     return response
 
 
-def __response_is_gzipped_data(url: str, response: AbstractWebClientResponse) -> bool:
+def __response_is_gzipped_data(url: str, response: AbstractWebClientSuccessResponse) -> bool:
     """
     Return True if Response looks like it's gzipped.
 
@@ -195,7 +202,7 @@ def gunzip(data: bytes) -> bytes:
     return gunzipped_data
 
 
-def ungzipped_response_content(url: str, response: AbstractWebClientResponse) -> str:
+def ungzipped_response_content(url: str, response: AbstractWebClientSuccessResponse) -> str:
     """
     Return HTTP response's decoded content, gunzip it if necessary.
 
