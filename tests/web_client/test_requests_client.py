@@ -1,10 +1,14 @@
+import socket
 from http import HTTPStatus
 from unittest import TestCase
 
 import requests_mock
 
 from usp.__about__ import __version__
-
+from usp.web_client.abstract_client import (
+    AbstractWebClientSuccessResponse,
+    WebClientErrorResponse,
+)
 from usp.web_client.requests_client import RequestsWebClient
 
 
@@ -35,7 +39,7 @@ class TestRequestsClient(TestCase):
             response = self.__client.get(test_url)
 
             assert response
-            assert response.is_success() is True
+            assert isinstance(response, AbstractWebClientSuccessResponse)
             assert response.status_code() == HTTPStatus.OK.value
             assert response.status_message() == HTTPStatus.OK.phrase
             assert response.header('Content-Type') == self.TEST_CONTENT_TYPE
@@ -59,7 +63,7 @@ class TestRequestsClient(TestCase):
             response = self.__client.get(test_url)
 
             assert response
-            assert response.is_success() is True
+            assert isinstance(response, AbstractWebClientSuccessResponse)
 
             content = response.raw_data().decode('utf-8')
             assert content == 'ultimate_sitemap_parser/{}'.format(__version__)
@@ -67,23 +71,51 @@ class TestRequestsClient(TestCase):
     def test_get_not_found(self):
         with requests_mock.Mocker() as m:
             test_url = self.TEST_BASE_URL + '/404.html'
-            test_content = 'This page does not exist.'
 
             m.get(
                 test_url,
                 status_code=HTTPStatus.NOT_FOUND.value,
                 reason=HTTPStatus.NOT_FOUND.phrase,
                 headers={'Content-Type': self.TEST_CONTENT_TYPE},
-                text=test_content,
+                text='This page does not exist.',
             )
 
             response = self.__client.get(test_url)
 
             assert response
-            assert response.is_success() is False
-            assert response.status_code() == HTTPStatus.NOT_FOUND.value
-            assert response.status_message() == HTTPStatus.NOT_FOUND.phrase
-            assert response.raw_data().decode('utf-8') == test_content
+            assert isinstance(response, WebClientErrorResponse)
+            assert response.retryable() is False
+
+    def test_get_nonexistent_domain(self):
+        test_url = 'http://www.totallydoesnotexisthjkfsdhkfsd.com/some_page.html'
+
+        response = self.__client.get(test_url)
+
+        assert response
+        assert isinstance(response, WebClientErrorResponse)
+        assert response.retryable() is False
+        assert 'Failed to establish a new connection' in response.message()
+
+    def test_get_timeout(self):
+        sock = socket.socket()
+        sock.bind(('', 0))
+        socket_port = sock.getsockname()[1]
+        assert socket_port
+        sock.listen(1)
+
+        test_timeout = 1
+        test_url = 'http://127.0.0.1:{}/slow_page.html'.format(socket_port)
+
+        self.__client.set_timeout(test_timeout)
+
+        response = self.__client.get(test_url)
+
+        sock.close()
+
+        assert response
+        assert isinstance(response, WebClientErrorResponse)
+        assert response.retryable() is True
+        assert 'Read timed out' in response.message()
 
     def test_get_max_response_data_length(self):
         with requests_mock.Mocker() as m:
@@ -104,7 +136,7 @@ class TestRequestsClient(TestCase):
             response = self.__client.get(test_url)
 
             assert response
-            assert response.is_success() is True
+            assert isinstance(response, AbstractWebClientSuccessResponse)
 
             response_length = len(response.raw_data())
             assert response_length == max_length
