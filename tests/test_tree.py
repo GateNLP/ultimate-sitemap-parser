@@ -410,6 +410,7 @@ class TestSitemapTree(TestCase):
     
                     Sitemap: {base_url}/sitemap_1.gz
                     Sitemap: {base_url}/sitemap_2.dat
+                    Sitemap: {base_url}/sitemap_3.xml.gz
                 """.format(base_url=self.TEST_BASE_URL)).strip(),
             )
 
@@ -449,6 +450,34 @@ class TestSitemapTree(TestCase):
                     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
                             xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
                         <url>
+                            <loc>{base_url}/news/bar.html</loc>
+                            <news:news>
+                                <news:publication>
+                                    <news:name>{publication_name}</news:name>
+                                    <news:language>{publication_language}</news:language>
+                                </news:publication>
+                                <news:publication_date>{publication_date}</news:publication_date>
+                                <news:title><![CDATA[Bąr]]></news:title>    <!-- CDATA and UTF-8 -->
+                            </news:news>
+                        </url>
+                    </urlset>
+                """.format(
+                    base_url=self.TEST_BASE_URL,
+                    publication_name=self.TEST_PUBLICATION_NAME,
+                    publication_language=self.TEST_PUBLICATION_LANGUAGE,
+                    publication_date=self.TEST_DATE_STR_ISO8601,
+                )).strip()),
+            )
+
+            # Sitemap which appears to be gzipped (due to extension and Content-Type) but really isn't
+            m.get(
+                self.TEST_BASE_URL + '/sitemap_3.xml.gz',
+                headers={'Content-Type': 'application/x-gzip'},
+                text=textwrap.dedent("""
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+                            xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+                        <url>
                             <loc>{base_url}/news/baz.html</loc>
                             <news:news>
                                 <news:publication>
@@ -465,7 +494,7 @@ class TestSitemapTree(TestCase):
                     publication_name=self.TEST_PUBLICATION_NAME,
                     publication_language=self.TEST_PUBLICATION_LANGUAGE,
                     publication_date=self.TEST_DATE_STR_ISO8601,
-                )).strip()),
+                )).strip(),
             )
 
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
@@ -476,7 +505,7 @@ class TestSitemapTree(TestCase):
 
             assert isinstance(actual_sitemap_tree.sub_sitemaps[0], IndexRobotsTxtSitemap)
             # noinspection PyUnresolvedReferences
-            assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 2
+            assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 3
 
             # noinspection PyUnresolvedReferences
             sitemap_1 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[0]
@@ -487,6 +516,11 @@ class TestSitemapTree(TestCase):
             sitemap_2 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[1]
             assert isinstance(sitemap_2, PagesXMLSitemap)
             assert len(sitemap_2.pages) == 1
+
+            # noinspection PyUnresolvedReferences
+            sitemap_3 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[2]
+            assert isinstance(sitemap_3, PagesXMLSitemap)
+            assert len(sitemap_3.pages) == 1
 
     def test_sitemap_tree_for_homepage_plain_text(self):
         """Test sitemap_tree_for_homepage() with plain text sitemaps."""
