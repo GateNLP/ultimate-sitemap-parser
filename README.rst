@@ -14,6 +14,10 @@
     :target: https://badge.fury.io/py/ultimate-sitemap-parser
     :alt: PyPI package
 
+.. image:: https://pepy.tech/badge/ultimate-sitemap-parser
+    :target: https://pepy.tech/project/ultimate-sitemap-parser
+    :alt: Download stats
+
 
 Website sitemap parser for Python 3.5+.
 
