@@ -26,7 +26,10 @@ class RequestsWebClientResponse(AbstractWebClientResponse):
         return int(self.__requests_response.status_code)
 
     def status_message(self) -> str:
-        return self.__requests_response.reason
+        message = self.__requests_response.reason
+        if not message:
+            message = HTTPStatus(self.status_code(), None).phrase
+        return message
 
     def header(self, case_insensitive_name: str) -> Optional[str]:
         return self.__requests_response.headers.get(case_insensitive_name.lower(), None)
