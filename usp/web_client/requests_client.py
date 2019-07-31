@@ -3,7 +3,6 @@
 from typing import Optional
 
 import requests
-from requests import Response
 
 from .abstract_client import AbstractWebClientResponse, AbstractWebClient
 from usp.__about__ import __version__
@@ -19,7 +18,7 @@ class RequestsWebClientResponse(AbstractWebClientResponse):
         '__max_response_data_length',
     ]
 
-    def __init__(self, requests_response: Response, max_response_data_length: Optional[int] = None):
+    def __init__(self, requests_response: requests.Response, max_response_data_length: Optional[int] = None):
         self.__requests_response = requests_response
         self.__max_response_data_length = max_response_data_length
 
