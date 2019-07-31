@@ -3,6 +3,7 @@
 import abc
 import re
 import xml.parsers.expat
+import time
 from collections import OrderedDict
 from decimal import Decimal
 from typing import Optional, Dict
@@ -158,18 +159,24 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
 
         # Serves as an ordered set because we want to deduplicate URLs but also retain the order
         sitemap_urls = OrderedDict()
+        crawl_interval = 0;
 
         for robots_txt_line in self._content.splitlines():
             robots_txt_line = robots_txt_line.strip()
             # robots.txt is supposed to be case sensitive but who cares in these Node.js times?
             robots_txt_line = robots_txt_line.lower()
             sitemap_match = re.search(r'^site-?map:\s*(.+?)$', robots_txt_line, flags=re.IGNORECASE)
+            crawl_delay_match = re.match(r'crawl-delay:', robots_txt_line, flags=re.IGNORECASE)
+
             if sitemap_match:
                 sitemap_url = sitemap_match.group(1)
                 if is_http_url(sitemap_url):
                     sitemap_urls[sitemap_url] = True
                 else:
                     log.warning("Sitemap URL {} doesn't look like an URL, skipping".format(sitemap_url))
+
+            if crawl_delay_match:
+                crawl_interval = int(robots_txt_line.split(":")[1])
 
         sub_sitemaps = []
 
@@ -181,6 +188,9 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
             )
             fetched_sitemap = fetcher.sitemap()
             sub_sitemaps.append(fetched_sitemap)
+            if crawl_interval > 0 and len(sitemap_urls.keys()) > 1:
+                log.info("Fetching next sitemap URL in {} seconds...".format(crawl_interval))
+                time.sleep(crawl_interval)
 
         index_sitemap = IndexRobotsTxtSitemap(url=self._url, sub_sitemaps=sub_sitemaps)
 
