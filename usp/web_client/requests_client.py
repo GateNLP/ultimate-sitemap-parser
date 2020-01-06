@@ -85,14 +85,16 @@ class RequestsWebClient(AbstractWebClient):
         # Used mostly for testing
         self.__timeout = timeout
 
-    def set_proxies(self, proxies:Dict[str, str]):
+    def set_proxies(self, proxies: Dict[str, str]) -> None:
         """
-        Set proxies from dictionnary where 
-            - keys are schemes
-            - values are scheme://user:password@host:port/
+        Set proxies from dictionnary where:
+
+        * keys are schemes, e.g. "http" or "https";
+        * values are "scheme://user:password@host:port/".
         
-        For example :
-        proxies = {'http': 'http://user:pass@10.10.1.10:3128/'}
+        For example:
+
+            proxies = {'http': 'http://user:pass@10.10.1.10:3128/'}
         """
         # Used mostly for testing
         self.__proxies = proxies
