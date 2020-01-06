@@ -1,7 +1,7 @@
 """requests-based implementation of web client class."""
 
 from http import HTTPStatus
-from typing import Optional
+from typing import Optional, Dict
 
 import requests
 
@@ -60,7 +60,7 @@ class RequestsWebClientErrorResponse(WebClientErrorResponse):
 class RequestsWebClient(AbstractWebClient):
     """requests-based web client to be used by the sitemap fetcher."""
 
-    __USER_AGENT = 'ultimate-sitemap-parser/{}'.format(__version__)
+    __USER_AGENT = 'ultimate_sitemap_parser/{}'.format(__version__)
 
     __HTTP_REQUEST_TIMEOUT = 60
     """
@@ -72,16 +72,30 @@ class RequestsWebClient(AbstractWebClient):
     __slots__ = [
         '__max_response_data_length',
         '__timeout',
+        '__proxies',
     ]
 
     def __init__(self):
         self.__max_response_data_length = None
         self.__timeout = self.__HTTP_REQUEST_TIMEOUT
+        self.__proxies = {}
 
     def set_timeout(self, timeout: int) -> None:
         """Set HTTP request timeout."""
         # Used mostly for testing
         self.__timeout = timeout
+
+    def set_proxies(self, proxies:Dict[str, str]):
+        """
+        Set proxies from dictionnary where 
+            - keys are schemes
+            - values are scheme://user:password@host:port/
+        
+        For example :
+        proxies = {'http': 'http://user:pass@10.10.1.10:3128/'}
+        """
+        # Used mostly for testing
+        self.__proxies = proxies
 
     def set_max_response_data_length(self, max_response_data_length: int) -> None:
         self.__max_response_data_length = max_response_data_length
@@ -93,6 +107,7 @@ class RequestsWebClient(AbstractWebClient):
                 timeout=self.__timeout,
                 stream=True,
                 headers={'User-Agent': self.__USER_AGENT},
+                proxies=self.__proxies
             )
         except requests.exceptions.Timeout as ex:
             # Retryable timeouts
