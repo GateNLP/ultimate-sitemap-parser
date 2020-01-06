@@ -66,7 +66,7 @@ class TestRequestsClient(TestCase):
             assert isinstance(response, AbstractWebClientSuccessResponse)
 
             content = response.raw_data().decode('utf-8')
-            assert content == 'ultimate-sitemap-parser/{}'.format(__version__)
+            assert content == 'ultimate_sitemap_parser/{}'.format(__version__)
 
     def test_get_not_found(self):
         with requests_mock.Mocker() as m:
