@@ -1,7 +1,7 @@
 """requests-based implementation of web client class."""
 
 from http import HTTPStatus
-from typing import Optional
+from typing import Optional, Dict
 
 import requests
 
@@ -85,10 +85,14 @@ class RequestsWebClient(AbstractWebClient):
         # Used mostly for testing
         self.__timeout = timeout
 
-    def set_proxies(self, proxies):
+    def set_proxies(self, proxies:Dict[str, str]):
         """
-        Set proxies from dictionnary 
-        {"http":"http://my.ip...", "https":"https://my.ip..."}
+        Set proxies from dictionnary where 
+            - keys are schemes
+            - values are scheme://user:password@host:port/
+        
+        For example :
+        proxies = {'http': 'http://user:pass@10.10.1.10:3128/'}
         """
         # Used mostly for testing
         self.__proxies = proxies
