@@ -65,6 +65,7 @@ class TestSitemapTree(TestCase):
             text="<h1>404 Not Found!</h1>",
         )
 
+    # noinspection DuplicatedCode
     def test_sitemap_tree_for_homepage(self):
         """Test sitemap_tree_for_homepage()."""
 
@@ -594,6 +595,7 @@ class TestSitemapTree(TestCase):
             assert SitemapPage(url='{}/news/bar.html'.format(self.TEST_BASE_URL)) in pages
             assert SitemapPage(url='{}/news/baz.html'.format(self.TEST_BASE_URL)) in pages
 
+    # noinspection DuplicatedCode
     def test_sitemap_tree_for_homepage_rss_atom(self):
         """Test sitemap_tree_for_homepage() with RSS 2.0 / Atom 0.3 / Atom 1.0 feeds."""
 
