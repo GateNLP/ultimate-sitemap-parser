@@ -685,7 +685,7 @@ class PagesRSSSitemapParser(AbstractXMLSitemapParser):
 
     class Page(object):
         """
-        Simple data class for holding various properties for a single <item> entry while parsing.
+        Data class for holding various properties for a single RSS <item> while parsing.
         """
 
         __slots__ = [
@@ -819,7 +819,7 @@ class PagesAtomSitemapParser(AbstractXMLSitemapParser):
     # FIXME merge with RSS parser class as there are too many similarities
 
     class Page(object):
-        """Simple data class for holding various properties for a single <entry> entry while parsing."""
+        """Data class for holding various properties for a single Atom <entry> while parsing."""
 
         __slots__ = [
             'link',
