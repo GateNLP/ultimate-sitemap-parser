@@ -31,6 +31,7 @@ jobs:
         run: |
           pip install .[test]
           coverage run --source=usp setup.py test
+          find .
 
       - name: Submit coverage results
         uses: coverallsapp/github-action@master
