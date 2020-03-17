@@ -22,6 +22,10 @@ _UNPUBLISHED_SITEMAP_PATHS = {
     'sitemap',
     'admin/config/search/xmlsitemap',
     'sitemap/sitemap-index.xml',
+    'sitemap_news.xml',
+    'sitemap-news.xml',
+    'sitemap_news.xml.gz',
+    'sitemap-news.xml.gz',
 }
 """Paths which are not exposed in robots.txt but might still contain a sitemap."""
 
