@@ -25,6 +25,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install .
+          pip install coverage
 
       - name: Run tests with coverage
         run: |
@@ -32,7 +33,7 @@ jobs:
           coverage run --source=usp setup.py test
 
       - name: Submit coverage results
-        run: bash <(curl -s https://codecov.io/bash)
+        run: codecov
         env:
           CODECOV_TOKEN: $(CODECOV_TOKEN)
 
