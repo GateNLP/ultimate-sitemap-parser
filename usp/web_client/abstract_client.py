@@ -7,25 +7,25 @@ from typing import Optional
 RETRYABLE_HTTP_STATUS_CODES = {
 
     # Some servers return "400 Bad Request" initially but upon retry start working again, no idea why
-    HTTPStatus.BAD_REQUEST.value,
+    int(HTTPStatus.BAD_REQUEST),
 
     # If we timed out requesting stuff, we can just try again
-    HTTPStatus.REQUEST_TIMEOUT.value,
+    int(HTTPStatus.REQUEST_TIMEOUT),
 
     # If we got rate limited, it makes sense to wait a bit
-    HTTPStatus.TOO_MANY_REQUESTS.value,
+    int(HTTPStatus.TOO_MANY_REQUESTS),
 
     # Server might be just fine on a subsequent attempt
-    HTTPStatus.INTERNAL_SERVER_ERROR.value,
+    int(HTTPStatus.INTERNAL_SERVER_ERROR),
 
     # Upstream might reappear on a retry
-    HTTPStatus.BAD_GATEWAY.value,
+    int(HTTPStatus.BAD_GATEWAY),
 
     # Service might become available again on a retry
-    HTTPStatus.SERVICE_UNAVAILABLE.value,
+    int(HTTPStatus.SERVICE_UNAVAILABLE),
 
     # Upstream might reappear on a retry
-    HTTPStatus.GATEWAY_TIMEOUT.value,
+    int(HTTPStatus.GATEWAY_TIMEOUT),
 
     # (unofficial) 509 Bandwidth Limit Exceeded (Apache Web Server/cPanel)
     509,

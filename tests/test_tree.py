@@ -3,11 +3,10 @@ import difflib
 import textwrap
 from decimal import Decimal
 from email.utils import format_datetime
-from http import HTTPStatus
 from unittest import TestCase
 
-import dateutil
 import requests_mock
+from dateutil.tz import tzoffset
 
 from tests.helpers import gzip
 from usp.log import create_logger
@@ -43,7 +42,7 @@ class TestSitemapTree(TestCase):
     # Publication / "last modified" date
     TEST_DATE_DATETIME = datetime.datetime(
         year=2009, month=12, day=17, hour=12, minute=4, second=56,
-        tzinfo=dateutil.tz.tzoffset(None, 7200),
+        tzinfo=tzoffset(None, 7200),
     )
     TEST_DATE_STR_ISO8601 = TEST_DATE_DATETIME.isoformat()
     """Test string date formatted as ISO 8601 (for XML and Atom 0.3 / 1.0 sitemaps)."""
@@ -59,8 +58,8 @@ class TestSitemapTree(TestCase):
         """Reply with "404 Not Found" to unmatched URLs instead of throwing NoMockAddress."""
         return requests_mock.create_response(
             request,
-            status_code=HTTPStatus.NOT_FOUND.value,
-            reason=HTTPStatus.NOT_FOUND.phrase,
+            status_code=404,
+            reason='Not Found',
             headers={'Content-Type': 'text/html'},
             text="<h1>404 Not Found!</h1>",
         )
@@ -276,8 +275,8 @@ class TestSitemapTree(TestCase):
             # Nonexistent sitemap
             m.get(
                 self.TEST_BASE_URL + '/sitemap_news_missing.xml',
-                status_code=HTTPStatus.NOT_FOUND.value,
-                reason=HTTPStatus.NOT_FOUND.phrase,
+                status_code=404,
+                reason='Not Found',
                 headers={'Content-Type': 'text/html'},
                 text="<h1>404 Not Found!</h1>",
             )
@@ -1177,8 +1176,8 @@ class TestSitemapTree(TestCase):
             # Nonexistent robots.txt
             m.get(
                 self.TEST_BASE_URL + '/robots.txt',
-                status_code=HTTPStatus.NOT_FOUND.value,
-                reason=HTTPStatus.NOT_FOUND.phrase,
+                status_code=404,
+                reason='Not Found',
                 headers={'Content-Type': 'text/html'},
                 text="<h1>404 Not Found!</h1>",
             )
