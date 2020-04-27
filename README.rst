@@ -1,14 +1,14 @@
-.. image:: https://travis-ci.org/berkmancenter/mediacloud-ultimate-sitemap-parser.svg?branch=develop
-    :target: https://travis-ci.org/berkmancenter/mediacloud-ultimate-sitemap-parser
-    :alt: Build Status
+.. image:: https://github.com/berkmancenter/mediacloud-ultimate-sitemap-parser/workflows/Python%20package/badge.svg
+    :target: https://github.com/berkmancenter/mediacloud-ultimate-sitemap-parser/actions
+    :alt: Build status
 
 .. image:: https://readthedocs.org/projects/ultimate-sitemap-parser/badge/?version=latest
     :target: https://ultimate-sitemap-parser.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
+    :alt: Documentation status
 
-.. image:: https://coveralls.io/repos/github/berkmancenter/mediacloud-ultimate-sitemap-parser/badge.svg?branch=develop
-    :target: https://coveralls.io/github/berkmancenter/mediacloud-ultimate-sitemap-parser?branch=develop
-    :alt: Coverage Status
+.. image:: https://codecov.io/gh/berkmancenter/mediacloud-ultimate-sitemap-parser/branch/develop/graph/badge.svg
+    :target: https://codecov.io/gh/berkmancenter/mediacloud-ultimate-sitemap-parser
+    :alt: Test coverage
 
 .. image:: https://badge.fury.io/py/ultimate-sitemap-parser.svg
     :target: https://badge.fury.io/py/ultimate-sitemap-parser
