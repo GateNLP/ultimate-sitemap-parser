@@ -18,6 +18,9 @@ tests_require = [
     # Running tests
     'pytest>=2.8',
 
+    # Reporting coverage
+    'pytest-cov>=2.8',
+
 ]
 
 setup(
