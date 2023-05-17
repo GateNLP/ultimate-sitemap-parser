@@ -1184,14 +1184,7 @@ class TestSitemapTree(TestCase):
 
             expected_sitemap_tree = IndexWebsiteSitemap(
                 url='{}/'.format(self.TEST_BASE_URL),
-                sub_sitemaps=[
-                    InvalidSitemap(
-                        url='{}/robots.txt'.format(self.TEST_BASE_URL),
-                        reason=(
-                            'Unable to fetch sitemap from {base_url}/robots.txt: 404 Not Found'
-                        ).format(base_url=self.TEST_BASE_URL),
-                    )
-                ]
+                sub_sitemaps=[],
             )
 
             actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)

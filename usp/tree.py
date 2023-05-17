@@ -55,7 +55,8 @@ def sitemap_tree_for_homepage(homepage_url: str, web_client: Optional[AbstractWe
 
     robots_txt_fetcher = SitemapFetcher(url=robots_txt_url, web_client=web_client, recursion_level=0)
     robots_txt_sitemap = robots_txt_fetcher.sitemap()
-    sitemaps.append(robots_txt_sitemap)
+    if not isinstance(robots_txt_sitemap, InvalidSitemap):
+        sitemaps.append(robots_txt_sitemap)
 
     sitemap_urls_found_in_robots_txt = set()
     if isinstance(robots_txt_sitemap, IndexRobotsTxtSitemap):
