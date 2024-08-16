@@ -14,6 +14,10 @@
     :target: https://badge.fury.io/py/ultimate-sitemap-parser
     :alt: PyPI package
 
+.. image:: https://img.shields.io/conda/v/conda-forge/ultimate-sitemap-parser?color=brightgreen
+   :target: https://anaconda.org/conda-forge/ultimate-sitemap-parser
+   :alt: Conda
+
 .. image:: https://pepy.tech/badge/ultimate-sitemap-parser
     :target: https://pepy.tech/project/ultimate-sitemap-parser
     :alt: Download stats
@@ -50,6 +54,12 @@ Installation
 .. code:: sh
 
     pip install ultimate-sitemap-parser
+
+or using Anaconda:
+
+.. code:: sh
+
+    conda install -c conda-forge ultimate-sitemap-parser
 
 
 Usage
