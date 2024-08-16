@@ -5,76 +5,59 @@ from http import HTTPStatus
 from typing import Optional
 
 RETRYABLE_HTTP_STATUS_CODES = {
-
     # Some servers return "400 Bad Request" initially but upon retry start working again, no idea why
     int(HTTPStatus.BAD_REQUEST),
-
     # If we timed out requesting stuff, we can just try again
     int(HTTPStatus.REQUEST_TIMEOUT),
-
     # If we got rate limited, it makes sense to wait a bit
     int(HTTPStatus.TOO_MANY_REQUESTS),
-
     # Server might be just fine on a subsequent attempt
     int(HTTPStatus.INTERNAL_SERVER_ERROR),
-
     # Upstream might reappear on a retry
     int(HTTPStatus.BAD_GATEWAY),
-
     # Service might become available again on a retry
     int(HTTPStatus.SERVICE_UNAVAILABLE),
-
     # Upstream might reappear on a retry
     int(HTTPStatus.GATEWAY_TIMEOUT),
-
     # (unofficial) 509 Bandwidth Limit Exceeded (Apache Web Server/cPanel)
     509,
-
     # (unofficial) 598 Network read timeout error
     598,
-
     # (unofficial, nginx) 499 Client Closed Request
     499,
-
     # (unofficial, Cloudflare) 520 Unknown Error
     520,
-
     # (unofficial, Cloudflare) 521 Web Server Is Down
     521,
-
     # (unofficial, Cloudflare) 522 Connection Timed Out
     522,
-
     # (unofficial, Cloudflare) 523 Origin Is Unreachable
     523,
-
     # (unofficial, Cloudflare) 524 A Timeout Occurred
     524,
-
     # (unofficial, Cloudflare) 525 SSL Handshake Failed
     525,
-
     # (unofficial, Cloudflare) 526 Invalid SSL Certificate
     526,
-
     # (unofficial, Cloudflare) 527 Railgun Error
     527,
-
     # (unofficial, Cloudflare) 530 Origin DNS Error
     530,
-
 }
 """HTTP status codes on which a request should be retried."""
 
 
-class AbstractWebClientResponse(object, metaclass=abc.ABCMeta):
+class AbstractWebClientResponse(metaclass=abc.ABCMeta):
     """
     Abstract response.
     """
+
     pass
 
 
-class AbstractWebClientSuccessResponse(AbstractWebClientResponse, metaclass=abc.ABCMeta):
+class AbstractWebClientSuccessResponse(
+    AbstractWebClientResponse, metaclass=abc.ABCMeta
+):
     """
     Successful response.
     """
@@ -123,8 +106,8 @@ class WebClientErrorResponse(AbstractWebClientResponse, metaclass=abc.ABCMeta):
     """
 
     __slots__ = [
-        '_message',
-        '_retryable',
+        "_message",
+        "_retryable",
     ]
 
     def __init__(self, message: str, retryable: bool):
@@ -155,7 +138,7 @@ class WebClientErrorResponse(AbstractWebClientResponse, metaclass=abc.ABCMeta):
         return self._retryable
 
 
-class AbstractWebClient(object, metaclass=abc.ABCMeta):
+class AbstractWebClient(metaclass=abc.ABCMeta):
     """
     Abstract web client to be used by the sitemap fetcher.
     """

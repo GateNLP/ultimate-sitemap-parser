@@ -9,13 +9,13 @@ from typing import List, Iterator
 from .page import SitemapPage
 
 
-class AbstractSitemap(object, metaclass=abc.ABCMeta):
+class AbstractSitemap(metaclass=abc.ABCMeta):
     """
     Abstract sitemap.
     """
 
     __slots__ = [
-        '__url',
+        "__url",
     ]
 
     def __init__(self, url: str):
@@ -28,7 +28,7 @@ class AbstractSitemap(object, metaclass=abc.ABCMeta):
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, AbstractSitemap):
-            raise NotImplemented
+            raise NotImplementedError
 
         if self.url != other.url:
             return False
@@ -36,16 +36,10 @@ class AbstractSitemap(object, metaclass=abc.ABCMeta):
         return True
 
     def __hash__(self):
-        return hash((
-            self.url,
-        ))
+        return hash((self.url,))
 
     def __repr__(self):
-        return (
-            "{self.__class__.__name__}("
-            "url={self.url}"
-            ")"
-        ).format(self=self)
+        return f"{self.__class__.__name__}(" f"url={self.url}" ")"
 
     @property
     def url(self) -> str:
@@ -70,7 +64,7 @@ class InvalidSitemap(AbstractSitemap):
     """Invalid sitemap, e.g. the one that can't be parsed."""
 
     __slots__ = [
-        '__reason',
+        "__reason",
     ]
 
     def __init__(self, url: str, reason: str):
@@ -85,7 +79,7 @@ class InvalidSitemap(AbstractSitemap):
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, InvalidSitemap):
-            raise NotImplemented
+            raise NotImplementedError
 
         if self.url != other.url:
             return False
@@ -97,11 +91,11 @@ class InvalidSitemap(AbstractSitemap):
 
     def __repr__(self):
         return (
-            "{self.__class__.__name__}("
-            "url={self.url}, "
-            "reason={self.reason}"
+            f"{self.__class__.__name__}("
+            f"url={self.url}, "
+            f"reason={self.reason}"
             ")"
-        ).format(self=self)
+        )
 
     @property
     def reason(self) -> str:
@@ -125,7 +119,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
     """Abstract sitemap that contains URLs to pages."""
 
     __slots__ = [
-        '__pages_temp_file_path',
+        "__pages_temp_file_path",
     ]
 
     def __init__(self, url: str, pages: List[SitemapPage]):
@@ -138,7 +132,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         super().__init__(url=url)
 
         temp_file, self.__pages_temp_file_path = tempfile.mkstemp()
-        with os.fdopen(temp_file, 'wb') as tmp:
+        with os.fdopen(temp_file, "wb") as tmp:
             pickle.dump(pages, tmp, protocol=pickle.HIGHEST_PROTOCOL)
 
     def __del__(self):
@@ -146,7 +140,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, AbstractPagesSitemap):
-            raise NotImplemented
+            raise NotImplementedError
 
         if self.url != other.url:
             return False
@@ -158,11 +152,8 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
 
     def __repr__(self):
         return (
-            "{self.__class__.__name__}("
-            "url={self.url}, "
-            "pages={self.pages}"
-            ")"
-        ).format(self=self)
+            f"{self.__class__.__name__}(" f"url={self.url}, " f"pages={self.pages}" ")"
+        )
 
     @property
     def pages(self) -> List[SitemapPage]:
@@ -171,7 +162,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
 
         :return: List of pages found in a sitemap.
         """
-        with open(self.__pages_temp_file_path, 'rb') as tmp:
+        with open(self.__pages_temp_file_path, "rb") as tmp:
             pages = pickle.load(tmp)
         return pages
 
@@ -181,14 +172,14 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
 
         :return: Iterator which yields all pages of this sitemap and linked sitemaps (if any).
         """
-        for page in self.pages:
-            yield page
+        yield from self.pages
 
 
 class PagesXMLSitemap(AbstractPagesSitemap):
     """
     XML sitemap that contains URLs to pages.
     """
+
     pass
 
 
@@ -196,6 +187,7 @@ class PagesTextSitemap(AbstractPagesSitemap):
     """
     Plain text sitemap that contains URLs to pages.
     """
+
     pass
 
 
@@ -203,6 +195,7 @@ class PagesRSSSitemap(AbstractPagesSitemap):
     """
     RSS 2.0 sitemap that contains URLs to pages.
     """
+
     pass
 
 
@@ -210,6 +203,7 @@ class PagesAtomSitemap(AbstractPagesSitemap):
     """
     RSS 0.3 / 1.0 sitemap that contains URLs to pages.
     """
+
     pass
 
 
@@ -219,7 +213,7 @@ class AbstractIndexSitemap(AbstractSitemap):
     """
 
     __slots__ = [
-        '__sub_sitemaps',
+        "__sub_sitemaps",
     ]
 
     def __init__(self, url: str, sub_sitemaps: List[AbstractSitemap]):
@@ -234,7 +228,7 @@ class AbstractIndexSitemap(AbstractSitemap):
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, AbstractIndexSitemap):
-            raise NotImplemented
+            raise NotImplementedError
 
         if self.url != other.url:
             return False
@@ -246,11 +240,11 @@ class AbstractIndexSitemap(AbstractSitemap):
 
     def __repr__(self):
         return (
-            "{self.__class__.__name__}("
-            "url={self.url}, "
-            "sub_sitemaps={self.sub_sitemaps}"
+            f"{self.__class__.__name__}("
+            f"url={self.url}, "
+            f"sub_sitemaps={self.sub_sitemaps}"
             ")"
-        ).format(self=self)
+        )
 
     @property
     def sub_sitemaps(self) -> List[AbstractSitemap]:
@@ -268,14 +262,14 @@ class AbstractIndexSitemap(AbstractSitemap):
         :return: Iterator which yields all pages of this sitemap and linked sitemaps (if any).
         """
         for sub_sitemap in self.sub_sitemaps:
-            for page in sub_sitemap.all_pages():
-                yield page
+            yield from self.all_pages()
 
 
 class IndexWebsiteSitemap(AbstractIndexSitemap):
     """
     Website's root sitemaps, including robots.txt and extra ones.
     """
+
     pass
 
 
@@ -283,6 +277,7 @@ class IndexXMLSitemap(AbstractIndexSitemap):
     """
     XML sitemap with URLs to other sitemaps.
     """
+
     pass
 
 
@@ -290,4 +285,5 @@ class IndexRobotsTxtSitemap(AbstractIndexSitemap):
     """
     robots.txt sitemap with URLs to other sitemaps.
     """
+
     pass

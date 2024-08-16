@@ -5,35 +5,37 @@ from decimal import Decimal
 from enum import Enum, unique
 from typing import List, Optional
 
-SITEMAP_PAGE_DEFAULT_PRIORITY = Decimal('0.5')
+SITEMAP_PAGE_DEFAULT_PRIORITY = Decimal("0.5")
 """Default sitemap page priority, as per the spec."""
 
 
-class SitemapNewsStory(object):
+class SitemapNewsStory:
     """
     Single story derived from Google News XML sitemap.
     """
 
     __slots__ = [
-        '__title',
-        '__publish_date',
-        '__publication_name',
-        '__publication_language',
-        '__access',
-        '__genres',
-        '__keywords',
-        '__stock_tickers',
+        "__title",
+        "__publish_date",
+        "__publication_name",
+        "__publication_language",
+        "__access",
+        "__genres",
+        "__keywords",
+        "__stock_tickers",
     ]
 
-    def __init__(self,
-                 title: str,
-                 publish_date: datetime.datetime,
-                 publication_name: Optional[str] = None,
-                 publication_language: Optional[str] = None,
-                 access: Optional[str] = None,
-                 genres: List[str] = None,
-                 keywords: List[str] = None,
-                 stock_tickers: List[str] = None):
+    def __init__(
+        self,
+        title: str,
+        publish_date: datetime.datetime,
+        publication_name: Optional[str] = None,
+        publication_language: Optional[str] = None,
+        access: Optional[str] = None,
+        genres: List[str] = None,
+        keywords: List[str] = None,
+        stock_tickers: List[str] = None,
+    ):
         """
         Initialize a new Google News story.
 
@@ -61,7 +63,7 @@ class SitemapNewsStory(object):
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, SitemapNewsStory):
-            raise NotImplemented
+            raise NotImplementedError
 
         if self.title != other.title:
             return False
@@ -90,30 +92,32 @@ class SitemapNewsStory(object):
         return True
 
     def __hash__(self):
-        return hash((
-            self.title,
-            self.publish_date,
-            self.publication_name,
-            self.publication_language,
-            self.access,
-            self.genres,
-            self.keywords,
-            self.stock_tickers,
-        ))
+        return hash(
+            (
+                self.title,
+                self.publish_date,
+                self.publication_name,
+                self.publication_language,
+                self.access,
+                self.genres,
+                self.keywords,
+                self.stock_tickers,
+            )
+        )
 
     def __repr__(self):
         return (
-            "{self.__class__.__name__}("
-            "title={self.title}, "
-            "publish_date={self.publish_date}, "
-            "publication_name={self.publication_name}, "
-            "publication_language={self.publication_language}, "
-            "access={self.access}, "
-            "genres={self.genres}, "
-            "keywords={self.keywords}, "
-            "stock_tickers={self.stock_tickers}"
+            f"{self.__class__.__name__}("
+            f"title={self.title}, "
+            f"publish_date={self.publish_date}, "
+            f"publication_name={self.publication_name}, "
+            f"publication_language={self.publication_language}, "
+            f"access={self.access}, "
+            f"genres={self.genres}, "
+            f"keywords={self.keywords}, "
+            f"stock_tickers={self.stock_tickers}"
             ")"
-        ).format(self=self)
+        )
 
     @property
     def title(self) -> str:
@@ -198,13 +202,13 @@ class SitemapNewsStory(object):
 class SitemapPageChangeFrequency(Enum):
     """Change frequency of a sitemap URL."""
 
-    ALWAYS = 'always'
-    HOURLY = 'hourly'
-    DAILY = 'daily'
-    WEEKLY = 'weekly'
-    MONTHLY = 'monthly'
-    YEARLY = 'yearly'
-    NEVER = 'never'
+    ALWAYS = "always"
+    HOURLY = "hourly"
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
+    NEVER = "never"
 
     @classmethod
     def has_value(cls, value: str) -> bool:
@@ -212,23 +216,25 @@ class SitemapPageChangeFrequency(Enum):
         return any(value == item.value for item in cls)
 
 
-class SitemapPage(object):
+class SitemapPage:
     """Single sitemap-derived page."""
 
     __slots__ = [
-        '__url',
-        '__priority',
-        '__last_modified',
-        '__change_frequency',
-        '__news_story',
+        "__url",
+        "__priority",
+        "__last_modified",
+        "__change_frequency",
+        "__news_story",
     ]
 
-    def __init__(self,
-                 url: str,
-                 priority: Decimal = SITEMAP_PAGE_DEFAULT_PRIORITY,
-                 last_modified: Optional[datetime.datetime] = None,
-                 change_frequency: Optional[SitemapPageChangeFrequency] = None,
-                 news_story: Optional[SitemapNewsStory] = None):
+    def __init__(
+        self,
+        url: str,
+        priority: Decimal = SITEMAP_PAGE_DEFAULT_PRIORITY,
+        last_modified: Optional[datetime.datetime] = None,
+        change_frequency: Optional[SitemapPageChangeFrequency] = None,
+        news_story: Optional[SitemapNewsStory] = None,
+    ):
         """
         Initialize a new sitemap-derived page.
 
@@ -246,7 +252,7 @@ class SitemapPage(object):
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, SitemapPage):
-            raise NotImplemented
+            raise NotImplementedError
 
         if self.url != other.url:
             return False
@@ -266,21 +272,23 @@ class SitemapPage(object):
         return True
 
     def __hash__(self):
-        return hash((
-            # Hash only the URL to be able to find unique pages later on
-            self.url,
-        ))
+        return hash(
+            (
+                # Hash only the URL to be able to find unique pages later on
+                self.url,
+            )
+        )
 
     def __repr__(self):
         return (
-            "{self.__class__.__name__}("
-            "url={self.url}, "
-            "priority={self.priority}, "
-            "last_modified={self.last_modified}, "
-            "change_frequency={self.change_frequency}, "
-            "news_story={self.news_story}"
+            f"{self.__class__.__name__}("
+            f"url={self.url}, "
+            f"priority={self.priority}, "
+            f"last_modified={self.last_modified}, "
+            f"change_frequency={self.change_frequency}, "
+            f"news_story={self.news_story}"
             ")"
-        ).format(self=self)
+        )
 
     @property
     def url(self) -> str:

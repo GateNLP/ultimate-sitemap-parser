@@ -21,7 +21,7 @@ from .web_client.abstract_client import (
 
 log = create_logger(__name__)
 
-__URL_REGEX = re.compile(r'^https?://[^\s/$.?#].[^\s]*$', re.IGNORECASE)
+__URL_REGEX = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", re.IGNORECASE)
 """Regular expression to match HTTP(s) URLs."""
 
 
@@ -39,10 +39,10 @@ def is_http_url(url: str) -> bool:
         log.debug("URL is empty")
         return False
 
-    log.debug("Testing if URL '{}' is HTTP(s) URL".format(url))
+    log.debug(f"Testing if URL '{url}' is HTTP(s) URL")
 
     if not re.search(__URL_REGEX, url):
-        log.debug("URL '{}' does not match URL's regexp".format(url))
+        log.debug(f"URL '{url}' does not match URL's regexp")
         return False
 
     try:
@@ -51,17 +51,17 @@ def is_http_url(url: str) -> bool:
         _ = urlunparse(uri)
 
     except Exception as ex:
-        log.debug("Cannot parse URL {}: {}".format(url, ex))
+        log.debug(f"Cannot parse URL {url}: {ex}")
         return False
 
     if not uri.scheme:
-        log.debug("Scheme is undefined for URL {}.".format(url))
+        log.debug(f"Scheme is undefined for URL {url}.")
         return False
-    if not uri.scheme.lower() in ['http', 'https']:
-        log.debug("Scheme is not HTTP(s) for URL {}.".format(url))
+    if uri.scheme.lower() not in ["http", "https"]:
+        log.debug(f"Scheme is not HTTP(s) for URL {url}.")
         return False
     if not uri.hostname:
-        log.debug("Host is undefined for URL {}.".format(url))
+        log.debug(f"Host is undefined for URL {url}.")
         return False
 
     return True
@@ -110,10 +110,12 @@ def parse_rfc2822_date(date_string: str) -> datetime.datetime:
     return parse_iso8601_date(date_string)
 
 
-def get_url_retry_on_client_errors(url: str,
-                                   web_client: AbstractWebClient,
-                                   retry_count: int = 5,
-                                   sleep_between_retries: int = 1) -> AbstractWebClientResponse:
+def get_url_retry_on_client_errors(
+    url: str,
+    web_client: AbstractWebClient,
+    retry_count: int = 5,
+    sleep_between_retries: int = 1,
+) -> AbstractWebClientResponse:
     """
     Fetch URL, retry on retryable errors.
 
@@ -127,32 +129,30 @@ def get_url_retry_on_client_errors(url: str,
 
     response = None
     for retry in range(0, retry_count):
-        log.info("Fetching URL {}...".format(url))
+        log.info(f"Fetching URL {url}...")
         response = web_client.get(url)
 
         if isinstance(response, WebClientErrorResponse):
-            log.warning(
-                "Request for URL {} failed: {}".format(
-                    url, response.message()
-                )
-            )
+            log.warning(f"Request for URL {url} failed: {response.message()}")
 
             if response.retryable():
-                log.info("Retrying URL {} in {} seconds...".format(url, sleep_between_retries))
+                log.info(f"Retrying URL {url} in {sleep_between_retries} seconds...")
                 time.sleep(sleep_between_retries)
 
             else:
-                log.info("Not retrying for URL {}".format(url))
+                log.info(f"Not retrying for URL {url}")
                 return response
 
         else:
             return response
 
-    log.info("Giving up on URL {}".format(url))
+    log.info(f"Giving up on URL {url}")
     return response
 
 
-def __response_is_gzipped_data(url: str, response: AbstractWebClientSuccessResponse) -> bool:
+def __response_is_gzipped_data(
+    url: str, response: AbstractWebClientSuccessResponse
+) -> bool:
     """
     Return True if Response looks like it's gzipped.
 
@@ -162,9 +162,9 @@ def __response_is_gzipped_data(url: str, response: AbstractWebClientSuccessRespo
     """
     uri = urlparse(url)
     url_path = unquote_plus(uri.path)
-    content_type = response.header('content-type') or ''
+    content_type = response.header("content-type") or ""
 
-    if url_path.lower().endswith('.gz') or 'gzip' in content_type.lower():
+    if url_path.lower().endswith(".gz") or "gzip" in content_type.lower():
         return True
 
     else:
@@ -183,15 +183,17 @@ def gunzip(data: bytes) -> bytes:
         raise GunzipException("Data is None.")
 
     if not isinstance(data, bytes):
-        raise GunzipException("Data is not bytes: %s" % str(data))
+        raise GunzipException(f"Data is not bytes: {str(data)}")
 
     if len(data) == 0:
-        raise GunzipException("Data is empty (no way an empty string is a valid Gzip archive).")
+        raise GunzipException(
+            "Data is empty (no way an empty string is a valid Gzip archive)."
+        )
 
     try:
         gunzipped_data = gzip_lib.decompress(data)
     except Exception as ex:
-        raise GunzipException("Unable to gunzip data: %s" % str(ex))
+        raise GunzipException(f"Unable to gunzip data: {str(ex)}")
 
     if gunzipped_data is None:
         raise GunzipException("Gunzipped data is None.")
@@ -202,7 +204,9 @@ def gunzip(data: bytes) -> bytes:
     return gunzipped_data
 
 
-def ungzipped_response_content(url: str, response: AbstractWebClientSuccessResponse) -> str:
+def ungzipped_response_content(
+    url: str, response: AbstractWebClientSuccessResponse
+) -> str:
     """
     Return HTTP response's decoded content, gunzip it if necessary.
 
@@ -218,10 +222,12 @@ def ungzipped_response_content(url: str, response: AbstractWebClientSuccessRespo
             data = gunzip(data)
         except GunzipException as ex:
             # In case of an error, just assume that it's one of the non-gzipped sitemaps with ".gz" extension
-            log.error("Unable to gunzip response {}, maybe it's a non-gzipped sitemap: {}".format(response, ex))
+            log.error(
+                f"Unable to gunzip response {response}, maybe it's a non-gzipped sitemap: {ex}"
+            )
 
     # FIXME other encodings
-    data = data.decode('utf-8-sig', errors='replace')
+    data = data.decode("utf-8-sig", errors="replace")
 
     assert isinstance(data, str)
 
@@ -241,17 +247,20 @@ def strip_url_to_homepage(url: str) -> str:
     try:
         uri = urlparse(url)
         assert uri.scheme, "Scheme must be set."
-        assert uri.scheme.lower() in ['http', 'https'], "Scheme must be http:// or https://"
+        assert uri.scheme.lower() in [
+            "http",
+            "https",
+        ], "Scheme must be http:// or https://"
         uri = (
             uri.scheme,
             uri.netloc,
-            '/',  # path
-            '',  # params
-            '',  # query
-            '',  # fragment
+            "/",  # path
+            "",  # params
+            "",  # query
+            "",  # fragment
         )
         url = urlunparse(uri)
     except Exception as ex:
-        raise StripURLToHomepageException("Unable to parse URL {}: {}".format(url, ex))
+        raise StripURLToHomepageException(f"Unable to parse URL {url}: {ex}")
 
     return url

@@ -21,11 +21,15 @@ class RequestsWebClientSuccessResponse(AbstractWebClientSuccessResponse):
     """
 
     __slots__ = [
-        '__requests_response',
-        '__max_response_data_length',
+        "__requests_response",
+        "__max_response_data_length",
     ]
 
-    def __init__(self, requests_response: requests.Response, max_response_data_length: Optional[int] = None):
+    def __init__(
+        self,
+        requests_response: requests.Response,
+        max_response_data_length: Optional[int] = None,
+    ):
         self.__requests_response = requests_response
         self.__max_response_data_length = max_response_data_length
 
@@ -43,7 +47,7 @@ class RequestsWebClientSuccessResponse(AbstractWebClientSuccessResponse):
 
     def raw_data(self) -> bytes:
         if self.__max_response_data_length:
-            data = self.__requests_response.content[:self.__max_response_data_length]
+            data = self.__requests_response.content[: self.__max_response_data_length]
         else:
             data = self.__requests_response.content
 
@@ -54,13 +58,14 @@ class RequestsWebClientErrorResponse(WebClientErrorResponse):
     """
     requests-based error response.
     """
+
     pass
 
 
 class RequestsWebClient(AbstractWebClient):
     """requests-based web client to be used by the sitemap fetcher."""
 
-    __USER_AGENT = 'ultimate_sitemap_parser/{}'.format(__version__)
+    __USER_AGENT = f"ultimate_sitemap_parser/{__version__}"
 
     __HTTP_REQUEST_TIMEOUT = 60
     """
@@ -70,9 +75,9 @@ class RequestsWebClient(AbstractWebClient):
     """
 
     __slots__ = [
-        '__max_response_data_length',
-        '__timeout',
-        '__proxies',
+        "__max_response_data_length",
+        "__timeout",
+        "__proxies",
     ]
 
     def __init__(self, verify=True):
@@ -92,7 +97,7 @@ class RequestsWebClient(AbstractWebClient):
 
         * keys are schemes, e.g. "http" or "https";
         * values are "scheme://user:password@host:port/".
-        
+
         For example:
 
             proxies = {'http': 'http://user:pass@10.10.1.10:3128/'}
@@ -109,7 +114,7 @@ class RequestsWebClient(AbstractWebClient):
                 url,
                 timeout=self.__timeout,
                 stream=True,
-                headers={'User-Agent': self.__USER_AGENT},
+                headers={"User-Agent": self.__USER_AGENT},
                 proxies=self.__proxies,
                 verify=self.__verify,
             )
@@ -122,17 +127,19 @@ class RequestsWebClient(AbstractWebClient):
             return RequestsWebClientErrorResponse(message=str(ex), retryable=False)
 
         else:
-
             if 200 <= response.status_code < 300:
                 return RequestsWebClientSuccessResponse(
                     requests_response=response,
                     max_response_data_length=self.__max_response_data_length,
                 )
             else:
-
-                message = '{} {}'.format(response.status_code, response.reason)
+                message = f"{response.status_code} {response.reason}"
 
                 if response.status_code in RETRYABLE_HTTP_STATUS_CODES:
-                    return RequestsWebClientErrorResponse(message=message, retryable=True)
+                    return RequestsWebClientErrorResponse(
+                        message=message, retryable=True
+                    )
                 else:
-                    return RequestsWebClientErrorResponse(message=message, retryable=False)
+                    return RequestsWebClientErrorResponse(
+                        message=message, retryable=False
+                    )

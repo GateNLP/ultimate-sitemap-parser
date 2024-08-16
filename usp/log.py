@@ -3,26 +3,26 @@
 import logging
 
 
-class Logger(object):
+class Logger:
     """
     Logging helper class.
     """
 
     __LEVELS = {
-        'CRITICAL': logging.CRITICAL,
-        'ERROR': logging.ERROR,
-        'WARNING': logging.WARNING,
-        'INFO': logging.INFO,
-        'DEBUG': logging.DEBUG,
+        "CRITICAL": logging.CRITICAL,
+        "ERROR": logging.ERROR,
+        "WARNING": logging.WARNING,
+        "INFO": logging.INFO,
+        "DEBUG": logging.DEBUG,
     }
     """Valid logging levels and their "logging" counterparts."""
 
-    __DEFAULT_LEVEL = 'INFO'
+    __DEFAULT_LEVEL = "INFO"
     """Default logging level."""
 
     __slots__ = [
         # "logging" object
-        '__l',
+        "__l",
     ]
 
     def __init__(self, name: str):

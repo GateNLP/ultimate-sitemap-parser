@@ -28,7 +28,21 @@ requests = ">=2.2.1"
 [tool.poetry.group.dev.dependencies]
 requests-mock = ">=1.6.0,<2.0"
 pytest = ">=2.8"
+ruff = "^0.6.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py38"
+extend-exclude = ["docs/*"]
+
+[tool.ruff.lint]
+select = [
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    "UP"
+]
