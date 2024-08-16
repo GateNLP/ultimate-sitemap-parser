@@ -27,7 +27,7 @@ requests = ">=2.2.1"
 
 [tool.poetry.group.dev.dependencies]
 requests-mock = ">=1.6.0,<2.0"
-pytest = ">=2.8"
+pytest = "^8.3.0"
 ruff = "^0.6.1"
 
 [build-system]
@@ -44,5 +44,6 @@ select = [
     "E7",
     "E9",
     "F",
-    "UP"
+    "UP",
+    "PT"
 ]

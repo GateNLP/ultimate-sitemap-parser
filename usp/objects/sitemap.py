@@ -262,7 +262,7 @@ class AbstractIndexSitemap(AbstractSitemap):
         :return: Iterator which yields all pages of this sitemap and linked sitemaps (if any).
         """
         for sub_sitemap in self.sub_sitemaps:
-            yield from self.all_pages()
+            yield from sub_sitemap.all_pages()
 
 
 class IndexWebsiteSitemap(AbstractIndexSitemap):
