@@ -33,20 +33,6 @@ class Logger(object):
         """
 
         self.__l = logging.getLogger(name)
-        if not self.__l.handlers:
-            formatter = logging.Formatter(
-                fmt='%(asctime)s %(levelname)s %(name)s [%(process)d/%(threadName)s]: %(message)s'
-            )
-
-            handler = logging.StreamHandler()
-            handler.setFormatter(formatter)
-            self.__l.addHandler(handler)
-
-            self.__l.setLevel(self.__LEVELS[self.__DEFAULT_LEVEL])
-
-            # Don't propagate handler to root logger
-            # (http://stackoverflow.com/a/21127526/200603)
-            self.__l.propagate = False
 
     def error(self, message: str) -> None:
         """
