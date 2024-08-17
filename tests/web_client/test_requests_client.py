@@ -1,9 +1,8 @@
 import re
 import socket
 from http import HTTPStatus
-from unittest import TestCase
 
-import requests_mock
+import pytest
 
 from usp.__about__ import __version__
 from usp.web_client.abstract_client import (
@@ -13,84 +12,76 @@ from usp.web_client.abstract_client import (
 from usp.web_client.requests_client import RequestsWebClient
 
 
-class TestRequestsClient(TestCase):
+class TestRequestsClient:
     TEST_BASE_URL = "http://test-ultimate-sitemap-parser.com"  # mocked by HTTPretty
     TEST_CONTENT_TYPE = "text/html"
 
-    __slots__ = [
-        "__client",
-    ]
+    @pytest.fixture
+    def client(self):
+        return RequestsWebClient()
 
-    def setUp(self) -> None:
-        super().setUp()
+    def test_get(self, client, requests_mock):
+        test_url = self.TEST_BASE_URL + "/"
+        test_content = "This is a homepage."
 
-        self.__client = RequestsWebClient()
+        requests_mock.get(
+            test_url,
+            headers={"Content-Type": self.TEST_CONTENT_TYPE},
+            text=test_content,
+        )
 
-    def test_get(self):
-        with requests_mock.Mocker() as m:
-            test_url = self.TEST_BASE_URL + "/"
-            test_content = "This is a homepage."
+        response = client.get(test_url)
 
-            m.get(
-                test_url,
-                headers={"Content-Type": self.TEST_CONTENT_TYPE},
-                text=test_content,
-            )
+        assert response
+        assert isinstance(response, AbstractWebClientSuccessResponse)
+        assert response.status_code() == HTTPStatus.OK.value
+        assert response.status_message() == HTTPStatus.OK.phrase
+        assert response.header("Content-Type") == self.TEST_CONTENT_TYPE
+        assert response.header("content-type") == self.TEST_CONTENT_TYPE
+        assert response.header("nonexistent") is None
+        assert response.raw_data().decode("utf-8") == test_content
 
-            response = self.__client.get(test_url)
+    def test_get_user_agent(self, client, requests_mock):
+        test_url = self.TEST_BASE_URL + "/"
 
-            assert response
-            assert isinstance(response, AbstractWebClientSuccessResponse)
-            assert response.status_code() == HTTPStatus.OK.value
-            assert response.status_message() == HTTPStatus.OK.phrase
-            assert response.header("Content-Type") == self.TEST_CONTENT_TYPE
-            assert response.header("content-type") == self.TEST_CONTENT_TYPE
-            assert response.header("nonexistent") is None
-            assert response.raw_data().decode("utf-8") == test_content
+        def content_user_agent(request, context):
+            context.status_code = HTTPStatus.OK.value
+            return request.headers.get("User-Agent", "unknown")
 
-    def test_get_user_agent(self):
-        with requests_mock.Mocker() as m:
-            test_url = self.TEST_BASE_URL + "/"
+        requests_mock.get(
+            test_url,
+            text=content_user_agent,
+        )
 
-            def content_user_agent(request, context):
-                context.status_code = HTTPStatus.OK.value
-                return request.headers.get("User-Agent", "unknown")
+        response = client.get(test_url)
 
-            m.get(
-                test_url,
-                text=content_user_agent,
-            )
+        assert response
+        assert isinstance(response, AbstractWebClientSuccessResponse)
 
-            response = self.__client.get(test_url)
+        content = response.raw_data().decode("utf-8")
+        assert content == f"ultimate_sitemap_parser/{__version__}"
 
-            assert response
-            assert isinstance(response, AbstractWebClientSuccessResponse)
+    def test_get_not_found(self, client, requests_mock):
+        test_url = self.TEST_BASE_URL + "/404.html"
 
-            content = response.raw_data().decode("utf-8")
-            assert content == f"ultimate_sitemap_parser/{__version__}"
+        requests_mock.get(
+            test_url,
+            status_code=HTTPStatus.NOT_FOUND.value,
+            reason=HTTPStatus.NOT_FOUND.phrase,
+            headers={"Content-Type": self.TEST_CONTENT_TYPE},
+            text="This page does not exist.",
+        )
 
-    def test_get_not_found(self):
-        with requests_mock.Mocker() as m:
-            test_url = self.TEST_BASE_URL + "/404.html"
+        response = client.get(test_url)
 
-            m.get(
-                test_url,
-                status_code=HTTPStatus.NOT_FOUND.value,
-                reason=HTTPStatus.NOT_FOUND.phrase,
-                headers={"Content-Type": self.TEST_CONTENT_TYPE},
-                text="This page does not exist.",
-            )
+        assert response
+        assert isinstance(response, WebClientErrorResponse)
+        assert response.retryable() is False
 
-            response = self.__client.get(test_url)
-
-            assert response
-            assert isinstance(response, WebClientErrorResponse)
-            assert response.retryable() is False
-
-    def test_get_nonexistent_domain(self):
+    def test_get_nonexistent_domain(self, client):
         test_url = "http://www.totallydoesnotexisthjkfsdhkfsd.com/some_page.html"
 
-        response = self.__client.get(test_url)
+        response = client.get(test_url)
 
         assert response
         assert isinstance(response, WebClientErrorResponse)
@@ -102,7 +93,7 @@ class TestRequestsClient(TestCase):
             is not None
         )
 
-    def test_get_timeout(self):
+    def test_get_timeout(self, client):
         sock = socket.socket()
         sock.bind(("", 0))
         socket_port = sock.getsockname()[1]
@@ -112,9 +103,9 @@ class TestRequestsClient(TestCase):
         test_timeout = 1
         test_url = f"http://127.0.0.1:{socket_port}/slow_page.html"
 
-        self.__client.set_timeout(test_timeout)
+        client.set_timeout(test_timeout)
 
-        response = self.__client.get(test_url)
+        response = client.get(test_url)
 
         sock.close()
 
@@ -123,26 +114,25 @@ class TestRequestsClient(TestCase):
         assert response.retryable() is True
         assert "Read timed out" in response.message()
 
-    def test_get_max_response_data_length(self):
-        with requests_mock.Mocker() as m:
-            actual_length = 1024 * 1024
-            max_length = 1024 * 512
+    def test_get_max_response_data_length(self, client, requests_mock):
+        actual_length = 1024 * 1024
+        max_length = 1024 * 512
 
-            test_url = self.TEST_BASE_URL + "/huge_page.html"
-            test_content = "a" * actual_length
+        test_url = self.TEST_BASE_URL + "/huge_page.html"
+        test_content = "a" * actual_length
 
-            m.get(
-                test_url,
-                headers={"Content-Type": self.TEST_CONTENT_TYPE},
-                text=test_content,
-            )
+        requests_mock.get(
+            test_url,
+            headers={"Content-Type": self.TEST_CONTENT_TYPE},
+            text=test_content,
+        )
 
-            self.__client.set_max_response_data_length(max_length)
+        client.set_max_response_data_length(max_length)
 
-            response = self.__client.get(test_url)
+        response = client.get(test_url)
 
-            assert response
-            assert isinstance(response, AbstractWebClientSuccessResponse)
+        assert response
+        assert isinstance(response, AbstractWebClientSuccessResponse)
 
-            response_length = len(response.raw_data())
-            assert response_length == max_length
+        response_length = len(response.raw_data())
+        assert response_length == max_length
