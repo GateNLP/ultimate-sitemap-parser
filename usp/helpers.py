@@ -181,7 +181,11 @@ def __response_is_gzipped_data(
     content_type = response.header("content-type") or ""
     content_encoding = response.header("content-encoding") or ""
 
-    if url_path.lower().endswith(".gz") or "gzip" in content_type.lower() or "gzip" in content_encoding.lower():
+    if (
+        url_path.lower().endswith(".gz")
+        or "gzip" in content_type.lower()
+        or "gzip" in content_encoding.lower()
+    ):
         return True
 
     else:

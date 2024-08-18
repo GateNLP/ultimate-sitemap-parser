@@ -1,5 +1,4 @@
 import json
-import logging
 from pathlib import Path
 
 import pytest
@@ -19,16 +18,20 @@ def pytest_generate_tests(metafunc):
         return
 
     manifest = json.loads(manifest_path.read_text())
-    cassette_fixtures = [(url, cassettes_root / item['name']) for url, item in manifest.items()]
+    cassette_fixtures = [
+        (url, cassettes_root / item["name"]) for url, item in manifest.items()
+    ]
     cassette_ids = [f"integration-{url}" for url, _ in cassette_fixtures]
-    metafunc.parametrize('site_url,cassette_path', cassette_fixtures, ids=cassette_ids)
+    metafunc.parametrize("site_url,cassette_path", cassette_fixtures, ids=cassette_ids)
+
 
 @pytest.fixture
-def with_vcr(cassette_path):
-    with vcr.use_cassette(cassette_path, record_mode='none'):
+def _with_vcr(cassette_path):
+    with vcr.use_cassette(cassette_path, record_mode="none"):
         yield
 
-@pytest.mark.usefixtures('with_vcr')
+
+@pytest.mark.usefixtures("_with_vcr")
 @pytest.mark.integration
 def test_integration(site_url, cassette_path):
     print(f"Loading {cassette_path}")

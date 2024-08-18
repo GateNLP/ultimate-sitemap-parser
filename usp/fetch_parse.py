@@ -84,7 +84,7 @@ class SitemapFetcher:
         self._recursion_level = recursion_level
 
     def sitemap(self) -> AbstractSitemap:
-        log.warning(f"Fetching level {self._recursion_level} sitemap from {self._url}...")
+        log.info(f"Fetching level {self._recursion_level} sitemap from {self._url}...")
         response = get_url_retry_on_client_errors(
             url=self._url, web_client=self._web_client
         )
@@ -126,7 +126,7 @@ class SitemapFetcher:
                     web_client=self._web_client,
                 )
 
-        log.warning(f"Parsing sitemap from URL {self._url}...")
+        log.info(f"Parsing sitemap from URL {self._url}...")
         sitemap = parser.sitemap()
 
         return sitemap
@@ -625,11 +625,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
                 news_story=sitemap_news_story,
             )
 
-    __slots__ = [
-        "_current_page",
-        "_pages",
-        "_page_urls"
-    ]
+    __slots__ = ["_current_page", "_pages", "_page_urls"]
 
     def __init__(self, url: str):
         super().__init__(url=url)
@@ -788,11 +784,7 @@ class PagesRSSSitemapParser(AbstractXMLSitemapParser):
                 ),
             )
 
-    __slots__ = [
-        "_current_page",
-        "_pages",
-        "_page_links"
-    ]
+    __slots__ = ["_current_page", "_pages", "_page_links"]
 
     def __init__(self, url: str):
         super().__init__(url=url)
