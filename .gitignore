@@ -115,3 +115,6 @@ dmypy.json
 .pyre/
 
 .idea/
+
+# Memray reports
+memray/

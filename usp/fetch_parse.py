@@ -84,7 +84,7 @@ class SitemapFetcher:
         self._recursion_level = recursion_level
 
     def sitemap(self) -> AbstractSitemap:
-        log.info(f"Fetching level {self._recursion_level} sitemap from {self._url}...")
+        log.warning(f"Fetching level {self._recursion_level} sitemap from {self._url}...")
         response = get_url_retry_on_client_errors(
             url=self._url, web_client=self._web_client
         )
@@ -126,7 +126,7 @@ class SitemapFetcher:
                     web_client=self._web_client,
                 )
 
-        log.info(f"Parsing sitemap from URL {self._url}...")
+        log.warning(f"Parsing sitemap from URL {self._url}...")
         sitemap = parser.sitemap()
 
         return sitemap
@@ -628,6 +628,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
     __slots__ = [
         "_current_page",
         "_pages",
+        "_page_urls"
     ]
 
     def __init__(self, url: str):
@@ -635,6 +636,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
 
         self._current_page = None
         self._pages = []
+        self._page_urls = set()
 
     def xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
         super().xml_element_start(name=name, attrs=attrs)
@@ -659,8 +661,9 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
             )
 
         if name == "sitemap:url":
-            if self._current_page not in self._pages:
+            if self._current_page.url not in self._page_urls:
                 self._pages.append(self._current_page)
+                self._page_urls.add(self._current_page.url)
             self._current_page = None
 
         else:
@@ -788,6 +791,7 @@ class PagesRSSSitemapParser(AbstractXMLSitemapParser):
     __slots__ = [
         "_current_page",
         "_pages",
+        "_page_links"
     ]
 
     def __init__(self, url: str):
@@ -795,6 +799,7 @@ class PagesRSSSitemapParser(AbstractXMLSitemapParser):
 
         self._current_page = None
         self._pages = []
+        self._page_links = set()
 
     def xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
         super().xml_element_start(name=name, attrs=attrs)
@@ -816,8 +821,9 @@ class PagesRSSSitemapParser(AbstractXMLSitemapParser):
         # If within <item> already
         if self._current_page:
             if name == "item":
-                if self._current_page not in self._pages:
+                if self._current_page.link not in self._page_links:
                     self._pages.append(self._current_page)
+                    self._page_links.add(self._current_page.link)
                 self._current_page = None
 
             else:
@@ -920,6 +926,7 @@ class PagesAtomSitemapParser(AbstractXMLSitemapParser):
     __slots__ = [
         "_current_page",
         "_pages",
+        "_page_links",
         "_last_link_rel_self_href",
     ]
 
@@ -928,6 +935,7 @@ class PagesAtomSitemapParser(AbstractXMLSitemapParser):
 
         self._current_page = None
         self._pages = []
+        self._page_links = set()
         self._last_link_rel_self_href = None
 
     def xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
@@ -962,8 +970,9 @@ class PagesAtomSitemapParser(AbstractXMLSitemapParser):
                     self._current_page.link = self._last_link_rel_self_href
                     self._last_link_rel_self_href = None
 
-                    if self._current_page not in self._pages:
+                    if self._current_page.link not in self._page_links:
                         self._pages.append(self._current_page)
+                        self._page_links.add(self._current_page.link)
 
                 self._current_page = None
 

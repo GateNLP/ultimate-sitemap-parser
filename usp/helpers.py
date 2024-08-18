@@ -4,11 +4,13 @@ import datetime
 import gzip as gzip_lib
 import html
 import re
+import sys
 import time
 from typing import Optional
 from urllib.parse import urlparse, unquote_plus, urlunparse
 
 from dateutil.parser import parse as dateutil_parse
+from dateutil.parser import isoparse as dateutil_isoparse
 
 from .exceptions import SitemapException, GunzipException, StripURLToHomepageException
 from .log import create_logger
@@ -23,6 +25,8 @@ log = create_logger(__name__)
 
 __URL_REGEX = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", re.IGNORECASE)
 """Regular expression to match HTTP(s) URLs."""
+
+HAS_DATETIME_NEW_ISOPARSER = sys.version_info >= (3, 11)
 
 
 def is_http_url(url: str) -> bool:
@@ -94,9 +98,16 @@ def parse_iso8601_date(date_string: str) -> datetime.datetime:
     if not date_string:
         raise SitemapException("Date string is unset.")
 
-    date = dateutil_parse(date_string)
+    if HAS_DATETIME_NEW_ISOPARSER:
+        # From Python 3.11, fromisosort is able to parse nearly any valid ISO 8601 string
+        return datetime.datetime.fromisoformat(date_string)
 
-    return date
+    try:
+        # Try the more efficient ISO 8601 parser
+        return dateutil_isoparse(date_string)
+    except ValueError:
+        # Try the less efficient general parser
+        return dateutil_parse(date_string)
 
 
 def parse_rfc2822_date(date_string: str) -> datetime.datetime:
@@ -107,7 +118,12 @@ def parse_rfc2822_date(date_string: str) -> datetime.datetime:
     :return: datetime.datetime object of a parsed date.
     """
     # FIXME parse known date formats faster
-    return parse_iso8601_date(date_string)
+    if not date_string:
+        raise SitemapException("Date string is unset.")
+
+    date = dateutil_parse(date_string)
+
+    return date
 
 
 def get_url_retry_on_client_errors(
@@ -163,8 +179,9 @@ def __response_is_gzipped_data(
     uri = urlparse(url)
     url_path = unquote_plus(uri.path)
     content_type = response.header("content-type") or ""
+    content_encoding = response.header("content-encoding") or ""
 
-    if url_path.lower().endswith(".gz") or "gzip" in content_type.lower():
+    if url_path.lower().endswith(".gz") or "gzip" in content_type.lower() or "gzip" in content_encoding.lower():
         return True
 
     else:
