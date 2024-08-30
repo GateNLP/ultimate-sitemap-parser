@@ -98,11 +98,10 @@ def parse_iso8601_date(date_string: str) -> datetime.datetime:
     if not date_string:
         raise SitemapException("Date string is unset.")
 
-    if HAS_DATETIME_NEW_ISOPARSER:
-        # From Python 3.11, fromisosort is able to parse nearly any valid ISO 8601 string
-        return datetime.datetime.fromisoformat(date_string)
-
     try:
+        if HAS_DATETIME_NEW_ISOPARSER:
+            # From Python 3.11, fromisosort is able to parse nearly any valid ISO 8601 string
+            return datetime.datetime.fromisoformat(date_string)
         # Try the more efficient ISO 8601 parser
         return dateutil_isoparse(date_string)
     except ValueError:
@@ -118,6 +117,7 @@ def parse_rfc2822_date(date_string: str) -> datetime.datetime:
     :return: datetime.datetime object of a parsed date.
     """
     # FIXME parse known date formats faster
+    # TODO: fix naming of this function as it shouldn't actually be RFC2822
     if not date_string:
         raise SitemapException("Date string is unset.")
 
