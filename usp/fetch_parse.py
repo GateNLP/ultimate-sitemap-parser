@@ -56,6 +56,7 @@ CUSTOM_XML_PARSE_CREATE: Optional[Callable[[], Any]] = None
 This method will be called with no arguments and must return an object with the same interface as :func:`xml.parsers.expat.ParserCreate`.
 """
 
+
 class SitemapFetcher:
     """robots.txt / XML / plain text sitemap fetcher."""
 

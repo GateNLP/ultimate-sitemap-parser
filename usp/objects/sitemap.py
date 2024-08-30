@@ -225,6 +225,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         """
         return []
 
+
 class PagesXMLSitemap(AbstractPagesSitemap):
     """
     XML sitemap that contains URLs to pages.
