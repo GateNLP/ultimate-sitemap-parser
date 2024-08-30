@@ -390,6 +390,7 @@ class TestSitemapTree:
         assert expected_sitemap_tree == actual_sitemap_tree, diff_str
 
         assert len(list(actual_sitemap_tree.all_pages())) == 6
+        assert len(list(actual_sitemap_tree.all_sitemaps())) == 7
 
     def test_sitemap_tree_for_homepage_gzip(self, requests_mock):
         """Test sitemap_tree_for_homepage() with gzipped sitemaps."""
@@ -597,6 +598,8 @@ class TestSitemapTree:
         assert SitemapPage(url=f"{self.TEST_BASE_URL}/news/foo.html") in pages
         assert SitemapPage(url=f"{self.TEST_BASE_URL}/news/bar.html") in pages
         assert SitemapPage(url=f"{self.TEST_BASE_URL}/news/baz.html") in pages
+
+        assert len(list(actual_sitemap_tree.all_sitemaps())) == 3
 
     # noinspection DuplicatedCode
     def test_sitemap_tree_for_homepage_rss_atom(self, requests_mock):
@@ -827,6 +830,7 @@ class TestSitemapTree:
         assert expected_sitemap_tree == actual_sitemap_tree, diff_str
 
         assert len(list(actual_sitemap_tree.all_pages())) == 6
+        assert len(list(actual_sitemap_tree.all_sitemaps())) == 4
 
     def test_sitemap_tree_for_homepage_rss_atom_empty(self, requests_mock):
         """Test sitemap_tree_for_homepage() with empty RSS 2.0 / Atom 0.3 / Atom 1.0 feeds."""
@@ -935,6 +939,7 @@ class TestSitemapTree:
         assert expected_sitemap_tree == actual_sitemap_tree
 
         assert len(list(actual_sitemap_tree.all_pages())) == 0
+        assert len(list(actual_sitemap_tree.all_sitemaps())) == 4
 
     def test_sitemap_tree_for_homepage_prematurely_ending_xml(self, requests_mock):
         """Test sitemap_tree_for_homepage() with clipped XML.
@@ -1268,6 +1273,7 @@ class TestSitemapTree:
         actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
 
         assert len(list(actual_sitemap_tree.all_pages())) == page_count
+        assert len(list(actual_sitemap_tree.all_sitemaps())) == 2
 
     def test_sitemap_tree_for_homepage_robots_txt_weird_spacing(self, requests_mock):
         """Test sitemap_tree_for_homepage() with weird (but valid) spacing."""
@@ -1315,6 +1321,7 @@ class TestSitemapTree:
 
         actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
         assert len(list(actual_sitemap_tree.all_pages())) == 1
+        assert len(list(actual_sitemap_tree.all_sitemaps())) == 2
 
     def test_sitemap_tree_for_homepage_utf8_bom(self, requests_mock):
         """Test sitemap_tree_for_homepage() with UTF-8 BOM in both robots.txt and sitemap."""
@@ -1371,3 +1378,4 @@ class TestSitemapTree:
 
         actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
         assert len(list(actual_sitemap_tree.all_pages())) == 1
+        assert len(list(actual_sitemap_tree.all_sitemaps())) == 2

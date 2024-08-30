@@ -1,4 +1,12 @@
-"""Objects that represent one of the found sitemaps."""
+"""Objects that represent one of the found sitemaps.
+
+.. seealso::
+
+    :doc:`Reference of classes used for each format </reference/formats>`
+
+.. inheritance-diagram:: AbstractSitemap InvalidSitemap AbstractIndexSitemap IndexWebsiteSitemap IndexXMLSitemap IndexRobotsTxtSitemap AbstractPagesSitemap PagesXMLSitemap PagesTextSitemap PagesRSSSitemap PagesAtomSitemap
+    :parts: 1
+"""
 
 import abc
 import os
@@ -50,14 +58,46 @@ class AbstractSitemap(metaclass=abc.ABCMeta):
         """
         return self.__url
 
+    @property
     @abc.abstractmethod
+    def pages(self) -> List[SitemapPage]:
+        """
+        Return a list of pages found in a sitemap (if any).
+
+        Should return an empty list if this sitemap cannot have sub-pages, to allow traversal with a consistent interface.
+
+        :return: the list of pages, or an empty list.
+        """
+        raise NotImplementedError("Abstract method")
+
+    # TODO: return custom iterator with set length here?
     def all_pages(self) -> Iterator[SitemapPage]:
         """
         Return iterator which yields all pages of this sitemap and linked sitemaps (if any).
 
         :return: Iterator which yields all pages of this sitemap and linked sitemaps (if any).
         """
+        yield from self.pages
+
+    @property
+    @abc.abstractmethod
+    def sub_sitemaps(self) -> List["AbstractSitemap"]:
+        """
+        Return a list of sub-sitemaps of this sitemap (if any).
+
+        Should return an empty list if this sitemap cannot have sub-pages, to allow traversal with a consistent interface.
+
+        :return: the list of sub-sitemaps, or an empty list.
+        """
         raise NotImplementedError("Abstract method")
+
+    def all_sitemaps(self) -> Iterator["AbstractSitemap"]:
+        """
+        Return iterator which yields all sub-sitemaps descended from this sitemap.
+
+        :return: Iterator which yields all sub-sitemaps descended from this sitemap.
+        """
+        yield from self.sub_sitemaps
 
 
 class InvalidSitemap(AbstractSitemap):
@@ -106,13 +146,23 @@ class InvalidSitemap(AbstractSitemap):
         """
         return self.__reason
 
-    def all_pages(self) -> Iterator[SitemapPage]:
+    @property
+    def pages(self) -> List[SitemapPage]:
         """
-        Return iterator which yields all pages of this sitemap and linked sitemaps (if any).
+        Return an empty list of pages, as invalid sitemaps have no pages.
 
-        :return: Iterator which yields all pages of this sitemap and linked sitemaps (if any).
+        :return: Empty list of pages.
         """
-        yield from []
+        return []
+
+    @property
+    def sub_sitemaps(self) -> List["AbstractSitemap"]:
+        """
+        Return an empty list of sub-sitemaps, as invalid sitemaps have no sub-sitemaps.
+
+        :return: Empty list of sub-sitemaps.
+        """
+        return []
 
 
 class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
@@ -158,22 +208,22 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
     @property
     def pages(self) -> List[SitemapPage]:
         """
-        Return list of pages found in a sitemap.
+        Load pages from disk swap file and return them.
 
-        :return: List of pages found in a sitemap.
+        :return: List of pages found in the sitemap.
         """
         with open(self.__pages_temp_file_path, "rb") as tmp:
             pages = pickle.load(tmp)
         return pages
 
-    def all_pages(self) -> Iterator[SitemapPage]:
+    @property
+    def sub_sitemaps(self) -> List["AbstractSitemap"]:
         """
-        Return iterator which yields all pages of this sitemap and linked sitemaps (if any).
+        Return an empty list of sub-sitemaps, as pages sitemaps have no sub-sitemaps.
 
-        :return: Iterator which yields all pages of this sitemap and linked sitemaps (if any).
+        :return: Empty list of sub-sitemaps.
         """
-        yield from self.pages
-
+        return []
 
 class PagesXMLSitemap(AbstractPagesSitemap):
     """
@@ -247,13 +297,17 @@ class AbstractIndexSitemap(AbstractSitemap):
         )
 
     @property
-    def sub_sitemaps(self) -> List[AbstractSitemap]:
-        """
-        Return sub-sitemaps that are linked to from this sitemap.
-
-        :return: Sub-sitemaps that are linked to from this sitemap.
-        """
+    def sub_sitemaps(self) -> List["AbstractSitemap"]:
         return self.__sub_sitemaps
+
+    @property
+    def pages(self) -> List[SitemapPage]:
+        """
+        Return an empty list of pages, as index sitemaps have no pages.
+
+        :return: Empty list of pages.
+        """
+        return []
 
     def all_pages(self) -> Iterator[SitemapPage]:
         """
@@ -263,6 +317,16 @@ class AbstractIndexSitemap(AbstractSitemap):
         """
         for sub_sitemap in self.sub_sitemaps:
             yield from sub_sitemap.all_pages()
+
+    def all_sitemaps(self) -> Iterator["AbstractSitemap"]:
+        """
+        Return iterator which yields all sub-sitemaps of this sitemap.
+
+        :return: Iterator which yields all sub-sitemaps of this sitemap.
+        """
+        for sub_sitemap in self.sub_sitemaps:
+            yield sub_sitemap
+            yield from sub_sitemap.all_sitemaps()
 
 
 class IndexWebsiteSitemap(AbstractIndexSitemap):
