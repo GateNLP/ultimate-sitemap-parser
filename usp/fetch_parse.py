@@ -1,11 +1,18 @@
-"""Sitemap fetchers and parsers."""
+"""Sitemap fetchers and parsers.
+
+.. seealso::
+
+    :doc:`Reference of classes used for each format </reference/formats>`
+
+    :doc:`Overview of parse process </guides/fetch-parse>`
+"""
 
 import abc
 import re
 import xml.parsers.expat
 from collections import OrderedDict
 from decimal import Decimal
-from typing import Optional, Dict
+from typing import Any, Optional, Dict, Callable
 
 from .exceptions import SitemapException, SitemapXMLParsingException
 from .helpers import (
@@ -42,6 +49,12 @@ from .web_client.requests_client import RequestsWebClient
 
 log = create_logger(__name__)
 
+# TODO: defusedxml example
+CUSTOM_XML_PARSE_CREATE: Optional[Callable[[], Any]] = None
+"""Specify an alternate method to use when creating XML parsers.
+
+This method will be called with no arguments and must return an object with the same interface as :func:`xml.parsers.expat.ParserCreate`.
+"""
 
 class SitemapFetcher:
     """robots.txt / XML / plain text sitemap fetcher."""
@@ -268,9 +281,12 @@ class XMLSitemapParser(AbstractSitemapParser):
         self._concrete_parser = None
 
     def sitemap(self) -> AbstractSitemap:
-        parser = xml.parsers.expat.ParserCreate(
-            namespace_separator=self.__XML_NAMESPACE_SEPARATOR
-        )
+        if CUSTOM_XML_PARSE_CREATE is not None:
+            parser = CUSTOM_XML_PARSE_CREATE()
+        else:
+            parser = xml.parsers.expat.ParserCreate(
+                namespace_separator=self.__XML_NAMESPACE_SEPARATOR
+            )
         parser.StartElementHandler = self._xml_element_start
         parser.EndElementHandler = self._xml_element_end
         parser.CharacterDataHandler = self._xml_char_data
@@ -857,9 +873,9 @@ class PagesAtomSitemapParser(AbstractXMLSitemapParser):
     """
     Pages Atom 0.3 / 1.0 sitemap parser.
 
-    https://github.com/simplepie/simplepie-ng/wiki/Spec:-Atom-0.3
-    https://www.ietf.org/rfc/rfc4287.txt
-    http://rakaz.nl/2005/07/moving-from-atom-03-to-10.html
+    - https://github.com/simplepie/simplepie-ng/wiki/Spec:-Atom-0.3
+    - https://www.ietf.org/rfc/rfc4287.txt
+    - http://rakaz.nl/2005/07/moving-from-atom-03-to-10.html
     """
 
     # FIXME merge with RSS parser class as there are too many similarities
