@@ -23,6 +23,9 @@ packages = [
     { include = "usp" }
 ]
 
+[tool.poetry.scripts]
+usp = 'usp.cli:main'
+
 [tool.poetry.dependencies]
 python = "^3.8"
 python-dateutil = ">=2.7,<3.0.0"

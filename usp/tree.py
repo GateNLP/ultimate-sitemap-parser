@@ -36,13 +36,17 @@ _UNPUBLISHED_SITEMAP_PATHS = {
 
 
 def sitemap_tree_for_homepage(
-    homepage_url: str, web_client: Optional[AbstractWebClient] = None
+    homepage_url: str, web_client: Optional[AbstractWebClient] = None,
+        use_robots: bool = True,
+        use_known_paths: bool = True
 ) -> AbstractSitemap:
     """
     Using a homepage URL, fetch the tree of sitemaps and pages listed in them.
 
     :param homepage_url: Homepage URL of a website to fetch the sitemap tree for, e.g. "http://www.example.com/".
     :param web_client: Web client implementation to use for fetching sitemaps.
+    :param use_robots: Whether to discover sitemaps through robots.txt.
+    :param use_known_paths: Whether to discover sitemaps through common known paths.
     :return: Root sitemap object of the fetched sitemap tree.
     """
 
@@ -62,33 +66,35 @@ def sitemap_tree_for_homepage(
 
     sitemaps = []
 
-    robots_txt_fetcher = SitemapFetcher(
-        url=robots_txt_url, web_client=web_client, recursion_level=0
-    )
-    robots_txt_sitemap = robots_txt_fetcher.sitemap()
-    if not isinstance(robots_txt_sitemap, InvalidSitemap):
-        sitemaps.append(robots_txt_sitemap)
-
     sitemap_urls_found_in_robots_txt = set()
-    if isinstance(robots_txt_sitemap, IndexRobotsTxtSitemap):
-        for sub_sitemap in robots_txt_sitemap.sub_sitemaps:
-            sitemap_urls_found_in_robots_txt.add(sub_sitemap.url)
+    if use_robots:
+        robots_txt_fetcher = SitemapFetcher(
+            url=robots_txt_url, web_client=web_client, recursion_level=0
+        )
+        robots_txt_sitemap = robots_txt_fetcher.sitemap()
+        if not isinstance(robots_txt_sitemap, InvalidSitemap):
+            sitemaps.append(robots_txt_sitemap)
 
-    for unpublished_sitemap_path in _UNPUBLISHED_SITEMAP_PATHS:
-        unpublished_sitemap_url = homepage_url + unpublished_sitemap_path
+        if isinstance(robots_txt_sitemap, IndexRobotsTxtSitemap):
+            for sub_sitemap in robots_txt_sitemap.all_sitemaps():
+                sitemap_urls_found_in_robots_txt.add(sub_sitemap.url)
 
-        # Don't refetch URLs already found in robots.txt
-        if unpublished_sitemap_url not in sitemap_urls_found_in_robots_txt:
-            unpublished_sitemap_fetcher = SitemapFetcher(
-                url=unpublished_sitemap_url,
-                web_client=web_client,
-                recursion_level=0,
-            )
-            unpublished_sitemap = unpublished_sitemap_fetcher.sitemap()
+    if use_known_paths:
+        for unpublished_sitemap_path in _UNPUBLISHED_SITEMAP_PATHS:
+            unpublished_sitemap_url = homepage_url + unpublished_sitemap_path
 
-            # Skip the ones that weren't found
-            if not isinstance(unpublished_sitemap, InvalidSitemap):
-                sitemaps.append(unpublished_sitemap)
+            # Don't refetch URLs already found in robots.txt
+            if unpublished_sitemap_url not in sitemap_urls_found_in_robots_txt:
+                unpublished_sitemap_fetcher = SitemapFetcher(
+                    url=unpublished_sitemap_url,
+                    web_client=web_client,
+                    recursion_level=0,
+                )
+                unpublished_sitemap = unpublished_sitemap_fetcher.sitemap()
+
+                # Skip the ones that weren't found
+                if not isinstance(unpublished_sitemap, InvalidSitemap):
+                    sitemaps.append(unpublished_sitemap)
 
     index_sitemap = IndexWebsiteSitemap(url=homepage_url, sub_sitemaps=sitemaps)
 
