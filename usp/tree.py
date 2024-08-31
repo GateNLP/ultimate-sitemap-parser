@@ -36,9 +36,10 @@ _UNPUBLISHED_SITEMAP_PATHS = {
 
 
 def sitemap_tree_for_homepage(
-    homepage_url: str, web_client: Optional[AbstractWebClient] = None,
-        use_robots: bool = True,
-        use_known_paths: bool = True
+    homepage_url: str,
+    web_client: Optional[AbstractWebClient] = None,
+    use_robots: bool = True,
+    use_known_paths: bool = True,
 ) -> AbstractSitemap:
     """
     Using a homepage URL, fetch the tree of sitemaps and pages listed in them.

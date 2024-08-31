@@ -1,5 +1,6 @@
 from typing import Dict
 
+
 def format_help(choices: Dict[str, str], opt_help: str) -> str:
     """Generate help text for argparse choices.
 
