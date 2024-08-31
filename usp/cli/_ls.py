@@ -46,9 +46,7 @@ def register(subparsers):
         action="store_true",
         help="strip the supplied URL from each page and sitemap URL",
     )
-    ls_parser.set_defaults(
-        no_robots=False, no_known=False, strip_url=False
-    )
+    ls_parser.set_defaults(no_robots=False, no_known=False, strip_url=False)
 
     ls_parser.set_defaults(func=ls)
 

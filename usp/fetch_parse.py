@@ -12,7 +12,7 @@ import re
 import xml.parsers.expat
 from collections import OrderedDict
 from decimal import Decimal
-from typing import Any, Optional, Dict, Callable
+from typing import Optional, Dict
 
 from .exceptions import SitemapException, SitemapXMLParsingException
 from .helpers import (
@@ -58,7 +58,7 @@ class SitemapFetcher:
 
     Spec says it might be up to 50 MB but let's go for the full 100 MB here."""
 
-    __MAX_RECURSION_LEVEL = 10
+    __MAX_RECURSION_LEVEL = 11
     """Max. recursion level in iterating over sub-sitemaps."""
 
     __slots__ = [
@@ -210,12 +210,18 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
         sub_sitemaps = []
 
         for sitemap_url in sitemap_urls.keys():
-            fetcher = SitemapFetcher(
-                url=sitemap_url,
-                recursion_level=self._recursion_level,
-                web_client=self._web_client,
-            )
-            fetched_sitemap = fetcher.sitemap()
+            try:
+                fetcher = SitemapFetcher(
+                    url=sitemap_url,
+                    recursion_level=self._recursion_level + 1,
+                    web_client=self._web_client,
+                )
+                fetched_sitemap = fetcher.sitemap()
+            except Exception as ex:
+                fetched_sitemap = InvalidSitemap(
+                    url=sitemap_url,
+                    reason=f"Unable to add sub-sitemap from URL {sitemap_url}: {str(ex)}",
+                )
             sub_sitemaps.append(fetched_sitemap)
 
         index_sitemap = IndexRobotsTxtSitemap(url=self._url, sub_sitemaps=sub_sitemaps)

@@ -27,7 +27,6 @@ from usp.tree import sitemap_tree_for_homepage
 
 # FIXME various exotic properties
 # FIXME XML vulnerabilities with Expat
-# FIXME max. recursion level
 # FIXME tests responses that are too big
 
 
@@ -1379,3 +1378,61 @@ class TestSitemapTree:
         actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
         assert len(list(actual_sitemap_tree.all_pages())) == 1
         assert len(list(actual_sitemap_tree.all_sitemaps())) == 2
+
+    def test_max_recursion_level_xml(self, requests_mock):
+        robots_txt_body = textwrap.dedent(
+            f"""
+            User-agent: *
+            Disallow: /whatever
+
+            Sitemap: {self.TEST_BASE_URL}/sitemap.xml
+        """
+        ).strip()
+
+        sitemap_index_body = textwrap.dedent(
+            f"""
+            <?xml version="1.0" encoding="UTF-8"?>
+            <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                <sitemap>
+                    <loc>{self.TEST_BASE_URL}/sitemap.xml</loc>
+                    <lastmod>2024-01-01</lastmod>
+                </sitemap>
+            </sitemapindex>
+            """
+        ).strip()
+
+        requests_mock.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+        requests_mock.get(
+            self.TEST_BASE_URL + "/robots.txt",
+            headers={"Content-Type": "text/plain"},
+            text=robots_txt_body,
+        )
+        requests_mock.get(
+            self.TEST_BASE_URL + "/sitemap.xml",
+            headers={"Content-Type": "application/xml"},
+            text=sitemap_index_body,
+        )
+
+        tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)
+        sitemaps = list(tree.all_sitemaps())
+
+        assert type(sitemaps[-1]) is InvalidSitemap
+
+    def test_max_recursion_level_robots(self, requests_mock):
+        requests_mock.add_matcher(TestSitemapTree.fallback_to_404_not_found_matcher)
+        robots_txt_body = textwrap.dedent(
+            f"""
+            User-agent: *
+            Disallow: /whatever
+
+            Sitemap: {self.TEST_BASE_URL}/robots.txt
+        """
+        ).strip()
+        requests_mock.get(
+            self.TEST_BASE_URL + "/robots.txt",
+            headers={"Content-Type": "text/plain"},
+            text=robots_txt_body,
+        )
+        tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)
+        sitemaps = list(tree.all_sitemaps())
+        assert type(sitemaps[-1]) is InvalidSitemap
