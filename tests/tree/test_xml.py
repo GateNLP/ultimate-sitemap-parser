@@ -1,26 +1,18 @@
-import difflib
 import textwrap
 
-from tests.helpers import gzip
 from tests.tree.base import TreeTestBase
 from usp.tree import sitemap_tree_for_homepage
 
 from usp.objects.sitemap import (
     IndexRobotsTxtSitemap,
     PagesXMLSitemap,
-    IndexXMLSitemap,
-    InvalidSitemap,
-    PagesTextSitemap,
     IndexWebsiteSitemap,
-    PagesRSSSitemap,
-    PagesAtomSitemap,
 )
 
 from usp.objects.page import (
     SitemapPage,
-    SitemapNewsStory,
-    SitemapPageChangeFrequency,
 )
+
 
 class TestTreeXML(TreeTestBase):
     def test_sitemap_tree_for_homepage_prematurely_ending_xml(self, requests_mock):

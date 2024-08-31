@@ -1,27 +1,12 @@
-from decimal import Decimal
-import difflib
 import textwrap
-from tests.helpers import gzip
 
 
 from tests.tree.base import TreeTestBase
 
 from usp.objects.sitemap import (
-    IndexRobotsTxtSitemap,
-    PagesXMLSitemap,
-    IndexXMLSitemap,
     InvalidSitemap,
-    PagesTextSitemap,
-    IndexWebsiteSitemap,
-    PagesRSSSitemap,
-    PagesAtomSitemap,
 )
 
-from usp.objects.page import (
-    SitemapPage,
-    SitemapNewsStory,
-    SitemapPageChangeFrequency,
-)
 from usp.tree import sitemap_tree_for_homepage
 
 
@@ -88,20 +73,23 @@ class TestTreeBasic(TreeTestBase):
         requests_mock.get(
             self.TEST_BASE_URL + "/robots.txt",
             headers={"Content-Type": "text/plain"},
-            text=(textwrap.dedent(
-                f"""
+            text=(
+                textwrap.dedent(
+                    f"""
             User-agent: *
             Disallow: /whatever
 
             Sitemap: {self.TEST_BASE_URL}/sitemap.xml
         """
-            ).strip()),
+                ).strip()
+            ),
         )
         requests_mock.get(
             self.TEST_BASE_URL + "/sitemap.xml",
             headers={"Content-Type": "application/xml"},
-            text=(textwrap.dedent(
-                f"""
+            text=(
+                textwrap.dedent(
+                    f"""
             <?xml version="1.0" encoding="UTF-8"?>
             <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
                 <sitemap>
@@ -110,7 +98,8 @@ class TestTreeBasic(TreeTestBase):
                 </sitemap>
             </sitemapindex>
             """
-            ).strip()),
+                ).strip()
+            ),
         )
 
         tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)
@@ -118,20 +107,21 @@ class TestTreeBasic(TreeTestBase):
 
         assert type(sitemaps[-1]) is InvalidSitemap
 
-
     def test_max_recursion_level_robots(self, requests_mock):
         requests_mock.add_matcher(TreeTestBase.fallback_to_404_not_found_matcher)
         requests_mock.get(
             self.TEST_BASE_URL + "/robots.txt",
             headers={"Content-Type": "text/plain"},
-            text=(textwrap.dedent(
-                f"""
+            text=(
+                textwrap.dedent(
+                    f"""
             User-agent: *
             Disallow: /whatever
 
             Sitemap: {self.TEST_BASE_URL}/robots.txt
         """
-            ).strip()),
+                ).strip()
+            ),
         )
         tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)
         sitemaps = list(tree.all_sitemaps())

@@ -6,20 +6,14 @@ from usp.tree import sitemap_tree_for_homepage
 
 from usp.objects.sitemap import (
     IndexRobotsTxtSitemap,
-    PagesXMLSitemap,
-    IndexXMLSitemap,
-    InvalidSitemap,
     PagesTextSitemap,
     IndexWebsiteSitemap,
-    PagesRSSSitemap,
-    PagesAtomSitemap,
 )
 
 from usp.objects.page import (
     SitemapPage,
-    SitemapNewsStory,
-    SitemapPageChangeFrequency,
 )
+
 
 class TestTreeBasic(TreeTestBase):
     def test_sitemap_tree_for_homepage_plain_text(self, requests_mock):

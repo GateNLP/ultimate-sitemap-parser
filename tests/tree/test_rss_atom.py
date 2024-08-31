@@ -1,16 +1,11 @@
 import difflib
 import textwrap
 
-from tests.helpers import gzip
 from tests.tree.base import TreeTestBase
 from usp.tree import sitemap_tree_for_homepage
 
 from usp.objects.sitemap import (
     IndexRobotsTxtSitemap,
-    PagesXMLSitemap,
-    IndexXMLSitemap,
-    InvalidSitemap,
-    PagesTextSitemap,
     IndexWebsiteSitemap,
     PagesRSSSitemap,
     PagesAtomSitemap,
@@ -19,8 +14,8 @@ from usp.objects.sitemap import (
 from usp.objects.page import (
     SitemapPage,
     SitemapNewsStory,
-    SitemapPageChangeFrequency,
 )
+
 
 class TestTreeBasic(TreeTestBase):
     def test_sitemap_tree_for_homepage_rss_atom(self, requests_mock):

@@ -11,10 +11,7 @@ from usp.objects.sitemap import (
     PagesXMLSitemap,
     IndexXMLSitemap,
     InvalidSitemap,
-    PagesTextSitemap,
     IndexWebsiteSitemap,
-    PagesRSSSitemap,
-    PagesAtomSitemap,
 )
 
 from usp.objects.page import (
