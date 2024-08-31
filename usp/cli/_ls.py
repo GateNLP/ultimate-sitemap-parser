@@ -42,12 +42,12 @@ def register(subparsers):
     )
     ls_parser.add_argument(
         "-u",
-        "--keep-url",
+        "--strip-url",
         action="store_true",
-        help="don't strip the supplied URL from each page and sitemap URL",
+        help="strip the supplied URL from each page and sitemap URL",
     )
     ls_parser.set_defaults(
-        page_only=False, no_robots=False, no_known=False, keep_url=False
+        no_robots=False, no_known=False, strip_url=False
     )
 
     ls_parser.set_defaults(func=ls)
@@ -94,7 +94,7 @@ def ls(args):
     )
 
     strip_prefix = ""
-    if not args.keep_url:
+    if args.strip_url:
         strip_prefix = tree.url
 
     if args.format == "pages":
