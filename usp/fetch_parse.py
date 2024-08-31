@@ -49,13 +49,6 @@ from .web_client.requests_client import RequestsWebClient
 
 log = create_logger(__name__)
 
-# TODO: defusedxml example
-CUSTOM_XML_PARSE_CREATE: Optional[Callable[[], Any]] = None
-"""Specify an alternate method to use when creating XML parsers.
-
-This method will be called with no arguments and must return an object with the same interface as :func:`xml.parsers.expat.ParserCreate`.
-"""
-
 
 class SitemapFetcher:
     """robots.txt / XML / plain text sitemap fetcher."""
@@ -282,12 +275,9 @@ class XMLSitemapParser(AbstractSitemapParser):
         self._concrete_parser = None
 
     def sitemap(self) -> AbstractSitemap:
-        if CUSTOM_XML_PARSE_CREATE is not None:
-            parser = CUSTOM_XML_PARSE_CREATE()
-        else:
-            parser = xml.parsers.expat.ParserCreate(
-                namespace_separator=self.__XML_NAMESPACE_SEPARATOR
-            )
+        parser = xml.parsers.expat.ParserCreate(
+            namespace_separator=self.__XML_NAMESPACE_SEPARATOR
+        )
         parser.StartElementHandler = self._xml_element_start
         parser.EndElementHandler = self._xml_element_end
         parser.CharacterDataHandler = self._xml_char_data
