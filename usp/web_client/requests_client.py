@@ -12,7 +12,7 @@ from .abstract_client import (
     WebClientErrorResponse,
     RETRYABLE_HTTP_STATUS_CODES,
 )
-from usp.__about__ import __version__
+from usp import __version__
 
 
 class RequestsWebClientSuccessResponse(AbstractWebClientSuccessResponse):
