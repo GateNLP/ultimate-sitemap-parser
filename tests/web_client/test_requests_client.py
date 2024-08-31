@@ -4,7 +4,7 @@ from http import HTTPStatus
 
 import pytest
 
-from usp.__about__ import __version__
+from usp import __version__
 from usp.web_client.abstract_client import (
     AbstractWebClientSuccessResponse,
     WebClientErrorResponse,
