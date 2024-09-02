@@ -91,6 +91,18 @@ class SitemapNewsStory:
 
         return True
 
+    def to_dict(self):
+        return {
+            "title": self.title,
+            "publish_date": self.publish_date,
+            "publication_name": self.publication_name,
+            "publication_language": self.publication_language,
+            "access": self.access,
+            "genres": self.genres,
+            "keywords": self.keywords,
+            "stock_tickers": self.stock_tickers,
+        }
+
     def __hash__(self):
         return hash(
             (
@@ -289,6 +301,21 @@ class SitemapPage:
             f"news_story={self.news_story}"
             ")"
         )
+
+    def to_dict(self):
+        """
+        Convert this page to a dictionary.
+        """
+
+        return {
+            "url": self.url,
+            "priority": self.priority,
+            "last_modified": self.last_modified,
+            "change_frequency": self.change_frequency.value
+            if self.change_frequency
+            else None,
+            "news_story": self.news_story.to_dict() if self.news_story else None,
+        }
 
     @property
     def url(self) -> str:

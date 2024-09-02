@@ -9,12 +9,36 @@
 """
 
 import abc
+from functools import cache
 import os
 import pickle
 import tempfile
 from typing import List, Iterator
 
 from .page import SitemapPage
+
+
+@cache
+def _all_slots(target_cls):
+    mro = target_cls.__mro__
+
+    # If a child class doesn't declare slots, getattr reports its parents' slots
+    # So we need to track the highest class that declared each slot
+    last_slot = {}
+
+    for cls in mro:
+        attrs = getattr(cls, "__slots__", tuple())
+        for attr in attrs:
+            last_slot[attr] = cls
+
+    slots = set()
+    for attr, cls in last_slot.items():
+        # Attrs belonging to parent classes may be mangled
+        if cls is not target_cls and attr.startswith("__"):
+            attr = "_" + cls.__name__ + attr
+        slots.add(attr)
+
+    return slots
 
 
 class AbstractSitemap(metaclass=abc.ABCMeta):
@@ -57,6 +81,18 @@ class AbstractSitemap(metaclass=abc.ABCMeta):
         :return: Sitemap URL.
         """
         return self.__url
+
+    def to_dict(self, with_pages=True) -> dict:
+        """
+        Return a dictionary representation of the sitemap, including its child sitemaps and optionally pages
+
+        :param with_pages: Include pages in the representation of this sitemap or descendants.
+        :return: Dictionary representation of the sitemap.
+        """
+
+        return {
+            "url": self.url,
+        }
 
     @property
     @abc.abstractmethod
@@ -137,6 +173,12 @@ class InvalidSitemap(AbstractSitemap):
             ")"
         )
 
+    def to_dict(self, with_pages=True) -> dict:
+        return {
+            **super().to_dict(with_pages=with_pages),
+            "reason": self.reason,
+        }
+
     @property
     def reason(self) -> str:
         """
@@ -181,8 +223,11 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         """
         super().__init__(url=url)
 
+        self._dump_pages(pages)
+
+    def _dump_pages(self, pages: List[SitemapPage]):
         temp_file, self.__pages_temp_file_path = tempfile.mkstemp()
-        with os.fdopen(temp_file, "wb") as tmp:
+        with open(self.__pages_temp_file_path, "wb") as tmp:
             pickle.dump(pages, tmp, protocol=pickle.HIGHEST_PROTOCOL)
 
     def __del__(self):
@@ -204,6 +249,32 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         return (
             f"{self.__class__.__name__}(" f"url={self.url}, " f"pages={self.pages}" ")"
         )
+
+    def __getstate__(self) -> tuple[None, dict]:
+        # Load default slots
+        obj_slots = {slot: getattr(self, slot) for slot in _all_slots(self.__class__)}
+        del obj_slots["_AbstractPagesSitemap__pages_temp_file_path"]
+        obj_slots["_pages_value"] = self.pages
+        return None, obj_slots
+
+    def __setstate__(self, state: tuple):
+        _, attrs = state
+        if "_pages_value" not in attrs:
+            raise ValueError("State does not contain pages value")
+        pages_val = attrs.pop("_pages_value")
+        for slot, val in attrs.items():
+            setattr(self, slot, val)
+        self._dump_pages(pages_val)
+
+    def to_dict(self, with_pages=True) -> dict:
+        obj = {
+            **super().to_dict(with_pages=with_pages),
+        }
+
+        if with_pages:
+            obj["pages"] = [page.to_dict() for page in self.pages]
+
+        return obj
 
     @property
     def pages(self) -> List[SitemapPage]:
@@ -296,6 +367,15 @@ class AbstractIndexSitemap(AbstractSitemap):
             f"sub_sitemaps={self.sub_sitemaps}"
             ")"
         )
+
+    def to_dict(self, with_pages=True) -> dict:
+        return {
+            **super().to_dict(with_pages=with_pages),
+            "sub_sitemaps": [
+                sub_sitemap.to_dict(with_pages=with_pages)
+                for sub_sitemap in self.sub_sitemaps
+            ],
+        }
 
     @property
     def sub_sitemaps(self) -> List["AbstractSitemap"]:
