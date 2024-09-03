@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>Example</title>
+    <link href="https://example.org/" />
+    <updated>2024-01-01</updated>
+    <entry>
+        <title>Page 1</title>
+        <link href="https://example.org/page1" />
+        <id>https://example.org/page1</id>
+        <updated>2024-01-01</updated>
+    </entry>
+    <entry>
+        <title>Page 2</title>
+        <link href="https://example.org/page2" />
+        <id>https://example.org/page2</id>
+        <updated>2024-01-02</updated>
+    </entry>
+</feed>

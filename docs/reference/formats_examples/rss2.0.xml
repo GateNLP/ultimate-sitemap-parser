@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Example</title>
+        <link>https://example.org/</link>
+        <description>Example</description>
+        <item>
+            <title>Page 1</title>
+            <link>https://example.org/page1</link>
+            <pubDate>2024-01-01</pubDate>
+        </item>
+        <item>
+            <title>Page 2</title>
+            <link>https://example.org/page2</link>
+            <pubDate>2024-01-02</pubDate>
+        </item>
+    </channel>
+</rss>

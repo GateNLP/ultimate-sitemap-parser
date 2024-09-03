@@ -43,6 +43,16 @@ optional = true
 pytest-memray = "^1.7.0"
 pyinstrument = "^4.7.2"
 
+[tool.poetry.group.docs]
+optional = true
+[tool.poetry.group.docs.dependencies]
+sphinx = { version = "^8.0.2", python = "^3.10" }
+sphinx-autobuild = { version = "^2024.04.16", python = "^3.10"}
+sphinx-design = {version = "^0.6.1", python = "^3.10"}
+furo = {version = "^2024.8.6", python = "^3.10"}
+sphinxext-opengraph = {version = "^0.9.1", python = "^3.10"}
+sphinx-copybutton = {version = "^0.5.2", python = "^3.10"}
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

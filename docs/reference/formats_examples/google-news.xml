@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+    xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+    <url>
+        <loc>https://example.org/page1</loc>
+        <lastmod>2024-01-01</lastmod>
+
+        <news:news>
+            <news:publication>
+                <news:name>Example.org News</news:name>
+            </news:publication>
+            <news:publication_date>2024-01-01</news:publication_date>
+            <news:title>News Article One</news:title>
+        </news:news>
+    </url>
+    <url>
+        <loc>https://example.org/page2</loc>
+        <lastmod>2024-01-02</lastmod>
+
+        <news:news>
+            <news:publication>
+                <news:name>Example.org News</news:name>
+            </news:publication>
+            <news:publication_date>2024-01-02</news:publication_date>
+            <news:title>News Article Two</news:title>
+        </news:news>
+    </url>
+</urlset>

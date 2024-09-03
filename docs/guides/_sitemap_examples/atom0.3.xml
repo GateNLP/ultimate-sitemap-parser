@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed version="0.3" xmlns="http://purl.org/atom/ns#">
+    <title>Example</title>
+    <link rel="alternate" type="text/html" href="https://example.org/" />
+    <modified>2024-01-01</modified>
+    <entry>
+        <title>Page 1</title>
+        <link rel="alternate" type="text/html" href="https://example.org/page1" />
+        <id>https://example.org/page1</id>
+        <issued>2024-01-01</issued>
+    </entry>
+    <entry>
+        <title>Page 2</title>
+        <link rel="alternate" type="text/html" href="https://example.org/page2" />
+        <id>https://example.org/page2</id>
+        <issued>2024-01-02</issued>
+    </entry>
+</feed>
