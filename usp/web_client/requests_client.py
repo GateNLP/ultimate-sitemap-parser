@@ -78,12 +78,7 @@ class RequestsWebClient(AbstractWebClient):
     Some webservers might be generating huge sitemaps on the fly, so this is why it's rather big.
     """
 
-    __slots__ = [
-        "__max_response_data_length",
-        "__timeout",
-        "__proxies",
-        "__verify"
-    ]
+    __slots__ = ["__max_response_data_length", "__timeout", "__proxies", "__verify"]
 
     def __init__(self, verify=True):
         """

@@ -298,6 +298,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         """
         return []
 
+
 # TODO: declare empty __slots__
 class PagesXMLSitemap(AbstractPagesSitemap):
     """
