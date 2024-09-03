@@ -45,7 +45,8 @@ def sitemap_tree_for_homepage(
     Using a homepage URL, fetch the tree of sitemaps and pages listed in them.
 
     :param homepage_url: Homepage URL of a website to fetch the sitemap tree for, e.g. "http://www.example.com/".
-    :param web_client: Web client implementation to use for fetching sitemaps.
+    :param web_client: Custom web client implementation to use when fetching sitemaps.
+        If ``None``, a :class:`~.RequestsWebClient` will be used.
     :param use_robots: Whether to discover sitemaps through robots.txt.
     :param use_known_paths: Whether to discover sitemaps through common known paths.
     :return: Root sitemap object of the fetched sitemap tree.

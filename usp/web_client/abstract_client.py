@@ -155,7 +155,7 @@ class AbstractWebClient(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get(self, url: str) -> AbstractWebClientResponse:
         """
-        Fetch an URL and return a response.
+        Fetch a URL and return a response.
 
         Method shouldn't throw exceptions on connection errors (including timeouts); instead, such errors should be
         reported via Response object.

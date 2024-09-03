@@ -1,4 +1,4 @@
-"""requests-based implementation of web client class."""
+"""Implementation of :mod:`usp.web_client.abstract_client` with Requests."""
 
 from http import HTTPStatus
 from typing import Optional, Dict
@@ -30,6 +30,10 @@ class RequestsWebClientSuccessResponse(AbstractWebClientSuccessResponse):
         requests_response: requests.Response,
         max_response_data_length: Optional[int] = None,
     ):
+        """
+        :param requests_response: Response data
+        :param max_response_data_length: Maximum data length, or ``None`` to not restrict.
+        """
         self.__requests_response = requests_response
         self.__max_response_data_length = max_response_data_length
 
@@ -56,7 +60,7 @@ class RequestsWebClientSuccessResponse(AbstractWebClientSuccessResponse):
 
 class RequestsWebClientErrorResponse(WebClientErrorResponse):
     """
-    requests-based error response.
+    Error response from the Requests parser.
     """
 
     pass
@@ -78,9 +82,13 @@ class RequestsWebClient(AbstractWebClient):
         "__max_response_data_length",
         "__timeout",
         "__proxies",
+        "__verify"
     ]
 
     def __init__(self, verify=True):
+        """
+        :param verify: whether certificates should be verified for HTTPS requests.
+        """
         self.__max_response_data_length = None
         self.__timeout = self.__HTTP_REQUEST_TIMEOUT
         self.__proxies = {}
@@ -93,19 +101,19 @@ class RequestsWebClient(AbstractWebClient):
 
     def set_proxies(self, proxies: Dict[str, str]) -> None:
         """
-        Set proxies from dictionnary where:
+        Set a proxy for the request.
 
         * keys are schemes, e.g. "http" or "https";
         * values are "scheme://user:password@host:port/".
 
-        For example:
-
-            proxies = {'http': 'http://user:pass@10.10.1.10:3128/'}
+        :param proxies: Proxy definition where the keys are schemes ("http" or "https") and values are the proxy address.
+            Example: ``{'http': 'http://user:pass@10.10.1.10:3128/'}``
         """
         # Used mostly for testing
         self.__proxies = proxies
 
     def set_max_response_data_length(self, max_response_data_length: int) -> None:
+        """Set max response data length."""
         self.__max_response_data_length = max_response_data_length
 
     def get(self, url: str) -> AbstractWebClientResponse:

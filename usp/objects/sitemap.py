@@ -251,14 +251,16 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         )
 
     def __getstate__(self) -> tuple[None, dict]:
-        # Load default slots
+        # Load slots of this class and its parents (mangling if appropriate)
         obj_slots = {slot: getattr(self, slot) for slot in _all_slots(self.__class__)}
+        # Replace temp file path with actual content
         del obj_slots["_AbstractPagesSitemap__pages_temp_file_path"]
         obj_slots["_pages_value"] = self.pages
         return None, obj_slots
 
     def __setstate__(self, state: tuple):
         _, attrs = state
+        # We can't restore contents without this key
         if "_pages_value" not in attrs:
             raise ValueError("State does not contain pages value")
         pages_val = attrs.pop("_pages_value")
@@ -296,7 +298,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         """
         return []
 
-
+# TODO: declare empty __slots__
 class PagesXMLSitemap(AbstractPagesSitemap):
     """
     XML sitemap that contains URLs to pages.

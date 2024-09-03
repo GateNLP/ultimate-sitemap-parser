@@ -196,6 +196,7 @@ def gunzip(data: bytes) -> bytes:
     """
     Gunzip data.
 
+    :raises GunzipException: If the data cannot be decompressed.
     :param data: Gzipped data.
     :return: Gunzipped data.
     """
@@ -258,6 +259,8 @@ def ungzipped_response_content(
 def strip_url_to_homepage(url: str) -> str:
     """
     Strip URL to its homepage.
+
+    :raises StripURLToHomepageException: If URL is empty or cannot be parsed.
 
     :param url: URL to strip, e.g. "http://www.example.com/page.html".
     :return: Stripped homepage URL, e.g. "http://www.example.com/"

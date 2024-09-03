@@ -91,7 +91,12 @@ class SitemapNewsStory:
 
         return True
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        """
+        Convert to a dictionary representation.
+
+        :return: the news story data as a dictionary
+        """
         return {
             "title": self.title,
             "publish_date": self.publish_date,

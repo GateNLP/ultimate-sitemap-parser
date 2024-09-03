@@ -51,7 +51,9 @@ log = create_logger(__name__)
 
 
 class SitemapFetcher:
-    """robots.txt / XML / plain text sitemap fetcher."""
+    """
+    Fetches and parses the sitemap at a given URL, and any declared sub-sitemaps.
+    """
 
     __MAX_SITEMAP_SIZE = 100 * 1024 * 1024
     """Max. uncompressed sitemap size.
@@ -73,6 +75,15 @@ class SitemapFetcher:
         recursion_level: int,
         web_client: Optional[AbstractWebClient] = None,
     ):
+        """
+
+        :param url: URL of the sitemap to fetch and parse.
+        :param recursion_level: current recursion level of parser
+        :param web_client: Web client to use. If ``None``, a :class:`~.RequestsWebClient` will be used.
+
+        :raises SitemapException: If the maximum recursion depth is exceeded.
+        :raises SitemapException: If the URL is not an HTTP(S) URL
+        """
         if recursion_level > self.__MAX_RECURSION_LEVEL:
             raise SitemapException(
                 f"Recursion level exceeded {self.__MAX_RECURSION_LEVEL} for URL {url}."
@@ -91,6 +102,12 @@ class SitemapFetcher:
         self._recursion_level = recursion_level
 
     def sitemap(self) -> AbstractSitemap:
+        """
+        Fetch and parse the sitemap.
+
+        :return: the parsed sitemap. Will be a child of :class:`~.AbstractSitemap`.
+            If an HTTP error is encountered, or the sitemap cannot be parsed, will be :class:`~.InvalidSitemap`.
+        """
         log.info(f"Fetching level {self._recursion_level} sitemap from {self._url}...")
         response = get_url_retry_on_client_errors(
             url=self._url, web_client=self._web_client
@@ -163,6 +180,11 @@ class AbstractSitemapParser(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def sitemap(self) -> AbstractSitemap:
+        """
+        Create the parsed sitemap instance and perform any sub-parsing needed.
+
+        :return: an instance of the appropriate sitemap class
+        """
         raise NotImplementedError("Abstract method.")
 
 
@@ -255,7 +277,11 @@ class PlainTextSitemapParser(AbstractSitemapParser):
 
 
 class XMLSitemapParser(AbstractSitemapParser):
-    """XML sitemap parser."""
+    """Initial XML sitemap parser.
+
+    Instantiates an Expat parser and registers handler methods, which determine the specific format
+    and instantiates a concrete parser (inheriting from :class:`AbstractXMLSitemapParser`) to extract data.
+    """
 
     __XML_NAMESPACE_SEPARATOR = " "
 
@@ -417,17 +443,39 @@ class AbstractXMLSitemapParser(metaclass=abc.ABCMeta):
         self._last_handler_call_was_xml_char_data = False
 
     def xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
+        """Concrete parser handler when the start of an element is encountered.
+
+        See :external+python:meth:`xmlparser.StartElementHandler <xml.parsers.expat.xmlparser.StartElementHandler>`
+
+        :param name: element name, potentially prefixed with namespace
+        :param attrs: element attributes
+        """
         self._last_handler_call_was_xml_char_data = False
         pass
 
     def xml_element_end(self, name: str) -> None:
+        """Concrete parser handler when the end of an element is encountered.
+
+        See :external+python:meth:`xmlparser.EndElementHandler <xml.parsers.expat.xmlparser.EndElementHandler>`
+
+        :param name: element name, potentially prefixed with namespace
+        """
         # End of any element always resets last encountered character data
         self._last_char_data = ""
         self._last_handler_call_was_xml_char_data = False
 
     def xml_char_data(self, data: str) -> None:
-        # Handler might be called multiple times for what essentially is a single string, e.g. in case of entities
-        # ("ABC &amp; DEF"), so this is why we're appending
+        """
+        Concrete parser handler for character data.
+
+        Multiple concurrent calls are concatenated until an XML element start or end is reached,
+        as it may be called multiple times for a single string.
+        E.g. ``ABC &amp; DEF``.
+
+        See :external+python:meth:`xmlparser.CharacterDataHandler <xml.parsers.expat.xmlparser.CharacterDataHandler>`
+
+        :param data: string data
+        """
         if self._last_handler_call_was_xml_char_data:
             self._last_char_data += data
         else:
@@ -437,6 +485,11 @@ class AbstractXMLSitemapParser(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def sitemap(self) -> AbstractSitemap:
+        """
+        Create the parsed sitemap instance and perform any sub-parsing needed.
+
+        :return: an instance of the appropriate sitemap class
+        """
         raise NotImplementedError("Abstract method.")
 
 
@@ -869,6 +922,8 @@ class PagesRSSSitemapParser(AbstractXMLSitemapParser):
 class PagesAtomSitemapParser(AbstractXMLSitemapParser):
     """
     Pages Atom 0.3 / 1.0 sitemap parser.
+
+    References:
 
     - https://github.com/simplepie/simplepie-ng/wiki/Spec:-Atom-0.3
     - https://www.ietf.org/rfc/rfc4287.txt

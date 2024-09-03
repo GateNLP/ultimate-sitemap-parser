@@ -19,7 +19,8 @@ class SitemapXMLParsingException(Exception):
 
 class GunzipException(Exception):
     """
-    gunzip() exception.
+    Error decompressing seemingly gzipped content.
+    See :func:`usp.helpers.gunzip`.
     """
 
     pass
@@ -27,7 +28,8 @@ class GunzipException(Exception):
 
 class StripURLToHomepageException(Exception):
     """
-    strip_url_to_homepage() exception.
+    Problem parsing URL and stripping to homepage.
+    See :func:`usp.helpers.strip_url_to_homepage`.
     """
 
     pass
