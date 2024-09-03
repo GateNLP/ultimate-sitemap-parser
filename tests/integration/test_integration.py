@@ -1,39 +1,11 @@
-import json
-from pathlib import Path
-
 import pytest
-import vcr
 
 from usp.tree import sitemap_tree_for_homepage
 
 
-def pytest_generate_tests(metafunc):
-    # cassettes = list(Path(__file__).parent.joinpath('cassettes').glob('*.yaml'))
-    # cassette_names = [f"integration-{cassette.stem}" for cassette in cassettes]
-    # metafunc.parametrize('cassette_path', cassettes, ids=cassette_names, indirect=True)
-    cassettes_root = Path(__file__).parent / "cassettes"
-
-    manifest_path = cassettes_root / "manifest.json"
-    if not manifest_path.exists():
-        return
-
-    manifest = json.loads(manifest_path.read_text())
-    cassette_fixtures = [
-        (url, cassettes_root / item["name"]) for url, item in manifest.items()
-    ]
-    cassette_ids = [f"integration-{url}" for url, _ in cassette_fixtures]
-    metafunc.parametrize("site_url,cassette_path", cassette_fixtures, ids=cassette_ids)
-
-
-@pytest.fixture
-def _with_vcr(cassette_path):
-    with vcr.use_cassette(cassette_path, record_mode="none"):
-        yield
-
-
 @pytest.mark.usefixtures("_with_vcr")
 @pytest.mark.integration
-def test_integration(site_url, cassette_path):
+def test_sitemap_parse(site_url, cassette_path):
     print(f"Loading {cassette_path}")
     sitemap = sitemap_tree_for_homepage(site_url)
 
