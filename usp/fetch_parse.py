@@ -973,7 +973,7 @@ class PagesAtomSitemapParser(AbstractXMLSitemapParser):
 
             publication_date = html_unescape_strip(self.publication_date)
             if publication_date:
-                publication_date = parse_rfc2822_date(publication_date)
+                publication_date = parse_iso8601_date(publication_date)
 
             return SitemapPage(
                 url=link,
