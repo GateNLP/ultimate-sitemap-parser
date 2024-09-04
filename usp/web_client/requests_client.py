@@ -1,7 +1,7 @@
 """Implementation of :mod:`usp.web_client.abstract_client` with Requests."""
 
 from http import HTTPStatus
-from typing import Optional, Dict
+from typing import Optional, Dict, Tuple, Union
 
 import requests
 
@@ -89,8 +89,14 @@ class RequestsWebClient(AbstractWebClient):
         self.__proxies = {}
         self.__verify = verify
 
-    def set_timeout(self, timeout: int) -> None:
-        """Set HTTP request timeout."""
+    def set_timeout(self, timeout: Union[int, Tuple[int, int], None]) -> None:
+        """Set HTTP request timeout.
+
+        See also: `Requests timeout docs <https://requests.readthedocs.io/en/latest/user/advanced/#timeouts>`__
+
+        :param timeout: An integer to use as both the connect and read timeouts,
+            or a tuple to specify them individually, or None for no timeout
+        """
         # Used mostly for testing
         self.__timeout = timeout
 
@@ -98,17 +104,13 @@ class RequestsWebClient(AbstractWebClient):
         """
         Set a proxy for the request.
 
-        * keys are schemes, e.g. "http" or "https";
-        * values are "scheme://user:password@host:port/".
-
         :param proxies: Proxy definition where the keys are schemes ("http" or "https") and values are the proxy address.
-            Example: ``{'http': 'http://user:pass@10.10.1.10:3128/'}``
+            Example: ``{'http': 'http://user:pass@10.10.1.10:3128/'}, or an empty dict to disable proxy.``
         """
         # Used mostly for testing
         self.__proxies = proxies
 
     def set_max_response_data_length(self, max_response_data_length: int) -> None:
-        """Set max response data length."""
         self.__max_response_data_length = max_response_data_length
 
     def get(self, url: str) -> AbstractWebClientResponse:
