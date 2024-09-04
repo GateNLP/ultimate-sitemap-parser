@@ -7,12 +7,12 @@
         <item>
             <title>Page 1</title>
             <link>https://example.org/page1</link>
-            <pubDate>2024-01-01</pubDate>
+            <pubDate>Mon, 01 Jan 2024 12:00:00 UTC</pubDate>
         </item>
         <item>
             <title>Page 2</title>
             <link>https://example.org/page2</link>
-            <pubDate>2024-01-02</pubDate>
+            <pubDate>Tue, 02 Jan 2024 14:00:00 UTC</pubDate>
         </item>
     </channel>
 </rss>
