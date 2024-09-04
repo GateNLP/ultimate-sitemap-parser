@@ -126,3 +126,91 @@ class TestTreeBasic(TreeTestBase):
         tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)
         sitemaps = list(tree.all_sitemaps())
         assert type(sitemaps[-1]) is InvalidSitemap
+
+    def test_truncated_sitemap_missing_close_urlset(self, requests_mock):
+        requests_mock.add_matcher(TreeTestBase.fallback_to_404_not_found_matcher)
+
+        requests_mock.get(
+            self.TEST_BASE_URL + "/robots.txt",
+            headers={"Content-Type": "text/plain"},
+            text=(
+                textwrap.dedent(
+                    f"""
+            User-agent: *
+            Disallow: /whatever
+
+            Sitemap: {self.TEST_BASE_URL}/sitemap.xml
+        """
+                ).strip()
+            ),
+        )
+
+        sitemap_xml = """<?xml version="1.0" encoding="UTF-8"?>
+            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+                    xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+                    xmlns:xhtml="http://www.w3.org/1999/xhtml">
+        """
+        for x in range(50):
+            sitemap_xml += f"""
+                <url>
+                    <loc>{self.TEST_BASE_URL}/page_{x}.html</loc>
+                </url>
+            """
+
+        requests_mock.get(
+            self.TEST_BASE_URL + "/sitemap.xml",
+            headers={"Content-Type": "application/xml"},
+            text=(
+                textwrap.dedent(sitemap_xml).strip()
+            ),
+        )
+
+        tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)
+        assert len(list(tree.all_pages())) == 50
+
+    def test_truncated_sitemap_mid_url(self, requests_mock):
+        requests_mock.add_matcher(TreeTestBase.fallback_to_404_not_found_matcher)
+
+        requests_mock.get(
+            self.TEST_BASE_URL + "/robots.txt",
+            headers={"Content-Type": "text/plain"},
+            text=(
+                textwrap.dedent(
+                    f"""
+            User-agent: *
+            Disallow: /whatever
+
+            Sitemap: {self.TEST_BASE_URL}/sitemap.xml
+        """
+                ).strip()
+            ),
+        )
+
+        sitemap_xml = """<?xml version="1.0" encoding="UTF-8"?>
+            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+                    xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+                    xmlns:xhtml="http://www.w3.org/1999/xhtml">
+        """
+        for x in range(49):
+            sitemap_xml += f"""
+                <url>
+                    <loc>{self.TEST_BASE_URL}/page_{x}.html</loc>
+                </url>
+            """
+        sitemap_xml += f"""
+            <url>
+                <loc>{self.TEST_BASE_URL}/page_
+        """
+
+        requests_mock.get(
+            self.TEST_BASE_URL + "/sitemap.xml",
+            headers={"Content-Type": "application/xml"},
+            text=(
+                textwrap.dedent(sitemap_xml).strip()
+            ),
+        )
+
+        tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)
+        all_pages = list(tree.all_pages())
+        assert len(all_pages) == 49
+        assert all_pages[-1].url.endswith('page_48.html')
