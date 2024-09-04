@@ -8,7 +8,6 @@ import sys
 import time
 from typing import Optional
 from urllib.parse import urlparse, unquote_plus, urlunparse
-
 from dateutil.parser import parse as dateutil_parse
 from dateutil.parser import isoparse as dateutil_isoparse
 
@@ -86,7 +85,7 @@ def html_unescape_strip(string: Optional[str]) -> Optional[str]:
     return string
 
 
-def parse_iso8601_date(date_string: str) -> datetime.datetime:
+def parse_iso8601_date(date_string: str) -> Optional[datetime.datetime]:
     """
     Parse ISO 8601 date (e.g. from sitemap's <publication_date>) into datetime.datetime object.
 
@@ -105,25 +104,29 @@ def parse_iso8601_date(date_string: str) -> datetime.datetime:
         # Try the more efficient ISO 8601 parser
         return dateutil_isoparse(date_string)
     except ValueError:
-        # Try the less efficient general parser
+        pass
+
+    # Try the less efficient general parser
+    try:
         return dateutil_parse(date_string)
+    except ValueError:
+        return None
 
 
-def parse_rfc2822_date(date_string: str) -> datetime.datetime:
+def parse_rfc2822_date(date_string: str) -> Optional[datetime.datetime]:
     """
     Parse RFC 2822 date (e.g. from Atom's <issued>) into datetime.datetime object.
 
     :param date_string: RFC 2822 date, e.g. "Tue, 10 Aug 2010 20:43:53 -0000".
     :return: datetime.datetime object of a parsed date.
     """
-    # FIXME parse known date formats faster
-    # TODO: fix naming of this function as it shouldn't actually be RFC2822
     if not date_string:
         raise SitemapException("Date string is unset.")
 
-    date = dateutil_parse(date_string)
-
-    return date
+    try:
+        return dateutil_parse(date_string)
+    except ValueError:
+        return None
 
 
 def get_url_retry_on_client_errors(
