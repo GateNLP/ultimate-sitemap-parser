@@ -144,7 +144,9 @@ class AbstractWebClient(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def set_max_response_data_length(self, max_response_data_length: Optional[int]) -> None:
+    def set_max_response_data_length(
+        self, max_response_data_length: Optional[int]
+    ) -> None:
         """
         Set the maximum number of bytes that the web client will fetch.
 

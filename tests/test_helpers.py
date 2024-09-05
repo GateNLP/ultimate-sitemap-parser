@@ -71,10 +71,12 @@ def test_parse_iso8601_date():
         tzinfo=datetime.timezone.utc,
     )
 
+
 def test_parse_iso8601_invalid_date():
     # GH#31
     assert parse_iso8601_date("2021-06-18T112:13:04+00:00") is None
     assert parse_iso8601_date("not a date") is None
+
 
 def test_parse_rfc2822_date():
     assert parse_rfc2822_date("Tue, 10 Aug 2010 20:43:53 -0000") == datetime.datetime(
@@ -99,10 +101,12 @@ def test_parse_rfc2822_date():
         tzinfo=datetime.timezone(datetime.timedelta(seconds=7200)),
     )
 
+
 def test_parse_rfc2822_date_invalid_date():
     # GH#31
     assert parse_rfc2822_date("Fri, 18 Jun 2021 112:13:04 UTC") is None
     assert parse_rfc2822_date("not a date") is None
+
 
 # noinspection SpellCheckingInspection
 def test_is_http_url():

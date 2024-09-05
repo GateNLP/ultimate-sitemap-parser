@@ -13,6 +13,7 @@ CASSETTE_REPO = "https://github.com/GateNLP/usp-test-cassettes"
 MANIFEST_FILE = f"{CASSETTE_REPO}/raw/main/manifest.json"
 CASSETTE_ROOT = Path(__file__).parent / "cassettes"
 
+
 def download_manifest():
     r = requests.get(MANIFEST_FILE, allow_redirects=True)
     r.raise_for_status()
@@ -24,6 +25,7 @@ def download_manifest():
 
     return data
 
+
 def load_hashes():
     if not (CASSETTE_ROOT / "hashes.json").exists():
         return {}
@@ -31,19 +33,22 @@ def load_hashes():
     with open(CASSETTE_ROOT / "hashes.json") as f:
         return json.load(f)
 
+
 def find_new(manifest, current_hashes):
     to_dl = []
 
     for url, data in manifest.items():
-        if current_hashes.get(url, {}) != data['hash']:
+        if current_hashes.get(url, {}) != data["hash"]:
             logging.info(f"{url} is out-of-date")
             to_dl.append(url)
 
     return to_dl
 
+
 def calc_hash(path):
     with open(path, "rb") as f:
         return hashlib.sha256(f.read()).hexdigest()
+
 
 def dl_cassette(data):
     dl_gz_path = CASSETTE_ROOT / "download" / f"{data['name']}.gz"
@@ -59,22 +64,26 @@ def dl_cassette(data):
     dl_hash = calc_hash(dl_gz_path)
 
     if dl_hash != data["hash"]:
-        logging.error(f"Downloaded file hash {dl_hash} does not match expected hash {data['hash']}")
+        logging.error(
+            f"Downloaded file hash {dl_hash} does not match expected hash {data['hash']}"
+        )
         exit(1)
 
     logging.info(f"Download completed, extracting to {cassette_path}")
 
-    with gzip.open(dl_gz_path, 'rb') as f_gz:
-        with open(cassette_path, 'wb') as f_cassette:
+    with gzip.open(dl_gz_path, "rb") as f_gz:
+        with open(cassette_path, "wb") as f_cassette:
             shutil.copyfileobj(f_gz, f_cassette)
 
     return dl_gz_path, cassette_path
+
 
 def update_hashes(current_hashes, url, new_hashes):
     current_hashes[url] = new_hashes
 
     with open(CASSETTE_ROOT / "hashes.json", "w") as f:
         json.dump(current_hashes, f, indent=2)
+
 
 def cleanup_files(data, confirm=True):
     cassettes = CASSETTE_ROOT.glob("*.yaml")
@@ -131,8 +140,15 @@ def main(force: bool = False, force_delete=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--force", action="store_true", help="Force downloading all cassettes")
-    parser.add_argument("-d", "--delete", action="store_true", help="Delete unknown cassettes without confirmation")
+    parser.add_argument(
+        "-f", "--force", action="store_true", help="Force downloading all cassettes"
+    )
+    parser.add_argument(
+        "-d",
+        "--delete",
+        action="store_true",
+        help="Delete unknown cassettes without confirmation",
+    )
     parser.set_defaults(force=False, delete=False)
     args = parser.parse_args()
     main(force=args.force, force_delete=args.delete)

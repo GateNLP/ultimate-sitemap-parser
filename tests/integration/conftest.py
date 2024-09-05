@@ -27,6 +27,7 @@ def pytest_collection_modifyitems(config, items):
             if "integration" in item.keywords:
                 item.add_marker(skip_perf)
 
+
 def pytest_generate_tests(metafunc):
     # cassettes = list(Path(__file__).parent.joinpath('cassettes').glob('*.yaml'))
     # cassette_names = [f"integration-{cassette.stem}" for cassette in cassettes]

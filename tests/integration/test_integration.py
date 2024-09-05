@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 
 from usp.tree import sitemap_tree_for_homepage
@@ -6,7 +8,7 @@ from usp.tree import sitemap_tree_for_homepage
 @pytest.mark.usefixtures("_with_vcr")
 @pytest.mark.integration
 def test_sitemap_parse(site_url, cassette_path):
-    print(f"Loading {cassette_path}")
+    logging.critical(f"Loading {cassette_path}")
     sitemap = sitemap_tree_for_homepage(site_url)
 
     # Do this over converting to a list() as this will load all pages into memory
@@ -14,4 +16,4 @@ def test_sitemap_parse(site_url, cassette_path):
     page_count = 0
     for page in sitemap.all_pages():
         page_count += 1
-    print(f"Site {site_url} has {page_count} pages")
+    logging.critical(f"Site {site_url} has {page_count} pages")
