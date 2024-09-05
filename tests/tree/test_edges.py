@@ -107,7 +107,9 @@ class TestTreeBasic(TreeTestBase):
 
         assert type(sitemaps[-1]) is InvalidSitemap
 
-    def test_max_recursion_level_robots(self, requests_mock):
+    def test_max_recursion_level_sitemap_with_robots(self, requests_mock):
+        # GH#29
+
         requests_mock.add_matcher(TreeTestBase.fallback_to_404_not_found_matcher)
         requests_mock.get(
             self.TEST_BASE_URL + "/robots.txt",
@@ -118,11 +120,29 @@ class TestTreeBasic(TreeTestBase):
             User-agent: *
             Disallow: /whatever
 
-            Sitemap: {self.TEST_BASE_URL}/robots.txt
+            Sitemap: {self.TEST_BASE_URL}/sitemap.xml
         """
                 ).strip()
             ),
         )
+        requests_mock.get(
+            self.TEST_BASE_URL + "/sitemap.xml",
+            headers={"Content-Type": "application/xml"},
+            text=(
+                textwrap.dedent(
+                    f"""
+            <?xml version="1.0" encoding="UTF-8"?>
+            <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                <sitemap>
+                    <loc>{self.TEST_BASE_URL}/robots.txt</loc>
+                    <lastmod>2024-01-01</lastmod>
+                </sitemap>
+            </sitemapindex>
+            """
+                ).strip()
+            ),
+        )
+
         tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)
         sitemaps = list(tree.all_sitemaps())
         assert type(sitemaps[-1]) is InvalidSitemap
@@ -160,9 +180,7 @@ class TestTreeBasic(TreeTestBase):
         requests_mock.get(
             self.TEST_BASE_URL + "/sitemap.xml",
             headers={"Content-Type": "application/xml"},
-            text=(
-                textwrap.dedent(sitemap_xml).strip()
-            ),
+            text=(textwrap.dedent(sitemap_xml).strip()),
         )
 
         tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)
@@ -205,12 +223,10 @@ class TestTreeBasic(TreeTestBase):
         requests_mock.get(
             self.TEST_BASE_URL + "/sitemap.xml",
             headers={"Content-Type": "application/xml"},
-            text=(
-                textwrap.dedent(sitemap_xml).strip()
-            ),
+            text=(textwrap.dedent(sitemap_xml).strip()),
         )
 
         tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)
         all_pages = list(tree.all_pages())
         assert len(all_pages) == 49
-        assert all_pages[-1].url.endswith('page_48.html')
+        assert all_pages[-1].url.endswith("page_48.html")
