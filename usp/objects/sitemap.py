@@ -246,9 +246,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         return True
 
     def __repr__(self):
-        return (
-            f"{self.__class__.__name__}(" f"url={self.url}, " f"pages={self.pages}" ")"
-        )
+        return f"{self.__class__.__name__}(url={self.url}, pages={self.pages})"
 
     def __getstate__(self) -> tuple[None, dict]:
         # Load slots of this class and its parents (mangling if appropriate)

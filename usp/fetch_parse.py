@@ -26,6 +26,7 @@ from .helpers import (
 )
 from .log import create_logger
 from .objects.page import (
+    SitemapImage,
     SitemapPage,
     SitemapNewsStory,
     SitemapPageChangeFrequency,
@@ -403,6 +404,10 @@ class XMLSitemapParser(AbstractSitemapParser):
             name = f"sitemap:{name}"
         elif "/sitemap-news/" in namespace_url:
             name = f"news:{name}"
+        elif "/sitemap-image/" in namespace_url:
+            name = f"image:{name}"
+        elif "/sitemap-video/" in namespace_url:
+            name = f"video:{name}"
         else:
             # We don't care about the rest of the namespaces, so just keep the plain element name
             pass
@@ -601,6 +606,24 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
     Pages XML sitemap parser.
     """
 
+    class Image:
+        __slots__ = ["loc", "caption", "geo_location", "title", "license"]
+
+        def __init__(self):
+            self.loc = None
+            self.caption = None
+            self.geo_location = None
+            self.title = None
+            self.license = None
+
+        def __hash__(self):
+            return hash(
+                (
+                    # Hash only the URL to be able to find unique ones
+                    self.loc,
+                )
+            )
+
     class Page:
         """Simple data class for holding various properties for a single <url> entry while parsing."""
 
@@ -617,6 +640,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
             "news_genres",
             "news_keywords",
             "news_stock_tickers",
+            "images",
         ]
 
         def __init__(self):
@@ -632,6 +656,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
             self.news_genres = None
             self.news_keywords = None
             self.news_stock_tickers = None
+            self.images = []
 
         def __hash__(self):
             return hash(
@@ -723,15 +748,29 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
                     stock_tickers=news_stock_tickers,
                 )
 
+            sitemap_images = None
+            if len(self.images) > 0:
+                sitemap_images = [
+                    SitemapImage(
+                        loc=image.loc,
+                        caption=image.caption,
+                        geo_location=image.geo_location,
+                        title=image.title,
+                        license_=image.license,
+                    )
+                    for image in self.images
+                ]
+
             return SitemapPage(
                 url=url,
                 last_modified=last_modified,
                 change_frequency=change_frequency,
                 priority=priority,
                 news_story=sitemap_news_story,
+                images=sitemap_images,
             )
 
-    __slots__ = ["_current_page", "_pages", "_page_urls"]
+    __slots__ = ["_current_page", "_pages", "_page_urls", "_current_image"]
 
     def __init__(self, url: str):
         super().__init__(url=url)
@@ -739,6 +778,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
         self._current_page = None
         self._pages = []
         self._page_urls = set()
+        self._current_image = None
 
     def xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
         super().xml_element_start(name=name, attrs=attrs)
@@ -749,6 +789,16 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
                     "Page is expected to be unset by <url>."
                 )
             self._current_page = self.Page()
+        elif name == "image:image":
+            if self._current_image:
+                raise SitemapXMLParsingException(
+                    "Image is expected to be unset by <image:image>."
+                )
+            if not self._current_page:
+                raise SitemapXMLParsingException(
+                    "Page is expected to be set before <image:image>."
+                )
+            self._current_image = self.Image()
 
     def __require_last_char_data_to_be_set(self, name: str) -> None:
         if not self._last_char_data:
@@ -767,7 +817,9 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
                 self._pages.append(self._current_page)
                 self._page_urls.add(self._current_page.url)
             self._current_page = None
-
+        elif name == "image:image":
+            self._current_page.images.append(self._current_image)
+            self._current_image = None
         else:
             if name == "sitemap:loc":
                 # Every entry must have <loc>
@@ -814,6 +866,23 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
             elif name == "news:stock_tickers":
                 # Element might be present but character data might be empty
                 self._current_page.news_stock_tickers = self._last_char_data
+
+            elif name == "image:loc":
+                # Every image entry must have <loc>
+                self.__require_last_char_data_to_be_set(name=name)
+                self._current_image.loc = self._last_char_data
+
+            elif name == "image:caption":
+                self._current_image.caption = self._last_char_data
+
+            elif name == "image:geo_location":
+                self._current_image.geo_location = self._last_char_data
+
+            elif name == "image:title":
+                self._current_image.title = self._last_char_data
+
+            elif name == "image:license":
+                self._current_image.license = self._last_char_data
 
         super().xml_element_end(name=name)
 

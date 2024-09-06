@@ -12,3 +12,6 @@ usp.objects.page
 .. autoclass:: SitemapNewsStory
     :members:
 
+.. autoclass:: SitemapImage
+    :members:
+

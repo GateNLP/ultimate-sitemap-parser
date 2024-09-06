@@ -122,7 +122,7 @@ class SitemapNewsStory:
             )
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}("
             f"title={self.title}, "
@@ -215,6 +215,116 @@ class SitemapNewsStory:
         return self.__stock_tickers
 
 
+class SitemapImage:
+    """
+    Single image derived from Google Image XML sitemap.
+
+    All properties except ``loc`` are now deprecated in the XML specification, see
+    https://developers.google.com/search/blog/2022/05/spring-cleaning-sitemap-extensions
+
+    They will continue to be supported here.
+    """
+
+    __slots__ = ["__loc", "__caption", "__geo_location", "__title", "__license"]
+
+    def __init__(
+        self,
+        loc: str,
+        caption: Optional[str] = None,
+        geo_location: Optional[str] = None,
+        title: Optional[str] = None,
+        license_: Optional[str] = None,
+    ):
+        """Initialise a Google Image.
+
+        :param loc: the URL of the image
+        :param caption: the caption of the image, optional
+        :param geo_location: the geographic location of the image, for example "Limerick, Ireland", optional
+        :param title: the title of the image, optional
+        :param license_: a URL to the license of the image, optional
+        """
+        self.__loc = loc
+        self.__caption = caption
+        self.__geo_location = geo_location
+        self.__title = title
+        self.__license = license_
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, SitemapImage):
+            raise NotImplementedError
+
+        if self.loc != other.loc:
+            return False
+
+        if self.caption != other.caption:
+            return False
+
+        if self.geo_location != other.geo_location:
+            return False
+
+        if self.title != other.title:
+            return False
+
+        if self.license != other.license:
+            return False
+
+        return True
+
+    def to_dict(self):
+        """Convert to a dictionary representation.
+
+        :return: the image data as a dictionary
+        """
+        return {
+            "loc": self.loc,
+            "caption": self.caption,
+            "geo_location": self.geo_location,
+            "title": self.title,
+            "license": self.license,
+        }
+
+    def __hash__(self):
+        return hash(
+            (self.loc, self.caption, self.geo_location, self.title, self.license)
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}("
+            f"loc={self.loc}, "
+            f"caption={self.caption}, "
+            f"geo_location={self.geo_location}, "
+            f"title={self.title}, "
+            f"license={self.license}"
+            ")"
+        )
+
+    @property
+    def loc(self) -> str:
+        """Get the URL of the image."""
+        return self.__loc
+
+    @property
+    def caption(self) -> Optional[str]:
+        """Get the caption of the image."""
+        return self.__caption
+
+    @property
+    def geo_location(self) -> Optional[str]:
+        """Get the geographic location of the image."""
+        return self.__geo_location
+
+    @property
+    def title(self) -> Optional[str]:
+        """Get the title of the image."""
+        return self.__title
+
+    @property
+    def license(self) -> Optional[str]:
+        """Get a URL to the license of the image."""
+        return self.__license
+
+
 @unique
 class SitemapPageChangeFrequency(Enum):
     """Change frequency of a sitemap URL."""
@@ -242,6 +352,7 @@ class SitemapPage:
         "__last_modified",
         "__change_frequency",
         "__news_story",
+        "__images",
     ]
 
     def __init__(
@@ -251,6 +362,7 @@ class SitemapPage:
         last_modified: Optional[datetime.datetime] = None,
         change_frequency: Optional[SitemapPageChangeFrequency] = None,
         news_story: Optional[SitemapNewsStory] = None,
+        images: Optional[List[SitemapImage]] = None,
     ):
         """
         Initialize a new sitemap-derived page.
@@ -266,6 +378,7 @@ class SitemapPage:
         self.__last_modified = last_modified
         self.__change_frequency = change_frequency
         self.__news_story = news_story
+        self.__images = images
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, SitemapPage):
@@ -286,6 +399,9 @@ class SitemapPage:
         if self.news_story != other.news_story:
             return False
 
+        if self.images != other.images:
+            return False
+
         return True
 
     def __hash__(self):
@@ -296,14 +412,15 @@ class SitemapPage:
             )
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}("
             f"url={self.url}, "
             f"priority={self.priority}, "
             f"last_modified={self.last_modified}, "
             f"change_frequency={self.change_frequency}, "
-            f"news_story={self.news_story}"
+            f"news_story={self.news_story}, "
+            f"images={self.images}"
             ")"
         )
 
@@ -320,49 +437,37 @@ class SitemapPage:
             if self.change_frequency
             else None,
             "news_story": self.news_story.to_dict() if self.news_story else None,
+            "images": [image.to_dict() for image in self.images]
+            if self.images
+            else None,
         }
 
     @property
     def url(self) -> str:
-        """
-        Return page URL.
-
-        :return: Page URL.
-        """
+        """Get the page URL."""
         return self.__url
 
     @property
     def priority(self) -> Decimal:
-        """
-        Return priority of this URL relative to other URLs on your site.
-
-        :return: Priority of this URL relative to other URLs on your site.
-        """
+        """Get the priority of this URL relative to other URLs on the site."""
         return self.__priority
 
     @property
     def last_modified(self) -> Optional[datetime.datetime]:
-        """
-        Return date of last modification of the URL.
-
-        :return: Date of last modification of the URL.
-        """
+        """Get the date of last modification of the URL."""
         return self.__last_modified
 
     @property
     def change_frequency(self) -> Optional[SitemapPageChangeFrequency]:
-        """
-        Return change frequency of a sitemap URL.
-
-        :return: Change frequency of a sitemap URL.
-        """
+        """Get the change frequency of a sitemap URL."""
         return self.__change_frequency
 
     @property
     def news_story(self) -> Optional[SitemapNewsStory]:
-        """
-        Return Google News story attached to the URL.
-
-        :return: Google News story attached to the URL.
-        """
+        """Get the Google News story attached to the URL."""
         return self.__news_story
+
+    @property
+    def images(self) -> Optional[List[SitemapImage]]:
+        """Get the images attached to the URL."""
+        return self.__images
