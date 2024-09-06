@@ -106,9 +106,9 @@ XML Sitemap Extensions
 
 .. note::
 
-    Only the Google News extension is supported currently. Other extensions (e.g. `Google Image`_ and `Google Video`_) are not currently supported, and only the standard part of the sitemap will be parsed.
+    The `Google Video`_ extension is not currently supported, and only the standard part of the sitemap will be parsed.
 
-.. _Google Image: https://developers.google.com/search/docs/crawling-indexing/sitemaps/image-sitemaps
+
 .. _Google Video: https://developers.google.com/search/docs/crawling-indexing/sitemaps/video-sitemaps
 
 
@@ -131,6 +131,22 @@ Google News
 The Google News extension provides additional information to describe the news story which a webpage represents, in addition to the page itself.
 
 If the page contains Google News data, it is stored as a :class:`~usp.objects.page.SitemapNewsStory` object in :attr:`SitemapPage.news_story <usp.objects.page.SitemapPage.news_story>`.
+
+Google Image
+""""""""""""
+
+- `Google documentation <https://developers.google.com/search/docs/crawling-indexing/sitemaps/image-sitemaps>`__
+
+.. dropdown:: Example
+    :class-container: flush
+
+    .. literalinclude:: formats_examples/google-image.xml
+        :emphasize-lines: 3,8-13,19-21
+        :language: xml
+
+The Google Image extension provides additional information to describe images on the page.
+
+If the page contains Google Image data, it is stored as a list of :class:`~usp.objects.page.SitemapImage` objects in :attr:`SitemapPage.images <usp.objects.page.SitemapPage.images>`.
 
 .. _xml date:
 

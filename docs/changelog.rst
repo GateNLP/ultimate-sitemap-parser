@@ -14,6 +14,7 @@ v1.0.0 (upcoming)
 - Sitemaps and pages now implement ``to_dict()`` method to convert to dictionaries
 - Added optional arguments to ``usp.tree.sitemap_tree_for_homepage()`` to disable robots.txt-based or known-path-based sitemap discovery. Default behaviour is still to use both.
 - Parse sitemaps from a string with :ref:`local parse`
+- Support for the Google Image sitemap extension
 
 **Performance**
 
@@ -25,6 +26,7 @@ Improvement of parse performance by approximately 90%:
 **Bug Fixes**
 
 - Invalid datetimes will be parsed as ``None`` instead of crashing (reported in :issue:`22`, :issue:`31`)
+- Invalid priorities will be set to the default (0.5) instead of crashing
 - Moved ``__version__`` attribute into main class module
 - Robots.txt index sitemaps now count for the max recursion depth (reported in :issue:`29`). The default maximum has been increased by 1 to compensate for this.
 

@@ -145,7 +145,7 @@ Large and well-established sites (e.g. media outlets) may have very complex site
 
 .. dropdown:: bbc.co.uk Sitemap Graph
 
-    .. graphviz:: _sitemap_examples/bbc-sitemap.dot
+    .. graphviz:: bbc-sitemap.dot
 
 Altogether, this sitemap tree contains 2.6 million URLs spread across 75 sitemaps. The ``robots.txt`` file declares 13 sitemaps, some of which are index sitemaps with as many as 50 page sitemaps. Despite this, USP is able to parse this tree in less than a minute and using no more than 90MiB of memory at peak.
 

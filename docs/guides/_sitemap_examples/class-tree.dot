@@ -1,4 +1,0 @@
-digraph G {
-    root [label="IndexWebsiteSitemap"]
-    robots [label="IndexRobots
-}

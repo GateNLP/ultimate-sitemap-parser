@@ -1,4 +1,0 @@
-Yes, there are plain text sitemaps and they could just contain random text.
-
-https://example.org/page1
-https://example.org/page2

@@ -607,6 +607,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
     """
 
     class Image:
+        """Data class for holding image data while parsing."""
         __slots__ = ["loc", "caption", "geo_location", "title", "license"]
 
         def __init__(self):
