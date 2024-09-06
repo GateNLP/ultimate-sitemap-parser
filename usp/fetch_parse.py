@@ -11,8 +11,9 @@ import abc
 import re
 import xml.parsers.expat
 from collections import OrderedDict
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from typing import Optional, Dict, Union
+
 
 from .exceptions import SitemapException, SitemapXMLParsingException
 from .helpers import (
@@ -591,6 +592,10 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
         return index_sitemap
 
 
+MIN_VALID_PRIORITY = Decimal("0.0")
+MAX_VALID_PRIORITY = Decimal("1.0")
+
+
 class PagesXMLSitemapParser(AbstractXMLSitemapParser):
     """
     Pages XML sitemap parser.
@@ -663,20 +668,15 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
 
             priority = html_unescape_strip(self.priority)
             if priority:
-                priority = Decimal(priority)
+                try:
+                    priority = Decimal(priority)
 
-                comp_zero = priority.compare(Decimal("0.0"))
-                comp_one = priority.compare(Decimal("1.0"))
-                if comp_zero in (
-                    Decimal("0"),
-                    Decimal("1") and comp_one in (Decimal("0"), Decimal("-1")),
-                ):
-                    # 0 <= priority <= 1
-                    pass
-                else:
-                    log.warning(f"Priority is not within 0 and 1: {priority}")
+                    if priority < MIN_VALID_PRIORITY or priority > MAX_VALID_PRIORITY:
+                        log.warning(f"Priority is not within 0 and 1: {priority}")
+                        priority = SITEMAP_PAGE_DEFAULT_PRIORITY
+                except InvalidOperation:
+                    log.warning(f"Invalid priority: {priority}")
                     priority = SITEMAP_PAGE_DEFAULT_PRIORITY
-
             else:
                 priority = SITEMAP_PAGE_DEFAULT_PRIORITY
 
