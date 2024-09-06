@@ -19,3 +19,9 @@ usp.web_client.abstract_client
     :members:
     :show-inheritance:
 
+.. autoclass:: LocalWebClient
+    :members:
+    :show-inheritance:
+
+.. autoclass:: NoWebClientException
+    :show-inheritance:

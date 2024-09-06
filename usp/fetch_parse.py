@@ -12,7 +12,7 @@ import re
 import xml.parsers.expat
 from collections import OrderedDict
 from decimal import Decimal
-from typing import Optional, Dict
+from typing import Optional, Dict, Union
 
 from .exceptions import SitemapException, SitemapXMLParsingException
 from .helpers import (
@@ -45,6 +45,7 @@ from .web_client.abstract_client import (
     AbstractWebClientSuccessResponse,
     WebClientErrorResponse,
 )
+from .web_client.abstract_client import LocalWebClient, NoWebClientException
 from .web_client.requests_client import RequestsWebClient
 
 log = create_logger(__name__)
@@ -101,6 +102,19 @@ class SitemapFetcher:
         self._web_client = web_client
         self._recursion_level = recursion_level
 
+    def _fetch(self) -> Union[str, WebClientErrorResponse]:
+        log.info(f"Fetching level {self._recursion_level} sitemap from {self._url}...")
+        response = get_url_retry_on_client_errors(
+            url=self._url, web_client=self._web_client
+        )
+
+        if isinstance(response, WebClientErrorResponse):
+            return response
+
+        assert isinstance(response, AbstractWebClientSuccessResponse)
+
+        return ungzipped_response_content(url=self._url, response=response)
+
     def sitemap(self) -> AbstractSitemap:
         """
         Fetch and parse the sitemap.
@@ -108,20 +122,13 @@ class SitemapFetcher:
         :return: the parsed sitemap. Will be a child of :class:`~.AbstractSitemap`.
             If an HTTP error is encountered, or the sitemap cannot be parsed, will be :class:`~.InvalidSitemap`.
         """
-        log.info(f"Fetching level {self._recursion_level} sitemap from {self._url}...")
-        response = get_url_retry_on_client_errors(
-            url=self._url, web_client=self._web_client
-        )
+        response_content = self._fetch()
 
-        if isinstance(response, WebClientErrorResponse):
+        if isinstance(response_content, WebClientErrorResponse):
             return InvalidSitemap(
                 url=self._url,
-                reason=f"Unable to fetch sitemap from {self._url}: {response.message()}",
+                reason=f"Unable to fetch sitemap from {self._url}: {response_content.message()}",
             )
-
-        assert isinstance(response, AbstractWebClientSuccessResponse)
-
-        response_content = ungzipped_response_content(url=self._url, response=response)
 
         # MIME types returned in Content-Type are unpredictable, so peek into the content instead
         if response_content[:20].strip().startswith("<"):
@@ -154,6 +161,31 @@ class SitemapFetcher:
         sitemap = parser.sitemap()
 
         return sitemap
+
+
+class SitemapStrParser(SitemapFetcher):
+    """Custom fetcher to parse a string instead of download from a URL.
+
+    This is a little bit hacky, but it allows us to support local content parsing without
+    having to change too much.
+    """
+
+    __slots__ = ["_static_content"]
+
+    def __init__(self, static_content: str):
+        """Init a new string parser
+
+        :param static_content: String containing sitemap text to parse
+        """
+        super().__init__(
+            url="http://usp-local-dummy.local/",
+            recursion_level=0,
+            web_client=LocalWebClient(),
+        )
+        self._static_content = static_content
+
+    def _fetch(self) -> Union[str, WebClientErrorResponse]:
+        return self._static_content
 
 
 class AbstractSitemapParser(metaclass=abc.ABCMeta):
@@ -239,6 +271,10 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
                     web_client=self._web_client,
                 )
                 fetched_sitemap = fetcher.sitemap()
+            except NoWebClientException:
+                fetched_sitemap = InvalidSitemap(
+                    url=sitemap_url, reason="Un-fetched child sitemap"
+                )
             except Exception as ex:
                 fetched_sitemap = InvalidSitemap(
                     url=sitemap_url,
@@ -538,6 +574,10 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
                     web_client=self._web_client,
                 )
                 fetched_sitemap = fetcher.sitemap()
+            except NoWebClientException:
+                fetched_sitemap = InvalidSitemap(
+                    url=sub_sitemap_url, reason="Un-fetched child sitemap"
+                )
             except Exception as ex:
                 fetched_sitemap = InvalidSitemap(
                     url=sub_sitemap_url,

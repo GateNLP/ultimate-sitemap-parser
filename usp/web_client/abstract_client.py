@@ -166,3 +166,24 @@ class AbstractWebClient(metaclass=abc.ABCMeta):
         :return: Response object.
         """
         raise NotImplementedError("Abstract method.")
+
+
+class NoWebClientException(Exception):
+    """Error indicating this web client cannot fetch pages."""
+
+    pass
+
+
+class LocalWebClient(AbstractWebClient):
+    """Dummy web client which is a valid implementation but errors if called.
+
+    Used for local parsing
+    """
+
+    def set_max_response_data_length(
+        self, max_response_data_length: Optional[int]
+    ) -> None:
+        pass
+
+    def get(self, url: str) -> AbstractWebClientResponse:
+        raise NoWebClientException

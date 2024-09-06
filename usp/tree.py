@@ -3,7 +3,7 @@
 from typing import Optional
 
 from .exceptions import SitemapException
-from .fetch_parse import SitemapFetcher
+from .fetch_parse import SitemapFetcher, SitemapStrParser
 from .helpers import is_http_url, strip_url_to_homepage
 from .log import create_logger
 from .objects.sitemap import (
@@ -101,3 +101,15 @@ def sitemap_tree_for_homepage(
     index_sitemap = IndexWebsiteSitemap(url=homepage_url, sub_sitemaps=sitemaps)
 
     return index_sitemap
+
+
+def sitemap_from_str(content: str) -> AbstractSitemap:
+    """Parse sitemap from a string.
+
+    Will return the parsed sitemaps, and any sub-sitemaps will be returned as :class:`~.InvalidSitemap`.
+
+    :param content: Sitemap string to parse
+    :return: Parsed sitemap
+    """
+    fetcher = SitemapStrParser(static_content=content)
+    return fetcher.sitemap()

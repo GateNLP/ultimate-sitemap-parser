@@ -87,6 +87,7 @@ USP is very easy to use, with just a single line of code it can traverse and par
 Advanced Features
 -----------------
 
-- :doc:`CLI Client <reference/cli>`: Use the ``usp ls`` tool to work with sitemaps from the command line.
+- :doc:`CLI Client <reference/cli>`: Use the ``usp ls`` tool to work with sitemaps from the command line
 - :doc:`Serialisation <guides/saving>`: Export raw data or save to disk and load later
+- :ref:`local parse`: Use USP's sitemap parsers on sitemaps which have already been downloaded
 - Custom web clients: Instead of the default client built on `requests <https://requests.readthedocs.io/en/latest/>`_ you can use your own web client by implementing the :class:`~usp.web_client.abstract_client.AbstractWebClient` interface.

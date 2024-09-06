@@ -6,6 +6,10 @@ usp.fetch_parse
 .. autoclass:: SitemapFetcher
     :members:
 
+.. autoclass:: SitemapStrParser
+    :members:
+    :show-inheritance:
+
 .. autoclass:: AbstractSitemapParser
     :members:
 
