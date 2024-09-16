@@ -1,3 +1,4 @@
+import re
 import socket
 from http import HTTPStatus
 from unittest import TestCase
@@ -94,7 +95,9 @@ class TestRequestsClient(TestCase):
         assert response
         assert isinstance(response, WebClientErrorResponse)
         assert response.retryable() is False
-        assert 'Failed to establish a new connection' in response.message()
+        assert re.search(
+            r'Failed to (establish a new connection|resolve)',
+            response.message()) is not None
 
     def test_get_timeout(self):
         sock = socket.socket()
