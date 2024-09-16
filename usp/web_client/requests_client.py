@@ -75,10 +75,11 @@ class RequestsWebClient(AbstractWebClient):
         '__proxies',
     ]
 
-    def __init__(self):
+    def __init__(self, verify=True):
         self.__max_response_data_length = None
         self.__timeout = self.__HTTP_REQUEST_TIMEOUT
         self.__proxies = {}
+        self.__verify = verify
 
     def set_timeout(self, timeout: int) -> None:
         """Set HTTP request timeout."""
@@ -109,7 +110,8 @@ class RequestsWebClient(AbstractWebClient):
                 timeout=self.__timeout,
                 stream=True,
                 headers={'User-Agent': self.__USER_AGENT},
-                proxies=self.__proxies
+                proxies=self.__proxies,
+                verify=self.__verify,
             )
         except requests.exceptions.Timeout as ex:
             # Retryable timeouts
