@@ -57,6 +57,7 @@ class TestTreeSave(TreeTestBase):
                     2009, 12, 17, 12, 4, 56, tzinfo=tzoffset(None, 7200)
                 ),
                 "change_frequency": "monthly",
+                "images": None,
                 "news_story": None,
             },
             {
@@ -66,6 +67,7 @@ class TestTreeSave(TreeTestBase):
                     2009, 12, 17, 12, 4, 56, tzinfo=tzoffset(None, 7200)
                 ),
                 "change_frequency": "always",
+                "images": None,
                 "news_story": None,
             },
             {
@@ -73,6 +75,7 @@ class TestTreeSave(TreeTestBase):
                 "priority": Decimal("0.5"),
                 "last_modified": None,
                 "change_frequency": None,
+                "images": None,
                 "news_story": {
                     "title": "Foo <foo>",
                     "publish_date": datetime.datetime(
@@ -91,6 +94,7 @@ class TestTreeSave(TreeTestBase):
                 "priority": Decimal("0.5"),
                 "last_modified": None,
                 "change_frequency": None,
+                "images": None,
                 "news_story": {
                     "title": "Bar & bar",
                     "publish_date": datetime.datetime(
@@ -109,6 +113,7 @@ class TestTreeSave(TreeTestBase):
                 "priority": Decimal("0.5"),
                 "last_modified": None,
                 "change_frequency": None,
+                "images": None,
                 "news_story": {
                     "title": "Bar & bar",
                     "publish_date": datetime.datetime(
@@ -127,6 +132,7 @@ class TestTreeSave(TreeTestBase):
                 "priority": Decimal("0.5"),
                 "last_modified": None,
                 "change_frequency": None,
+                "images": None,
                 "news_story": {
                     "title": "Bąž",
                     "publish_date": datetime.datetime(

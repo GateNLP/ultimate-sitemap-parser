@@ -9,16 +9,17 @@
 """
 
 import abc
-from functools import cache
+from functools import lru_cache
 import os
 import pickle
 import tempfile
-from typing import List, Iterator
+from typing import List, Iterator, Tuple
 
 from .page import SitemapPage
 
 
-@cache
+# TODO: change to functools.cache when dropping py3.8
+@lru_cache(maxsize=None)
 def _all_slots(target_cls):
     mro = target_cls.__mro__
 
@@ -248,7 +249,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
     def __repr__(self):
         return f"{self.__class__.__name__}(url={self.url}, pages={self.pages})"
 
-    def __getstate__(self) -> tuple[None, dict]:
+    def __getstate__(self) -> Tuple[None, dict]:
         # Load slots of this class and its parents (mangling if appropriate)
         obj_slots = {slot: getattr(self, slot) for slot in _all_slots(self.__class__)}
         # Replace temp file path with actual content
