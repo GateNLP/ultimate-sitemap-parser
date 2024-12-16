@@ -9,7 +9,7 @@
 """
 
 import abc
-from functools import cache
+from functools import lru_cache
 import os
 import pickle
 import tempfile
@@ -18,7 +18,8 @@ from typing import List, Iterator
 from .page import SitemapPage
 
 
-@cache
+# TODO: change to functools.cache when dropping py3.8
+@lru_cache(maxsize=None)
 def _all_slots(target_cls):
     mro = target_cls.__mro__
 
