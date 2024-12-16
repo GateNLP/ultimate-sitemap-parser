@@ -62,6 +62,7 @@ class SitemapNewsStory:
         self.__stock_tickers = stock_tickers if stock_tickers else []
 
     def __eq__(self, other) -> bool:
+        """Check equality."""
         if not isinstance(other, SitemapNewsStory):
             raise NotImplementedError
 
@@ -138,45 +139,30 @@ class SitemapNewsStory:
 
     @property
     def title(self) -> str:
-        """
-        Return story title.
-
-        :return: Story title.
-        """
+        """Get the story title."""
         return self.__title
 
     @property
     def publish_date(self) -> datetime.datetime:
-        """
-        Return story publication date.
-
-        :return: Story publication date.
-        """
+        """Get the  story publication date."""
         return self.__publish_date
 
     @property
     def publication_name(self) -> Optional[str]:
-        """
-        Return name of the news publication in which the article appears in.
-
-        :return: Name of the news publication in which the article appears in.
-        """
+        """Get the name of the news publication in which the article appears."""
         return self.__publication_name
 
     @property
     def publication_language(self) -> Optional[str]:
-        """Return primary language of the news publication in which the article appears in.
+        """Get the primary language of the news publication in which the article appears.
 
         It should be an ISO 639 Language Code (either 2 or 3 letters).
-
-        :return: Primary language of the news publication in which the article appears in.
         """
         return self.__publication_language
 
     @property
     def access(self) -> Optional[str]:
-        """
-        Return accessibility of the article.
+        """Get the accessibility of the article.
 
         :return: Accessibility of the article.
         """
@@ -184,33 +170,25 @@ class SitemapNewsStory:
 
     @property
     def genres(self) -> List[str]:
-        """
-        Return list of properties characterizing the content of the article.
+        """Get list of genres characterizing the content of the article.
 
-        Returns genres such as "PressRelease" or "UserGenerated".
-
-        :return: List of properties characterizing the content of the article
+        Genres will be one "PressRelease", "Satire", "Blog", "OpEd", "Opinion", "UserGenerated"
         """
         return self.__genres
 
     @property
     def keywords(self) -> List[str]:
-        """
-        Return list of keywords describing the topic of the article.
-
-        :return: List of keywords describing the topic of the article.
-        """
+        """Get list of keywords describing the topic of the article."""
         return self.__keywords
 
     @property
     def stock_tickers(self) -> List[str]:
-        """
-        Return list of up to 5 stock tickers that are the main subject of the article.
+        """Get stock tickers that are the main subject of the article.
 
         Each ticker must be prefixed by the name of its stock exchange, and must match its entry in Google Finance.
         For example, "NASDAQ:AMAT" (but not "NASD:AMAT"), or "BOM:500325" (but not "BOM:RIL").
 
-        :return: List of up to 5 stock tickers that are the main subject of the article.
+        Up to 5 tickers can be provided.
         """
         return self.__stock_tickers
 

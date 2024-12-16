@@ -7,6 +7,8 @@ import sys, os
 
 sys.path.append(os.path.abspath('extensions'))
 
+from usp import __version__ as usp_version
+
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -16,7 +18,7 @@ sys.path.append(os.path.abspath('extensions'))
 project = 'Ultimate Sitemap Parser'
 copyright = '2018-2024, Ultimate Sitemap Parser Contributors'
 author = 'Ultimate Sitemap Parser Contributors'
-release = '0.5.0'
+release = usp_version
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -31,8 +33,7 @@ extensions = [
     'sphinx_design',
     'sphinxext.opengraph',
     'sphinx_copybutton',
-    'custom_graphviz',
-
+    'custom_graphviz'
 ]
 
 templates_path = ['_templates']
@@ -58,6 +59,7 @@ html_theme_options = {
     'source_branch': 'master',
     'source_directory': 'docs/'
 }
+html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "https://usp-dummy.gate.ac.uk/")
 
 # -- Extension Config --------------------------------------------------------
 

@@ -1,7 +1,6 @@
 """Helpers to generate a sitemap tree."""
 
 from typing import Optional
-
 from .exceptions import SitemapException
 from .fetch_parse import SitemapFetcher, SitemapStrParser
 from .helpers import is_http_url, strip_url_to_homepage
