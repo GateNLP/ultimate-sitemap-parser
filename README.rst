@@ -1,4 +1,5 @@
-# Ultimate Sitemap Parser
+Ultimate Sitemap Parser
+-----------------------
 
 .. image:: https://img.shields.io/pypi/pyversions/ultimate-sitemap-parser
    :alt: PyPI - Python Version
