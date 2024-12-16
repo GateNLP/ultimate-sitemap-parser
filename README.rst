@@ -1,17 +1,24 @@
+# Ultimate Sitemap Parser
+
 .. image:: https://img.shields.io/pypi/pyversions/ultimate-sitemap-parser
    :alt: PyPI - Python Version
+   :target: https://github.com/GateNLP/ultimate-sitemap-parser
 
 .. image:: https://img.shields.io/pypi/v/ultimate-sitemap-parser
    :alt: PyPI - Version
+   :target: https://pypi.org/project/ultimate-sitemap-parser/
 
 .. image:: https://img.shields.io/conda/vn/conda-forge/ultimate-sitemap-parser
    :alt: Conda Version
+   :target: https://anaconda.org/conda-forge/ultimate-sitemap-parser
 
 .. image:: https://img.shields.io/pepy/dt/ultimate-sitemap-parser
+   :target: https://pepy.tech/project/ultimate-sitemap-parser
    :alt: Pepy Total Downloads
 
 
-Ultimate Sitemap Parser (USP) is a performant and robust Python library for parsing and crawling sitemaps.
+**Ultimate Sitemap Parser (USP) is a performant and robust Python library for parsing and crawling sitemaps.**
+
 
 Features
 ========
@@ -65,4 +72,3 @@ Usage
 hierarchy found on the website; see a `reference of AbstractSitemap subclasses <https://ultimate-sitemap-parser.readthedocs.io/en/latest/reference/api/usp.objects.sitemap.html>`_. `AbstractSitemap.all_pages()` returns a generator to efficiently iterate over pages without loading the entire tree into memory.
 
 For more examples and details, see the `documentation <https://ultimate-sitemap-parser.readthedocs.io/en/latest/>`_.
-
