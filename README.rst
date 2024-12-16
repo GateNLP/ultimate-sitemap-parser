@@ -1,22 +1,14 @@
-.. image:: https://travis-ci.org/mediacloud/ultimate-sitemap-parser.svg?branch=develop
-    :target: https://travis-ci.org/mediacloud/ultimate-sitemap-parser
-    :alt: Build Status
+.. image:: https://img.shields.io/pypi/pyversions/ultimate-sitemap-parser
+   :alt: PyPI - Python Version
 
-.. image:: https://readthedocs.org/projects/ultimate-sitemap-parser/badge/?version=latest
-    :target: https://ultimate-sitemap-parser.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
+.. image:: https://img.shields.io/pypi/v/ultimate-sitemap-parser
+   :alt: PyPI - Version
 
-.. image:: https://badge.fury.io/py/ultimate-sitemap-parser.svg
-    :target: https://badge.fury.io/py/ultimate-sitemap-parser
-    :alt: PyPI package
+.. image:: https://img.shields.io/conda/vn/conda-forge/ultimate-sitemap-parser
+   :alt: Conda Version
 
-.. image:: https://img.shields.io/conda/v/conda-forge/ultimate-sitemap-parser?color=brightgreen
-   :target: https://anaconda.org/conda-forge/ultimate-sitemap-parser
-   :alt: Conda
-
-.. image:: https://pepy.tech/badge/ultimate-sitemap-parser
-    :target: https://pepy.tech/project/ultimate-sitemap-parser
-    :alt: Download stats
+.. image:: https://img.shields.io/pepy/dt/ultimate-sitemap-parser
+   :alt: Pepy Total Downloads
 
 
 Ultimate Sitemap Parser (USP) is a performant and robust Python library for parsing and crawling sitemaps.
