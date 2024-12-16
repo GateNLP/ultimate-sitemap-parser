@@ -43,7 +43,7 @@ class RequestsWebClientSuccessResponse(AbstractWebClientSuccessResponse):
     def status_message(self) -> str:
         message = self.__requests_response.reason
         if not message:
-            message = HTTPStatus(self.status_code(), None).phrase
+            message = HTTPStatus(self.status_code()).phrase
         return message
 
     def header(self, case_insensitive_name: str) -> Optional[str]:
