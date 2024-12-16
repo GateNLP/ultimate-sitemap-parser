@@ -6,10 +6,6 @@
     :target: https://ultimate-sitemap-parser.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://coveralls.io/repos/github/mediacloud/ultimate-sitemap-parser/badge.svg?branch=develop
-    :target: https://coveralls.io/github/mediacloud/ultimate-sitemap-parser?branch=develop
-    :alt: Coverage Status
-
 .. image:: https://badge.fury.io/py/ultimate-sitemap-parser.svg
     :target: https://badge.fury.io/py/ultimate-sitemap-parser
     :alt: PyPI package
@@ -23,8 +19,7 @@
     :alt: Download stats
 
 
-Website sitemap parser for Python 3.5+.
-
+Ultimate Sitemap Parser (USP) is a performant and robust Python library for parsing and crawling sitemaps.
 
 Features
 ========
@@ -69,18 +64,13 @@ Usage
 
     from usp.tree import sitemap_tree_for_homepage
 
-    tree = sitemap_tree_for_homepage('https://www.nytimes.com/')
-    print(tree)
+    tree = sitemap_tree_for_homepage('https://www.example.org/')
+
+    for page in tree.all_pages():
+        print(page.url)
 
 ``sitemap_tree_for_homepage()`` will return a tree of ``AbstractSitemap`` subclass objects that represent the sitemap
-hierarchy found on the website; see a `reference of AbstractSitemap subclasses <https://ultimate-sitemap-parser.readthedocs.io/en/latest/usp.objects.html#module-usp.objects.sitemap>`_.
+hierarchy found on the website; see a `reference of AbstractSitemap subclasses <https://ultimate-sitemap-parser.readthedocs.io/en/latest/reference/api/usp.objects.sitemap.html>`_. `AbstractSitemap.all_pages()` returns a generator to efficiently iterate over pages without loading the entire tree into memory.
 
-If you'd like to just list all the pages found in all of the sitemaps within the website, consider using ``all_pages()`` method:
+For more examples and details, see the `documentation <https://ultimate-sitemap-parser.readthedocs.io/en/latest/>`_.
 
-.. code:: python
-
-    # all_pages() returns an Iterator
-    for page in tree.all_pages():
-        print(page)
-
-``all_pages()`` method will return an iterator yielding ``SitemapPage`` objects; see a `reference of SitemapPage <https://ultimate-sitemap-parser.readthedocs.io/en/latest/usp.objects.html#module-usp.objects.page>`_.
