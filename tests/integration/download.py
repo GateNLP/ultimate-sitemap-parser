@@ -56,7 +56,7 @@ def dl_cassette(data):
     with requests.get(data["url"], allow_redirects=True, stream=True) as r:
         r.raise_for_status()
 
-        with open(dl_gz_path / dl_gz_path, "wb") as f:
+        with open(dl_gz_path, "wb") as f:
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
 
