@@ -120,6 +120,7 @@ def cleanup_files(data, confirm=True):
 
 def main(force: bool = False, force_delete=False):
     logging.basicConfig(level=logging.INFO)
+    CASSETTE_ROOT.mkdir(exist_ok=True)
     (CASSETTE_ROOT / "download").mkdir(exist_ok=True)
 
     manifest = download_manifest()
