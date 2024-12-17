@@ -32,6 +32,7 @@ Ultimate Sitemap Parser
 
     changelog
     acknowledgements
+    contributing
     GitHub <https://github.com/GateNLP/ultimate-sitemap-parser>
     PyPI <https://pypi.org/project/ultimate-sitemap-parser>
     Issues <https://github.com/GateNLP/ultimate-sitemap-parser/issues>
