@@ -1,4 +1,4 @@
-name: Test
+name: Integration Test
 
 on: [workflow_dispatch]
 
@@ -6,7 +6,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  integ_test:
     runs-on: ubuntu-latest
 
     strategy:
