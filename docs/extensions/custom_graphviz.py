@@ -334,8 +334,8 @@ def render_dot_html(
         replacement_color = replace_var(var_text)
         return f'"{replacement_color}"'
 
-    # fontcolor = replace_var("var(--pst-color-link)")
-    # fontsize = "12"
+    fontcolor = replace_var("var(--graphviz-font-color)")
+    fontsize = "12"
 
     graphviz_dot = options.get("graphviz_dot", self.builder.config.graphviz_dot)
     config_info = get_adjusted_graphviz_config(self.builder.app, graphviz_dot)
@@ -344,18 +344,18 @@ def render_dot_html(
     #     ttf_font = font
 
     command_line_options = [
-        # "-Ncolor=" + replace_var("var(--md-graphviz-node-fg-color)"),
-        # "-Nstyle=solid,filled",
-        # "-Nfillcolor=" + replace_var("var(--md-graphviz-node-bg-color)"),
-        # "-Nfontcolor=" + fontcolor,
-        # "-Nfontsize=" + fontsize,
-        # "-Ecolor=" + replace_var("var(--md-graphviz-edge-color)"),
-        # "-Efontcolor=" + fontcolor,
-        # "-Efontsize=" + fontsize,
-        # "-Gbgcolor=transparent",
-        # "-Gcolor=" + replace_var("var(--md-graphviz-node-fg-color)"),
-        # "-Gfontcolor=" + fontcolor,
-        # "-Gfontsize=" + fontsize,
+        "-Ncolor=" + replace_var("var(--color-content-foreground)"),
+        "-Nstyle=solid,filled",
+        "-Nfillcolor=" + replace_var("var(--color-content-background)"),
+        "-Nfontcolor=" + fontcolor,
+        "-Nfontsize=" + fontsize,
+        "-Ecolor=" + replace_var("var(--color-content-foreground)"),
+        "-Efontcolor=" + fontcolor,
+        "-Efontsize=" + fontsize,
+        "-Gbgcolor=transparent",
+        "-Gcolor=" + replace_var("var(--color-content-foreground)"),
+        "-Gfontcolor=" + fontcolor,
+        "-Gfontsize=" + fontsize,
     ]
     # if ttf_font is not None:
     #     command_line_options.extend(
@@ -449,7 +449,7 @@ def render_dot_html(
                     child.attrib["within_a"] = "true"
         within_a = attrib.pop("within_a", None)
         # if within_a:
-        #     style += "--pst-color-link-hover: var(--pst-color-link-hover);"
+        #     style += "--graphviz-hover-color: var(--pst-color-link-hover);"
         if style:
             attrib["style"] = style
 
