@@ -27,7 +27,7 @@ Features
 - Supports all sitemap formats:
 
   - `XML sitemaps <https://www.sitemaps.org/protocol.html#xmlTagDefinitions>`_
-  - `Google News sitemaps <https://support.google.com/news/publisher-center/answer/74288?hl=en>`_
+  - `Google News sitemaps <https://developers.google.com/search/docs/crawling-indexing/sitemaps/news-sitemap>`_ and `Image sitemaps <https://developers.google.com/search/docs/advanced/sitemaps/image-sitemaps>`_
   - `plain text sitemaps <https://www.sitemaps.org/protocol.html#otherformats>`_
   - `RSS 2.0 / Atom 0.3 / Atom 1.0 sitemaps <https://www.sitemaps.org/protocol.html#otherformats>`_
   - `Sitemaps linked from robots.txt <https://developers.google.com/search/reference/robots_txt#sitemap>`_
