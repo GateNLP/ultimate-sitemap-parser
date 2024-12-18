@@ -1,0 +1,86 @@
+[tool.poetry]
+name = "ultimate-sitemap-parser"
+version = "1.0.0rc1"
+description = "A performant library for parsing and crawling sitemaps"
+authors = [
+    "Linas Valiukas <linas@media.mit.edu>",
+    "Hal Roberts <hroberts@cyber.law.harvard.edu>",
+    "Freddy Heppell <f.heppell@sheffield.ac.uk>"
+]
+maintainers = [
+    "Freddy Heppell <f.heppell@sheffield.ac.uk>"
+]
+homepage = "https://ultimate-sitemap-parser.readthedocs.io/"
+documentation = "https://ultimate-sitemap-parser.readthedocs.io/"
+repository = "https://github.com/GateNLP/ultimate-sitemap-parser"
+license = "GPL-3.0-or-later"
+readme = "README.rst"
+classifiers=[
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Information Technology',
+    'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+    'Programming Language :: Python',
+    'Operating System :: OS Independent',
+    'Topic :: Internet :: WWW/HTTP :: Indexing/Search',
+    'Topic :: Text Processing :: Indexing',
+    'Topic :: Text Processing :: Markup :: XML',
+]
+keywords = ["sitemap", "crawler", "indexing", "xml", "rss", "atom", "google news"]
+packages = [
+    { include = "usp" }
+]
+
+[tool.poetry.scripts]
+usp = 'usp.cli:main'
+
+[tool.poetry.dependencies]
+python = "^3.8"
+python-dateutil = ">=2.7,<3.0.0"
+requests = ">=2.2.1"
+
+[tool.poetry.group.dev.dependencies]
+requests-mock = ">=1.6.0,<2.0"
+pytest = "^8.3.0"
+ruff = "^0.6.1"
+vcrpy = "6.0.1"
+
+[tool.poetry.group.perf]
+optional = true
+[tool.poetry.group.perf.dependencies]
+pytest-memray = "^1.7.0"
+pyinstrument = "^4.7.2"
+
+[tool.poetry.group.docs]
+optional = true
+[tool.poetry.group.docs.dependencies]
+sphinx = { version = "^8.0.2", python = "^3.10" }
+sphinx-autobuild = { version = "^2024.04.16", python = "^3.10"}
+sphinx-design = {version = "^0.6.1", python = "^3.10"}
+furo = {version = "^2024.8.6", python = "^3.10"}
+sphinxext-opengraph = {version = "^0.9.1", python = "^3.10"}
+sphinx-copybutton = {version = "^0.5.2", python = "^3.10"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py38"
+extend-exclude = ["docs/*"]
+
+[tool.ruff.lint]
+select = [
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    "UP",
+    "PT"
+]
+
+[tool.pytest.ini_options]
+junit_suite_name = "ultimate-sitemap-parser"
+junit_duration_report = "call"
+log_cli = true
+log_cli_level = "WARNING"

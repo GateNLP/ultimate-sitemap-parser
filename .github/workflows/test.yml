@@ -1,0 +1,41 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Poetry
+        run: pipx install poetry==1.8.3
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "poetry"
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-root
+      - name: Install Project
+        run: poetry install --no-interaction
+      - name: Poetry Build
+        run: poetry build
+      - name: Run tests
+        run: poetry run pytest

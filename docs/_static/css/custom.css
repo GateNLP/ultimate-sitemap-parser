@@ -1,0 +1,78 @@
+/* Fix graphviz width */
+svg.graphviz {
+    max-width: 100% !important;
+    height: auto !important;
+
+    --graphviz-font-color: var(--color-content-foreground);
+}
+
+svg.graphviz .node a {
+    text-decoration: none;
+    --graphviz-font-color: var(--color-link);
+}
+
+/* Make Rubric more like sphinx-book-theme */
+p.rubric {
+    font-size: 1em;
+    border-bottom: 1px solid var(--color-background-border);
+    margin-top: 30px;
+    line-height: unset;
+}
+
+/* Flush code blocks in cards */
+.code-card .sd-card-body {
+    padding: 0;
+    border-radius: 0 0 0.25rem 0.25rem;
+    /*background-color: var(--sd-color-card-background) !important;*/
+}
+
+.code-card .sd-card-body>div {
+    margin: 0;
+    border-radius: 0 0 0.25rem 0.25rem;
+}
+
+.code-card .highlight {
+    border-radius: 0 0 0.25rem 0.25rem;
+    background: unset !important;
+}
+
+.code-card .highlight pre {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border: none;
+    background: unset;
+}
+
+/* Flush code blocks in dropdowns */
+
+details.flush {
+    --sd-fontsize-tabs-label: 0.9rem;
+}
+
+details.flush .sd-summary-content {
+    padding: 0;
+}
+
+details.flush .sd-summary-content > div[class^="highlight-"] {
+    margin: 0;
+}
+
+details.flush .highlight {
+    border-radius: 0 0 0.25rem 0.25rem;
+}
+
+details.flush .sd-tab-set {
+    margin-bottom: 0;
+}
+
+details.flush .sd-tab-content {
+    padding: 0;
+}
+
+details.flush .sd-tab-label {
+    padding-top: 0.5em;
+}
+
+.extlink-commit {
+    font-family: var(--font-stack--monospace);
+}

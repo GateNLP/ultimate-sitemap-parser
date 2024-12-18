@@ -1,0 +1,38 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Poetry
+        run: pipx install poetry==1.8.3
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.8"
+          cache: "poetry"
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-root
+      - name: Install Project
+        run: poetry install --no-interaction
+      - name: Ruff Lint Format
+        run: poetry run ruff format --check
+        id: format
+      - name: Ruff Lint Check
+        run: poetry run ruff check --output-format=github
+        if: success() || steps.format.conclusion == 'failure'

@@ -1,0 +1,13 @@
+# An example robots.txt file
+# Some sitemap declarations, Google allows all of these
+Sitemap: https://example.org/sitemap.xml
+sitemap: https://example.org/weirdly-named-sitemap.xml
+site-map: https://example.org/another-sitemap.xml
+sItE-mAp: https://example.org/and-another-sitemap.xml
+
+# And other stuff too
+User-agent: *
+Disallow: /admin/
+
+User-agent: GPTBot
+Disallow: /

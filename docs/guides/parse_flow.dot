@@ -1,0 +1,142 @@
+strict digraph {
+
+    fetch [
+        shape = "rect"
+        group=main
+        xref=":class:`~usp.fetch_parse.SitemapFetcher`"
+        label= "Fetch with\nSitemapFetcher"
+    ]
+
+    httpsucc [
+        label="Did request\nsucceed?"
+        shape=diamond;
+                group=main
+
+    ]
+
+    fetch -> httpsucc
+
+    returninvalid [
+        xref=":class:`~usp.objects.sitemap.InvalidSitemap`"
+        label = "Return\nInvalidSitemap"
+    ]
+
+    httpsucc -> returninvalid [label="No"]
+
+    {
+        rank=same;
+        httpsucc; returninvalid; userobots;
+    }
+
+    seemsxml [
+        label="Starts with\n '<' char?"
+        shape=diamond
+        group=main
+    ]
+    httpsucc -> seemsxml [label="Yes"]
+
+    isrobots [
+        label="URL ends with\nrobots.txt?"
+        shape=diamond
+        group=robots
+    ]
+    seemsxml -> isrobots [label="No"]
+
+    {rank=same;
+    seemsxml;isrobots;
+    }
+
+    useplaintext [
+        label="PlainTextSitemapParser"
+        group=robots
+        xref=":class:`~usp.fetch_parse.PlainTextSitemapParser`"
+    ]
+
+    isrobots -> useplaintext [label="No"]
+
+    userobots [
+        xref=":class:`~usp.fetch_parse.IndexRobotsTxtSitemapParser`"
+        label="IndexRobotsTxtSitemapParser"
+        group=robots
+    ]
+    isrobots -> userobots [label="Yes"]
+
+
+    xmlparse [
+        xref=":class:`~usp.fetch_parse.XMLSitemapParser`"
+        label="XMLSitemapParser",
+        shape="parallelogram"
+        group=main
+    ]
+    seemsxml -> xmlparse [label="Yes"]
+
+    isurlset [
+        label="Has\n<urlset>?"
+        shape="diamond"
+    ]
+    xmlparse -> isurlset
+
+    concretepages [
+        xref=":class:`~usp.fetch_parse.PagesXMLSitemapParser`"
+        label="PagesXMLSitemapParser"
+    ]
+    isurlset -> concretepages [label="Yes"]
+
+    {rank=same;
+    isurlset;concretepages;
+    }
+
+    issitemapindex [
+        label="Has\n<sitemapindex>?"
+        shape=diamond
+    ]
+    isurlset -> issitemapindex [label="No"]
+
+    concreteindex [
+        xref=":class:`~usp.fetch_parse.IndexXMLSitemapParser`"
+        label="IndexXMLSitemapParser"
+    ]
+    issitemapindex -> concreteindex [label="Yes"]
+
+    {rank=same;
+    issitemapindex;concreteindex
+    }
+
+    isrss [
+        label="Has\n<rss>?"
+        shape=diamond
+    ]
+    issitemapindex -> isrss [label="No"]
+
+    concreterss [
+        xref=":class:`~usp.fetch_parse.PagesRSSSitemapParser`"
+        label="PagesRSSSitemapParser"
+    ]
+    isrss -> concreterss [label="Yes"]
+
+    {rank=same;
+    isrss; concreterss;
+    }
+
+    isatom [
+        label="Has\n<feed>?"
+        shape=diamond
+    ]
+    isrss -> isatom [label="No"]
+
+    concreteatom [
+        xref=":class:`~usp.fetch_parse.PagesAtomSitemapParser`"
+        label="PagesAtomSitemapParser"
+    ]
+    isatom -> concreteatom [label="Yes"]
+
+    {rank=same;
+    isatom; concreteatom;
+    }
+
+    error [
+        xref=":class:`~usp.exceptions.SitemapXMLParsingException`"
+        label="Raise\nSitemapXMLParsingException"
+    ]
+    isatom -> error [label="No"]
+}

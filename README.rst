@@ -1,21 +1,24 @@
-.. image:: https://travis-ci.org/berkmancenter/mediacloud-ultimate_sitemap_parser.svg?branch=develop
-    :target: https://travis-ci.org/berkmancenter/mediacloud-ultimate_sitemap_parser
-    :alt: Build Status
+Ultimate Sitemap Parser
+-----------------------
 
-.. image:: https://readthedocs.org/projects/ultimate-sitemap-parser/badge/?version=latest
-    :target: https://ultimate-sitemap-parser.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
+.. image:: https://img.shields.io/pypi/pyversions/ultimate-sitemap-parser
+   :alt: PyPI - Python Version
+   :target: https://github.com/GateNLP/ultimate-sitemap-parser
 
-.. image:: https://coveralls.io/repos/github/berkmancenter/mediacloud-ultimate_sitemap_parser/badge.svg?branch=develop
-    :target: https://coveralls.io/github/berkmancenter/mediacloud-ultimate_sitemap_parser?branch=develop
-    :alt: Coverage Status
+.. image:: https://img.shields.io/pypi/v/ultimate-sitemap-parser
+   :alt: PyPI - Version
+   :target: https://pypi.org/project/ultimate-sitemap-parser/
 
-.. image:: https://badge.fury.io/py/ultimate-sitemap-parser.svg
-    :target: https://badge.fury.io/py/ultimate-sitemap-parser
-    :alt: PyPI package
+.. image:: https://img.shields.io/conda/vn/conda-forge/ultimate-sitemap-parser
+   :alt: Conda Version
+   :target: https://anaconda.org/conda-forge/ultimate-sitemap-parser
+
+.. image:: https://img.shields.io/pepy/dt/ultimate-sitemap-parser
+   :target: https://pepy.tech/project/ultimate-sitemap-parser
+   :alt: Pepy Total Downloads
 
 
-Website sitemap parser for Python 3.5+.
+**Ultimate Sitemap Parser (USP) is a performant and robust Python library for parsing and crawling sitemaps.**
 
 
 Features
@@ -24,7 +27,7 @@ Features
 - Supports all sitemap formats:
 
   - `XML sitemaps <https://www.sitemaps.org/protocol.html#xmlTagDefinitions>`_
-  - `Google News sitemaps <https://support.google.com/news/publisher-center/answer/74288?hl=en>`_
+  - `Google News sitemaps <https://developers.google.com/search/docs/crawling-indexing/sitemaps/news-sitemap>`_ and `Image sitemaps <https://developers.google.com/search/docs/advanced/sitemaps/image-sitemaps>`_
   - `plain text sitemaps <https://www.sitemaps.org/protocol.html#otherformats>`_
   - `RSS 2.0 / Atom 0.3 / Atom 1.0 sitemaps <https://www.sitemaps.org/protocol.html#otherformats>`_
   - `Sitemaps linked from robots.txt <https://developers.google.com/search/reference/robots_txt#sitemap>`_
@@ -45,7 +48,13 @@ Installation
 
 .. code:: sh
 
-    pip install ultimate_sitemap_parser
+    pip install ultimate-sitemap-parser
+
+or using Anaconda:
+
+.. code:: sh
+
+    conda install -c conda-forge ultimate-sitemap-parser
 
 
 Usage
@@ -55,18 +64,12 @@ Usage
 
     from usp.tree import sitemap_tree_for_homepage
 
-    tree = sitemap_tree_for_homepage('https://www.nytimes.com/')
-    print(tree)
+    tree = sitemap_tree_for_homepage('https://www.example.org/')
+
+    for page in tree.all_pages():
+        print(page.url)
 
 ``sitemap_tree_for_homepage()`` will return a tree of ``AbstractSitemap`` subclass objects that represent the sitemap
-hierarchy found on the website; see a `reference of AbstractSitemap subclasses <https://ultimate-sitemap-parser.readthedocs.io/en/latest/usp.objects.html#module-usp.objects.sitemap>`_.
+hierarchy found on the website; see a `reference of AbstractSitemap subclasses <https://ultimate-sitemap-parser.readthedocs.io/en/latest/reference/api/usp.objects.sitemap.html>`_. `AbstractSitemap.all_pages()` returns a generator to efficiently iterate over pages without loading the entire tree into memory.
 
-If you'd like to just list all the pages found in all of the sitemaps within the website, consider using ``all_pages()`` method:
-
-.. code:: python
-
-    # all_pages() returns an Iterator
-    for page in tree.all_pages():
-        print(page)
-
-``all_pages()`` method will return an iterator yielding ``SitemapPage`` objects; see a `reference of SitemapPage <https://ultimate-sitemap-parser.readthedocs.io/en/latest/usp.objects.html#module-usp.objects.page>`_.
+For more examples and details, see the `documentation <https://ultimate-sitemap-parser.readthedocs.io/en/latest/>`_.

@@ -1,0 +1,4 @@
+cassettes/*.yaml
+cassettes/manifest.json
+cassettes/hashes.json
+cassettes/download/

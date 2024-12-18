@@ -5,76 +5,59 @@ from http import HTTPStatus
 from typing import Optional
 
 RETRYABLE_HTTP_STATUS_CODES = {
-
     # Some servers return "400 Bad Request" initially but upon retry start working again, no idea why
-    HTTPStatus.BAD_REQUEST.value,
-
+    int(HTTPStatus.BAD_REQUEST),
     # If we timed out requesting stuff, we can just try again
-    HTTPStatus.REQUEST_TIMEOUT.value,
-
+    int(HTTPStatus.REQUEST_TIMEOUT),
     # If we got rate limited, it makes sense to wait a bit
-    HTTPStatus.TOO_MANY_REQUESTS.value,
-
+    int(HTTPStatus.TOO_MANY_REQUESTS),
     # Server might be just fine on a subsequent attempt
-    HTTPStatus.INTERNAL_SERVER_ERROR.value,
-
+    int(HTTPStatus.INTERNAL_SERVER_ERROR),
     # Upstream might reappear on a retry
-    HTTPStatus.BAD_GATEWAY.value,
-
+    int(HTTPStatus.BAD_GATEWAY),
     # Service might become available again on a retry
-    HTTPStatus.SERVICE_UNAVAILABLE.value,
-
+    int(HTTPStatus.SERVICE_UNAVAILABLE),
     # Upstream might reappear on a retry
-    HTTPStatus.GATEWAY_TIMEOUT.value,
-
+    int(HTTPStatus.GATEWAY_TIMEOUT),
     # (unofficial) 509 Bandwidth Limit Exceeded (Apache Web Server/cPanel)
     509,
-
     # (unofficial) 598 Network read timeout error
     598,
-
     # (unofficial, nginx) 499 Client Closed Request
     499,
-
     # (unofficial, Cloudflare) 520 Unknown Error
     520,
-
     # (unofficial, Cloudflare) 521 Web Server Is Down
     521,
-
     # (unofficial, Cloudflare) 522 Connection Timed Out
     522,
-
     # (unofficial, Cloudflare) 523 Origin Is Unreachable
     523,
-
     # (unofficial, Cloudflare) 524 A Timeout Occurred
     524,
-
     # (unofficial, Cloudflare) 525 SSL Handshake Failed
     525,
-
     # (unofficial, Cloudflare) 526 Invalid SSL Certificate
     526,
-
     # (unofficial, Cloudflare) 527 Railgun Error
     527,
-
     # (unofficial, Cloudflare) 530 Origin DNS Error
     530,
-
 }
 """HTTP status codes on which a request should be retried."""
 
 
-class AbstractWebClientResponse(object, metaclass=abc.ABCMeta):
+class AbstractWebClientResponse(metaclass=abc.ABCMeta):
     """
     Abstract response.
     """
+
     pass
 
 
-class AbstractWebClientSuccessResponse(AbstractWebClientResponse, metaclass=abc.ABCMeta):
+class AbstractWebClientSuccessResponse(
+    AbstractWebClientResponse, metaclass=abc.ABCMeta
+):
     """
     Successful response.
     """
@@ -123,8 +106,8 @@ class WebClientErrorResponse(AbstractWebClientResponse, metaclass=abc.ABCMeta):
     """
 
     __slots__ = [
-        '_message',
-        '_retryable',
+        "_message",
+        "_retryable",
     ]
 
     def __init__(self, message: str, retryable: bool):
@@ -155,24 +138,26 @@ class WebClientErrorResponse(AbstractWebClientResponse, metaclass=abc.ABCMeta):
         return self._retryable
 
 
-class AbstractWebClient(object, metaclass=abc.ABCMeta):
+class AbstractWebClient(metaclass=abc.ABCMeta):
     """
     Abstract web client to be used by the sitemap fetcher.
     """
 
     @abc.abstractmethod
-    def set_max_response_data_length(self, max_response_data_length: int) -> None:
+    def set_max_response_data_length(
+        self, max_response_data_length: Optional[int]
+    ) -> None:
         """
         Set the maximum number of bytes that the web client will fetch.
 
-        :param max_response_data_length: Maximum number of bytes that the web client will fetch.
+        :param max_response_data_length: Maximum number of bytes that the web client will fetch, or None to fetch all.
         """
         raise NotImplementedError("Abstract method.")
 
     @abc.abstractmethod
     def get(self, url: str) -> AbstractWebClientResponse:
         """
-        Fetch an URL and return a response.
+        Fetch a URL and return a response.
 
         Method shouldn't throw exceptions on connection errors (including timeouts); instead, such errors should be
         reported via Response object.
@@ -181,3 +166,24 @@ class AbstractWebClient(object, metaclass=abc.ABCMeta):
         :return: Response object.
         """
         raise NotImplementedError("Abstract method.")
+
+
+class NoWebClientException(Exception):
+    """Error indicating this web client cannot fetch pages."""
+
+    pass
+
+
+class LocalWebClient(AbstractWebClient):
+    """Dummy web client which is a valid implementation but errors if called.
+
+    Used for local parsing
+    """
+
+    def set_max_response_data_length(
+        self, max_response_data_length: Optional[int]
+    ) -> None:
+        pass
+
+    def get(self, url: str) -> AbstractWebClientResponse:
+        raise NoWebClientException
