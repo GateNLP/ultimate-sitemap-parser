@@ -10,6 +10,9 @@ authors = [
 maintainers = [
     "Freddy Heppell <f.heppell@sheffield.ac.uk>"
 ]
+homepage = "https://ultimate-sitemap-parser.readthedocs.io/"
+documentation = "https://ultimate-sitemap-parser.readthedocs.io/"
+repository = "https://github.com/GateNLP/ultimate-sitemap-parser"
 license = "GPL-3.0-or-later"
 readme = "README.rst"
 classifiers=[
@@ -23,6 +26,7 @@ classifiers=[
     'Topic :: Text Processing :: Indexing',
     'Topic :: Text Processing :: Markup :: XML',
 ]
+keywords = ["sitemap", "crawler", "indexing", "xml", "rss", "atom", "google news"]
 packages = [
     { include = "usp" }
 ]
