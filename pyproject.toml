@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ultimate-sitemap-parser"
 version = "1.0.0rc1"
-description = "Ult"
+description = "A performant library for parsing and crawling sitemaps"
 authors = [
     "Linas Valiukas <linas@media.mit.edu>",
     "Hal Roberts <hroberts@cyber.law.harvard.edu>",
