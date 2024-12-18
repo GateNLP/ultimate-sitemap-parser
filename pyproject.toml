@@ -1,15 +1,19 @@
 [tool.poetry]
 name = "ultimate-sitemap-parser"
-version = "0.6.0"
+version = "1.0.0rc1"
 description = "Ult"
 authors = [
     "Linas Valiukas <linas@media.mit.edu>",
-    "Hal Roberts <hroberts@cyber.law.harvard.edu>"
+    "Hal Roberts <hroberts@cyber.law.harvard.edu>",
+    "Freddy Heppell <f.heppell@sheffield.ac.uk>"
+]
+maintainers = [
+    "Freddy Heppell <f.heppell@sheffield.ac.uk>"
 ]
 license = "GPL-3.0-or-later"
 readme = "README.rst"
 classifiers=[
-    'Development Status :: 3 - Alpha',
+    'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'Intended Audience :: Information Technology',
     'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
