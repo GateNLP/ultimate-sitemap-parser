@@ -2,7 +2,7 @@ Changelog
 =========
 
 v1.0.0 (2025-01-13)
------------------
+-------------------
 
 Ultimate Sitemap Parser is now maintained by the `GATE Team <https://gate.ac.uk/>`_ at the School of Computer Science, University of Sheffield. We'd like to thank Linas Valiukas and Hal Roberts for their work on this package, and Paige Gulley for coordinating the transfer of the library.
 
