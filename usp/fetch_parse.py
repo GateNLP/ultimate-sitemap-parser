@@ -643,6 +643,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
             "news_keywords",
             "news_stock_tickers",
             "images",
+            "alternates"
         ]
 
         def __init__(self):
@@ -659,6 +660,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
             self.news_keywords = None
             self.news_stock_tickers = None
             self.images = []
+            self.alternates = []
 
         def __hash__(self):
             return hash(
@@ -763,6 +765,10 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
                     for image in self.images
                 ]
 
+            alternates = None
+            if len(self.alternates) > 0:
+                alternates = self.alternates
+
             return SitemapPage(
                 url=url,
                 last_modified=last_modified,
@@ -770,6 +776,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
                 priority=priority,
                 news_story=sitemap_news_story,
                 images=sitemap_images,
+                alternates=alternates,
             )
 
     __slots__ = ["_current_page", "_pages", "_page_urls", "_current_image"]
@@ -801,6 +808,15 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
                     "Page is expected to be set before <image:image>."
                 )
             self._current_image = self.Image()
+        elif name == "link":
+            if not self._current_page:
+                raise SitemapXMLParsingException(
+                    "Page is expected to be set before <link>."
+                )
+            if "hreflang" not in attrs or "href" not in attrs:
+                log.warning(f"<link> element is missing hreflang or href attributes: {attrs}.")
+
+            self._current_page.alternates.append((attrs["hreflang"], attrs["href"]))
 
     def __require_last_char_data_to_be_set(self, name: str) -> None:
         if not self._last_char_data:

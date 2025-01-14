@@ -3,7 +3,7 @@
 import datetime
 from decimal import Decimal
 from enum import Enum, unique
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 SITEMAP_PAGE_DEFAULT_PRIORITY = Decimal("0.5")
 """Default sitemap page priority, as per the spec."""
@@ -331,6 +331,7 @@ class SitemapPage:
         "__change_frequency",
         "__news_story",
         "__images",
+        "__alternates",
     ]
 
     def __init__(
@@ -341,6 +342,7 @@ class SitemapPage:
         change_frequency: Optional[SitemapPageChangeFrequency] = None,
         news_story: Optional[SitemapNewsStory] = None,
         images: Optional[List[SitemapImage]] = None,
+        alternates: Optional[List[Tuple[str, str]]] = None,
     ):
         """
         Initialize a new sitemap-derived page.
@@ -357,6 +359,7 @@ class SitemapPage:
         self.__change_frequency = change_frequency
         self.__news_story = news_story
         self.__images = images
+        self.__alternates = alternates
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, SitemapPage):
@@ -378,6 +381,9 @@ class SitemapPage:
             return False
 
         if self.images != other.images:
+            return False
+
+        if self.alternates != other.alternates:
             return False
 
         return True
@@ -449,3 +455,8 @@ class SitemapPage:
     def images(self) -> Optional[List[SitemapImage]]:
         """Get the images attached to the URL."""
         return self.__images
+
+    @property
+    def alternates(self) -> Optional[List[Tuple[str, str]]]:
+        """Get the alternate URLs for the URL."""
+        return self.__alternates
