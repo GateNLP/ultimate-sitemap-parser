@@ -150,6 +150,25 @@ If the page contains Google Image data, it is stored as a list of :class:`~usp.o
 
 .. _xml date:
 
+Additional Features
+^^^^^^^^^^^^^^^^^^^
+
+Beyond the Sitemap specification, USP also supports some non-standard features used by large sitemap consumers (e.g. Google).
+
+Alternate Localised Pages
+"""""""""""""""""""""""""
+
+- `Google documentation <https://developers.google.com/search/docs/specialty/international/localized-versions#sitemap>`__
+
+.. dropdown:: Example
+    :class-container: flush
+
+    .. literalinclude:: formats_examples/hreflang.xml
+        :emphasize-lines: 3,7-10,15-18
+        :language: xml
+
+Alternate localised pages specified with the ``<link>`` tag will be stored as a list in :attr:`SitemapPage.alternates <usp.objects.page.SitemapPage.alternates>`. Language codes are not validated.
+
 Date Time Parsing
 ^^^^^^^^^^^^^^^^^
 

@@ -813,10 +813,12 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
                 raise SitemapXMLParsingException(
                     "Page is expected to be set before <link>."
                 )
-            if "hreflang" not in attrs or "href" not in attrs:
+            if "rel" not in attrs or attrs["rel"] != "alternate":
+                log.warning(f"<link> element is missing rel attribute: {attrs}.")
+            elif "hreflang" not in attrs or "href" not in attrs:
                 log.warning(f"<link> element is missing hreflang or href attributes: {attrs}.")
-
-            self._current_page.alternates.append((attrs["hreflang"], attrs["href"]))
+            else:
+                self._current_page.alternates.append((attrs["hreflang"], attrs["href"]))
 
     def __require_last_char_data_to_be_set(self, name: str) -> None:
         if not self._last_char_data:

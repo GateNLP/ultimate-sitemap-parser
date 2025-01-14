@@ -458,5 +458,12 @@ class SitemapPage:
 
     @property
     def alternates(self) -> Optional[List[Tuple[str, str]]]:
-        """Get the alternate URLs for the URL."""
+        """Get the alternate URLs for the URL.
+
+        A tuple of (language code, URL) for each ``<xhtml:link>`` element with ``rel="alternate"`` attribute.
+
+        Example::
+
+            [('fr', 'https://www.example.com/fr/page'), ('de', 'https://www.example.com/de/page')]
+        """
         return self.__alternates

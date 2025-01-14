@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9/"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://example.org/en/page</loc>
+        <lastmod>2024-01-01</lastmod>
+        <xhtml:link
+            rel="alternate"
+            hreflang="fr-FR"
+            href="https://example.org/fr/page"/>
+    </url>
+    <url>
+        <loc>https://example.org/fr/page</loc>
+        <lastmod>2024-01-02</lastmod>
+        <xhtml:link
+            rel="alternate"
+            hreflang="en-GB"
+            href="https://example.org/en/page"/>
+    </url>
+</urlset>
