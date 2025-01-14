@@ -146,7 +146,7 @@ class TestXMLExts(TreeTestBase):
                     </url>
                 </urlset>
                 """
-            ).strip()
+            ).strip(),
         )
 
         tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)

@@ -643,7 +643,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
             "news_keywords",
             "news_stock_tickers",
             "images",
-            "alternates"
+            "alternates",
         ]
 
         def __init__(self):
@@ -816,7 +816,9 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
             if "rel" not in attrs or attrs["rel"] != "alternate":
                 log.warning(f"<link> element is missing rel attribute: {attrs}.")
             elif "hreflang" not in attrs or "href" not in attrs:
-                log.warning(f"<link> element is missing hreflang or href attributes: {attrs}.")
+                log.warning(
+                    f"<link> element is missing hreflang or href attributes: {attrs}."
+                )
             else:
                 self._current_page.alternates.append((attrs["hreflang"], attrs["href"]))
 
