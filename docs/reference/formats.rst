@@ -132,6 +132,8 @@ The Google News extension provides additional information to describe the news s
 
 If the page contains Google News data, it is stored as a :class:`~usp.objects.page.SitemapNewsStory` object in :attr:`SitemapPage.news_story <usp.objects.page.SitemapPage.news_story>`.
 
+.. _google-image-ext:
+
 Google Image
 """"""""""""
 
@@ -154,6 +156,8 @@ Additional Features
 ^^^^^^^^^^^^^^^^^^^
 
 Beyond the Sitemap specification, USP also supports some non-standard features used by large sitemap consumers (e.g. Google).
+
+.. _sitemap-extra-localisation:
 
 Alternate Localised Pages
 """""""""""""""""""""""""

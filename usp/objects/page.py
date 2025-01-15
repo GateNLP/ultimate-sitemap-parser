@@ -448,12 +448,18 @@ class SitemapPage:
 
     @property
     def news_story(self) -> Optional[SitemapNewsStory]:
-        """Get the Google News story attached to the URL."""
+        """Get the Google News story attached to the URL.
+
+        See :ref:`google-news-ext` reference
+        """
         return self.__news_story
 
     @property
     def images(self) -> Optional[List[SitemapImage]]:
-        """Get the images attached to the URL."""
+        """Get the images attached to the URL.
+
+        See :ref:`google-image-ext` reference
+        """
         return self.__images
 
     @property
@@ -461,6 +467,8 @@ class SitemapPage:
         """Get the alternate URLs for the URL.
 
         A tuple of (language code, URL) for each ``<xhtml:link>`` element with ``rel="alternate"`` attribute.
+
+        See :ref:`sitemap-extra-localisation` reference
 
         Example::
 
