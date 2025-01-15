@@ -106,7 +106,9 @@ class TestXMLExts(TreeTestBase):
 
         assert tree == expected_sitemap_tree
 
-    def test_xml_hreflang(self, requests_mock):
+
+class TestXMLHrefLang(TreeTestBase):
+    def test_hreflang(self, requests_mock):
         requests_mock.add_matcher(TreeTestBase.fallback_to_404_not_found_matcher)
 
         requests_mock.get(
@@ -118,7 +120,6 @@ class TestXMLExts(TreeTestBase):
                 Disallow: /whatever
 
                 Sitemap: {self.TEST_BASE_URL}/sitemap.xml
-
             """
             ).strip(),
         )
@@ -158,3 +159,67 @@ class TestXMLExts(TreeTestBase):
         assert pages[1].alternates == [
             ("en-GB", f"{self.TEST_BASE_URL}/en/page"),
         ]
+
+    def test_missing_attrs(self, requests_mock):
+        requests_mock.add_matcher(TreeTestBase.fallback_to_404_not_found_matcher)
+
+        requests_mock.get(
+            self.TEST_BASE_URL + "/robots.txt",
+            headers={"Content-Type": "text/plain"},
+            text=textwrap.dedent(
+                f"""
+                User-agent: *
+                Disallow: /whatever
+
+                Sitemap: {self.TEST_BASE_URL}/sitemap.xml
+            """
+            ).strip(),
+        )
+
+        requests_mock.get(
+            self.TEST_BASE_URL + "/sitemap.xml",
+            headers={"Content-Type": "text/xml"},
+            text=textwrap.dedent(
+                f"""
+                <?xml version="1.0" encoding="UTF-8"?>
+                <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+                    <url>
+                        <loc>{self.TEST_BASE_URL}/en/page</loc>
+                        <lastmod>{self.TEST_DATE_STR_ISO8601}</lastmod>
+                        <changefreq>monthly</changefreq>
+                        <priority>0.8</priority>
+                        <xhtml:link rel="alternate" href="{self.TEST_BASE_URL}/fr/page"/>
+                    </url>
+                    <url>
+                        <loc>{self.TEST_BASE_URL}/en/page2</loc>
+                        <lastmod>{self.TEST_DATE_STR_ISO8601}</lastmod>
+                        <changefreq>monthly</changefreq>
+                        <priority>0.8</priority>
+                        <xhtml:link hreflang="fr-FR" href="{self.TEST_BASE_URL}/fr/page2"/>
+                    </url>
+                    <url>
+                        <loc>{self.TEST_BASE_URL}/fr/page</loc>
+                        <lastmod>{self.TEST_DATE_STR_ISO8601}</lastmod>
+                        <changefreq>monthly</changefreq>
+                        <priority>0.8</priority>
+                        <xhtml:link rel="alternate" hreflang="en-GB"/>
+                    </url>
+                    <url>
+                        <loc>{self.TEST_BASE_URL}/fr/page2</loc>
+                        <lastmod>{self.TEST_DATE_STR_ISO8601}</lastmod>
+                        <changefreq>monthly</changefreq>
+                        <priority>0.8</priority>
+                        <xhtml:link hreflang="en-GB" href="{self.TEST_BASE_URL}/en/page2"/>
+                    </url>
+                </urlset>
+                """
+            ).strip(),
+        )
+
+        tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)
+
+        pages = list(tree.all_pages())
+        assert pages[0].alternates is None
+        assert pages[1].alternates is None
+        assert pages[2].alternates is None
+        assert pages[3].alternates is None
