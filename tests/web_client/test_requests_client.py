@@ -1,3 +1,4 @@
+import logging
 import re
 import socket
 from http import HTTPStatus
@@ -136,3 +137,42 @@ class TestRequestsClient:
 
         response_length = len(response.raw_data())
         assert response_length == max_length
+
+    def test_error_page_log(self, client, requests_mock, caplog):
+        caplog.set_level(logging.INFO)
+        test_url = self.TEST_BASE_URL + "/error_page.html"
+
+        requests_mock.get(
+            test_url,
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR.value,
+            text="This page is broken.",
+        )
+
+        client.get(test_url)
+
+        assert "Response content: This page is broken." in caplog.text
+
+    @pytest.fixture
+    def mocked_sleep(self, mocker):
+        return mocker.patch("usp.web_client.abstract_client.time.sleep")
+
+    def test_no_request_wait(self, mocked_sleep):
+        client = RequestsWebClient()
+        client.get(self.TEST_BASE_URL + "/page1.html")
+        client.get(self.TEST_BASE_URL + "/page2.html")
+        mocked_sleep.assert_not_called()
+
+    def test_request_wait(self, mocked_sleep):
+        client = RequestsWebClient(wait=1)
+        client.get(self.TEST_BASE_URL + "/page1.html")
+        mocked_sleep.assert_not_called()
+        client.get(self.TEST_BASE_URL + "/page2.html")
+        mocked_sleep.assert_called_once_with(1)
+
+    def test_request_wait_random(self, mocked_sleep):
+        client = RequestsWebClient(wait=1, random_wait=True)
+        client.get(self.TEST_BASE_URL + "/page1.html")
+        client.get(self.TEST_BASE_URL + "/page2.html")
+        mocked_sleep.assert_called_once()
+        assert 0.5 <= mocked_sleep.call_args[0][0] <= 1.5
+        assert mocked_sleep.call_args[0][0] != 1
