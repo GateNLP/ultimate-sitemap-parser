@@ -3,7 +3,7 @@ name = "ultimate-sitemap-parser"
 version = "1.1.0"
 description = "A performant library for parsing and crawling sitemaps"
 authors = [
-    { name = "Linas Valiukas", email = "linas@media.mit.edu>"},
+    { name = "Linas Valiukas", email = "linas@media.mit.edu"},
     { name = "Hal Roberts", email = "hroberts@cyber.law.harvard.edu"},
     { name = "Freddy Heppell", email = "f.heppell@sheffield.ac.uk"},
 ]
