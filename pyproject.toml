@@ -8,7 +8,7 @@ authors = [
     { name = "Freddy Heppell", email = "f.heppell@sheffield.ac.uk"},
 ]
 maintainers = [
-    { name = "Freddy Heppell", email = "f.heppell@sheffield.ac.uk>"},
+    { name = "Freddy Heppell", email = "f.heppell@sheffield.ac.uk"},
 ]
 license = "GPL-3.0-or-later"
 readme = "README.rst"
