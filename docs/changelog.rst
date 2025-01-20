@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Upcoming
+--------
+
+**New Features**
+
+* Added support for :ref:`alternate localised pages <sitemap-extra-localisation>` with ``hreflang``.
+
 v1.0.0 (2025-01-13)
 -------------------
 
