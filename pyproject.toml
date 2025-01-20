@@ -44,6 +44,7 @@ requests-mock = ">=1.6.0,<2.0"
 pytest = "^8.3.0"
 ruff = "^0.6.1"
 vcrpy = "6.0.1"
+pytest-mock = "^3.14.0"
 
 [tool.poetry.group.perf]
 optional = true
