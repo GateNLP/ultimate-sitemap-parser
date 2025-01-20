@@ -1,7 +1,9 @@
 """Abstract web client class."""
 
 import abc
+import random
 from http import HTTPStatus
+import time
 from typing import Optional
 
 RETRYABLE_HTTP_STATUS_CODES = {
@@ -187,3 +189,24 @@ class LocalWebClient(AbstractWebClient):
 
     def get(self, url: str) -> AbstractWebClientResponse:
         raise NoWebClientException
+
+
+class RequestWaiter:
+    def __init__(self, wait: Optional[float] = None, random_wait: bool = True):
+        self.wait_s = wait
+        self.random_wait = random_wait
+        self.is_first = True
+
+    def wait(self) -> None:
+        if self.wait is None:
+            return
+
+        if self.is_first:
+            self.is_first = False
+            return
+
+        wait_f = 1.0
+        if self.random_wait:
+            wait_f = random.uniform(0.5, 1.5)
+
+        time.sleep(self.wait_s * wait_f)

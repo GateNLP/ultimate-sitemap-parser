@@ -10,6 +10,7 @@ from .abstract_client import (
     AbstractWebClient,
     AbstractWebClientResponse,
     AbstractWebClientSuccessResponse,
+    RequestWaiter,
     WebClientErrorResponse,
     RETRYABLE_HTTP_STATUS_CODES,
 )
@@ -79,9 +80,17 @@ class RequestsWebClient(AbstractWebClient):
     Some webservers might be generating huge sitemaps on the fly, so this is why it's rather big.
     """
 
-    __slots__ = ["__max_response_data_length", "__timeout", "__proxies", "__verify"]
+    __slots__ = [
+        "__max_response_data_length",
+        "__timeout",
+        "__proxies",
+        "__verify",
+        "__waiter",
+    ]
 
-    def __init__(self, verify=True):
+    def __init__(
+        self, verify=True, wait: Optional[float] = None, random_wait: bool = False
+    ):
         """
         :param verify: whether certificates should be verified for HTTPS requests.
         """
@@ -89,6 +98,7 @@ class RequestsWebClient(AbstractWebClient):
         self.__timeout = self.__HTTP_REQUEST_TIMEOUT
         self.__proxies = {}
         self.__verify = verify
+        self.__waiter = RequestWaiter(wait, random_wait)
 
     def set_timeout(self, timeout: Union[int, Tuple[int, int], None]) -> None:
         """Set HTTP request timeout.
@@ -115,6 +125,7 @@ class RequestsWebClient(AbstractWebClient):
         self.__max_response_data_length = max_response_data_length
 
     def get(self, url: str) -> AbstractWebClientResponse:
+        self.__waiter.wait()
         try:
             response = requests.get(
                 url,
