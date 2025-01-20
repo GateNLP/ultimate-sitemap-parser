@@ -1,3 +1,4 @@
+import logging
 import re
 import socket
 from http import HTTPStatus
@@ -136,3 +137,17 @@ class TestRequestsClient:
 
         response_length = len(response.raw_data())
         assert response_length == max_length
+
+    def test_error_page_log(self, client, requests_mock, caplog):
+        caplog.set_level(logging.INFO)
+        test_url = self.TEST_BASE_URL + "/error_page.html"
+
+        requests_mock.get(
+            test_url,
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR.value,
+            text="This page is broken.",
+        )
+
+        client.get(test_url)
+
+        assert "Response content: This page is broken." in caplog.text

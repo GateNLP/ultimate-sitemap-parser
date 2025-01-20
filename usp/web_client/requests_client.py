@@ -1,6 +1,7 @@
 """Implementation of :mod:`usp.web_client.abstract_client` with Requests."""
 
 from http import HTTPStatus
+import logging
 from typing import Optional, Dict, Tuple, Union
 
 import requests
@@ -139,6 +140,7 @@ class RequestsWebClient(AbstractWebClient):
                 )
             else:
                 message = f"{response.status_code} {response.reason}"
+                logging.info(f"Response content: {response.text}")
 
                 if response.status_code in RETRYABLE_HTTP_STATUS_CODES:
                     return RequestsWebClientErrorResponse(
