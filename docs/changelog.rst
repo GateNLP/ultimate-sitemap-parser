@@ -7,6 +7,7 @@ Upcoming
 **New Features**
 
 * Added support for :ref:`alternate localised pages <sitemap-extra-localisation>` with ``hreflang``.
+* If an HTTP error is encountered, the contents of the error page is logged at ``INFO`` level.
 
 v1.0.0 (2025-01-13)
 -------------------
