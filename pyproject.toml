@@ -1,20 +1,36 @@
-[tool.poetry]
+[project]
 name = "ultimate-sitemap-parser"
 version = "1.0.0"
 description = "A performant library for parsing and crawling sitemaps"
 authors = [
-    "Linas Valiukas <linas@media.mit.edu>",
-    "Hal Roberts <hroberts@cyber.law.harvard.edu>",
-    "Freddy Heppell <f.heppell@sheffield.ac.uk>"
+    { name = "Linas Valiukas", email = "linas@media.mit.edu>"},
+    { name = "Hal Roberts", email = "hroberts@cyber.law.harvard.edu"},
+    { name = "Freddy Heppell", email = "f.heppell@sheffield.ac.uk"},
 ]
 maintainers = [
-    "Freddy Heppell <f.heppell@sheffield.ac.uk>"
+    { name = "Freddy Heppell", email = "f.heppell@sheffield.ac.uk>"},
 ]
+license = "GPL-3.0-or-later"
+readme = "README.rst"
+keywords = ["sitemap", "crawler", "indexing", "xml", "rss", "atom", "google news"]
+dynamic = ["classifiers"]
+
+requires-python = ">=3.8"
+dependencies = [
+    "python-dateutil (>=2.7,<3.0.0)",
+    "requests (>=2.2.1,<3.0.0)"
+]
+
+[project.urls]
 homepage = "https://ultimate-sitemap-parser.readthedocs.io/"
 documentation = "https://ultimate-sitemap-parser.readthedocs.io/"
 repository = "https://github.com/GateNLP/ultimate-sitemap-parser"
-license = "GPL-3.0-or-later"
-readme = "README.rst"
+
+[project.scripts]
+usp = 'usp.cli:main'
+
+[tool.poetry]
+requires-poetry = ">=2.0"
 classifiers=[
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
@@ -26,18 +42,13 @@ classifiers=[
     'Topic :: Text Processing :: Indexing',
     'Topic :: Text Processing :: Markup :: XML',
 ]
-keywords = ["sitemap", "crawler", "indexing", "xml", "rss", "atom", "google news"]
 packages = [
     { include = "usp" }
 ]
 
-[tool.poetry.scripts]
-usp = 'usp.cli:main'
-
 [tool.poetry.dependencies]
-python = "^3.8"
-python-dateutil = ">=2.7,<3.0.0"
-requests = ">=2.2.1"
+# Specify upper bound for locking
+python = ">=3.8,<4.0"
 
 [tool.poetry.group.dev.dependencies]
 requests-mock = ">=1.6.0,<2.0"
