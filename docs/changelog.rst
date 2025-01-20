@@ -8,6 +8,7 @@ Upcoming
 
 * Added support for :ref:`alternate localised pages <sitemap-extra-localisation>` with ``hreflang``.
 * If an HTTP error is encountered, the contents of the error page is logged at ``INFO`` level.
+* Added optional configurable wait time to HTTP request client.
 
 v1.0.0 (2025-01-13)
 -------------------

@@ -192,13 +192,25 @@ class LocalWebClient(AbstractWebClient):
 
 
 class RequestWaiter:
+    """
+    Manages waiting between requests.
+    """
+
     def __init__(self, wait: Optional[float] = None, random_wait: bool = True):
-        self.wait_s = wait
+        """
+        :param wait: time to wait between requests, in seconds.
+        :param random_wait: if true, wait time is multiplied by a random number between 0.5 and 1.5.
+        """
+        self.wait_s = wait or 0
         self.random_wait = random_wait
         self.is_first = True
 
     def wait(self) -> None:
-        if self.wait is None:
+        """Perform a wait if needed. Should be called before each request.
+
+        Will skip wait if this is the first request.
+        """
+        if self.wait_s == 0:
             return
 
         if self.is_first:

@@ -93,6 +93,8 @@ class RequestsWebClient(AbstractWebClient):
     ):
         """
         :param verify: whether certificates should be verified for HTTPS requests.
+        :param wait: time to wait between requests, in seconds.
+        :param random_wait: if true, wait time is multiplied by a random number between 0.5 and 1.5.
         """
         self.__max_response_data_length = None
         self.__timeout = self.__HTTP_REQUEST_TIMEOUT

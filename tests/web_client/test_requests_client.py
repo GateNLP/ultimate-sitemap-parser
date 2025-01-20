@@ -156,6 +156,12 @@ class TestRequestsClient:
     def mocked_sleep(self, mocker):
         return mocker.patch("usp.web_client.abstract_client.time.sleep")
 
+    def test_no_request_wait(self, mocked_sleep):
+        client = RequestsWebClient()
+        client.get(self.TEST_BASE_URL + "/page1.html")
+        client.get(self.TEST_BASE_URL + "/page2.html")
+        mocked_sleep.assert_not_called()
+
     def test_request_wait(self, mocked_sleep):
         client = RequestsWebClient(wait=1)
         client.get(self.TEST_BASE_URL + "/page1.html")
