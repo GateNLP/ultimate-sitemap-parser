@@ -7,6 +7,7 @@ Upcoming
 **Bug Fixes**
 
 - Changed log level when a suspected gzipped sitemap can't be un-gzipped from `error` to `warning`, since parsing can usually continue (:pr:`62` by :user:`redreceipt`)
+- Line references in logs now reference the correct location instead of lines within the logging helper file (:pr`63`)
 
 v1.1.0 (2025-01-20)
 -------------------
