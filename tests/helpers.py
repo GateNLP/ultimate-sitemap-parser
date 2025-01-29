@@ -1,5 +1,4 @@
 import gzip as gzip_lib
-
 from typing import Union
 
 

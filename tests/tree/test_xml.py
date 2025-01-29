@@ -1,17 +1,15 @@
 import textwrap
 
 from tests.tree.base import TreeTestBase
-from usp.tree import sitemap_tree_for_homepage
-
-from usp.objects.sitemap import (
-    IndexRobotsTxtSitemap,
-    PagesXMLSitemap,
-    IndexWebsiteSitemap,
-)
-
 from usp.objects.page import (
     SitemapPage,
 )
+from usp.objects.sitemap import (
+    IndexRobotsTxtSitemap,
+    IndexWebsiteSitemap,
+    PagesXMLSitemap,
+)
+from usp.tree import sitemap_tree_for_homepage
 
 
 class TestTreeXML(TreeTestBase):

@@ -1,9 +1,9 @@
 import datetime
-from email.utils import format_datetime
 import textwrap
+from email.utils import format_datetime
 
-from dateutil.tz import tzoffset
 import requests_mock as rq_mock
+from dateutil.tz import tzoffset
 
 
 class TreeTestBase:

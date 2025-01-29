@@ -9,11 +9,11 @@
 """
 
 import abc
-from functools import lru_cache
 import os
 import pickle
 import tempfile
-from typing import List, Iterator, Tuple
+from functools import lru_cache
+from typing import Iterator, List, Tuple
 
 from .page import SitemapPage
 
@@ -72,7 +72,7 @@ class AbstractSitemap(metaclass=abc.ABCMeta):
         return hash((self.url,))
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(" f"url={self.url}" ")"
+        return f"{self.__class__.__name__}(url={self.url})"
 
     @property
     def url(self) -> str:
@@ -167,12 +167,7 @@ class InvalidSitemap(AbstractSitemap):
         return True
 
     def __repr__(self):
-        return (
-            f"{self.__class__.__name__}("
-            f"url={self.url}, "
-            f"reason={self.reason}"
-            ")"
-        )
+        return f"{self.__class__.__name__}(url={self.url}, reason={self.reason})"
 
     def to_dict(self, with_pages=True) -> dict:
         return {

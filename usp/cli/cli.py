@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 
-from usp.cli import _ls as ls_cmd
 from usp import __version__
+from usp.cli import _ls as ls_cmd
 
 
 def main():

@@ -1,20 +1,21 @@
 """Implementation of :mod:`usp.web_client.abstract_client` with Requests."""
 
-from http import HTTPStatus
 import logging
-from typing import Optional, Dict, Tuple, Union
+from http import HTTPStatus
+from typing import Dict, Optional, Tuple, Union
 
 import requests
 
+from usp import __version__
+
 from .abstract_client import (
+    RETRYABLE_HTTP_STATUS_CODES,
     AbstractWebClient,
     AbstractWebClientResponse,
     AbstractWebClientSuccessResponse,
     RequestWaiter,
     WebClientErrorResponse,
-    RETRYABLE_HTTP_STATUS_CODES,
 )
-from usp import __version__
 
 log = logging.getLogger(__name__)
 

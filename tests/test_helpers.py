@@ -1,18 +1,19 @@
 import datetime
+
 import pytest
 
 from usp.exceptions import (
-    StripURLToHomepageException,
-    SitemapException,
     GunzipException,
+    SitemapException,
+    StripURLToHomepageException,
 )
 from usp.helpers import (
-    html_unescape_strip,
-    parse_iso8601_date,
-    is_http_url,
-    strip_url_to_homepage,
-    parse_rfc2822_date,
     gunzip,
+    html_unescape_strip,
+    is_http_url,
+    parse_iso8601_date,
+    parse_rfc2822_date,
+    strip_url_to_homepage,
 )
 
 

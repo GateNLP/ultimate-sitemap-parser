@@ -8,16 +8,17 @@ import re
 import sys
 import time
 from typing import Optional
-from urllib.parse import urlparse, unquote_plus, urlunparse
-from dateutil.parser import parse as dateutil_parse
-from dateutil.parser import isoparse as dateutil_isoparse
+from urllib.parse import unquote_plus, urlparse, urlunparse
 
-from .exceptions import SitemapException, GunzipException, StripURLToHomepageException
+from dateutil.parser import isoparse as dateutil_isoparse
+from dateutil.parser import parse as dateutil_parse
+
+from .exceptions import GunzipException, SitemapException, StripURLToHomepageException
 from .web_client.abstract_client import (
     AbstractWebClient,
+    AbstractWebClientResponse,
     AbstractWebClientSuccessResponse,
     WebClientErrorResponse,
-    AbstractWebClientResponse,
 )
 
 log = logging.getLogger(__name__)

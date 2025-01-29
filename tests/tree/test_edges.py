@@ -1,12 +1,9 @@
 import textwrap
 
-
 from tests.tree.base import TreeTestBase
-
 from usp.objects.sitemap import (
     InvalidSitemap,
 )
-
 from usp.tree import sitemap_tree_for_homepage
 
 

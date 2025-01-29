@@ -2,19 +2,17 @@ import difflib
 import textwrap
 
 from tests.tree.base import TreeTestBase
-from usp.tree import sitemap_tree_for_homepage
-
+from usp.objects.page import (
+    SitemapNewsStory,
+    SitemapPage,
+)
 from usp.objects.sitemap import (
     IndexRobotsTxtSitemap,
     IndexWebsiteSitemap,
-    PagesRSSSitemap,
     PagesAtomSitemap,
+    PagesRSSSitemap,
 )
-
-from usp.objects.page import (
-    SitemapPage,
-    SitemapNewsStory,
-)
+from usp.tree import sitemap_tree_for_homepage
 
 
 class TestTreeBasic(TreeTestBase):
