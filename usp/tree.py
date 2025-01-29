@@ -1,10 +1,10 @@
 """Helpers to generate a sitemap tree."""
 
+import logging
 from typing import Optional
 from .exceptions import SitemapException
 from .fetch_parse import SitemapFetcher, SitemapStrParser
 from .helpers import is_http_url, strip_url_to_homepage
-from .log import create_logger
 from .objects.sitemap import (
     AbstractSitemap,
     InvalidSitemap,
@@ -13,7 +13,7 @@ from .objects.sitemap import (
 )
 from .web_client.abstract_client import AbstractWebClient
 
-log = create_logger(__name__)
+log = logging.getLogger(__name__)
 
 _UNPUBLISHED_SITEMAP_PATHS = {
     "sitemap.xml",

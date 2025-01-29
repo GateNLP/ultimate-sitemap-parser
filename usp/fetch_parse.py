@@ -13,7 +13,7 @@ import xml.parsers.expat
 from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
 from typing import Optional, Dict, Union
-
+import logging
 
 from .exceptions import SitemapException, SitemapXMLParsingException
 from .helpers import (
@@ -24,7 +24,6 @@ from .helpers import (
     is_http_url,
     parse_rfc2822_date,
 )
-from .log import create_logger
 from .objects.page import (
     SitemapImage,
     SitemapPage,
@@ -50,7 +49,7 @@ from .web_client.abstract_client import (
 from .web_client.abstract_client import LocalWebClient, NoWebClientException
 from .web_client.requests_client import RequestsWebClient
 
-log = create_logger(__name__)
+log = logging.getLogger(__name__)
 
 
 class SitemapFetcher:
