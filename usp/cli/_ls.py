@@ -2,7 +2,7 @@ import argparse
 import sys
 from typing import Iterator
 
-from usp.cli._util import tabs, format_help
+from usp.cli._util import format_help, tabs
 from usp.objects.sitemap import AbstractSitemap
 from usp.tree import sitemap_tree_for_homepage
 

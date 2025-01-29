@@ -3,9 +3,9 @@ import gzip
 import hashlib
 import json
 import logging
-from pathlib import Path
 import shutil
 import sys
+from pathlib import Path
 
 import requests
 

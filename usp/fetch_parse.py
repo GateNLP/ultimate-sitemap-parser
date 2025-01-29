@@ -8,45 +8,46 @@
 """
 
 import abc
+import logging
 import re
 import xml.parsers.expat
 from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
-from typing import Optional, Dict, Union
-import logging
+from typing import Dict, Optional, Union
 
 from .exceptions import SitemapException, SitemapXMLParsingException
 from .helpers import (
-    html_unescape_strip,
-    parse_iso8601_date,
     get_url_retry_on_client_errors,
-    ungzipped_response_content,
+    html_unescape_strip,
     is_http_url,
+    parse_iso8601_date,
     parse_rfc2822_date,
+    ungzipped_response_content,
 )
 from .objects.page import (
-    SitemapImage,
-    SitemapPage,
-    SitemapNewsStory,
-    SitemapPageChangeFrequency,
     SITEMAP_PAGE_DEFAULT_PRIORITY,
+    SitemapImage,
+    SitemapNewsStory,
+    SitemapPage,
+    SitemapPageChangeFrequency,
 )
 from .objects.sitemap import (
     AbstractSitemap,
-    InvalidSitemap,
     IndexRobotsTxtSitemap,
     IndexXMLSitemap,
-    PagesXMLSitemap,
-    PagesTextSitemap,
-    PagesRSSSitemap,
+    InvalidSitemap,
     PagesAtomSitemap,
+    PagesRSSSitemap,
+    PagesTextSitemap,
+    PagesXMLSitemap,
 )
 from .web_client.abstract_client import (
     AbstractWebClient,
     AbstractWebClientSuccessResponse,
+    LocalWebClient,
+    NoWebClientException,
     WebClientErrorResponse,
 )
-from .web_client.abstract_client import LocalWebClient, NoWebClientException
 from .web_client.requests_client import RequestsWebClient
 
 log = logging.getLogger(__name__)

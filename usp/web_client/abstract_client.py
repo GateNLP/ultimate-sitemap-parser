@@ -2,8 +2,8 @@
 
 import abc
 import random
-from http import HTTPStatus
 import time
+from http import HTTPStatus
 from typing import Optional
 
 RETRYABLE_HTTP_STATUS_CODES = {

@@ -9,11 +9,11 @@
 """
 
 import abc
-from functools import lru_cache
 import os
 import pickle
 import tempfile
-from typing import List, Iterator, Tuple
+from functools import lru_cache
+from typing import Iterator, List, Tuple
 
 from .page import SitemapPage
 

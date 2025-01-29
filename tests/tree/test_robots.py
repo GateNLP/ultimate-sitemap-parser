@@ -1,12 +1,11 @@
 import textwrap
 
 from tests.tree.base import TreeTestBase
-from usp.tree import sitemap_tree_for_homepage
-
 from usp.objects.sitemap import (
     IndexRobotsTxtSitemap,
     IndexWebsiteSitemap,
 )
+from usp.tree import sitemap_tree_for_homepage
 
 
 class TestTreeRobots(TreeTestBase):

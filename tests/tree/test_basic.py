@@ -1,23 +1,20 @@
-from decimal import Decimal
 import difflib
 import textwrap
+from decimal import Decimal
+
 from tests.helpers import gzip
-
-
 from tests.tree.base import TreeTestBase
-
+from usp.objects.page import (
+    SitemapNewsStory,
+    SitemapPage,
+    SitemapPageChangeFrequency,
+)
 from usp.objects.sitemap import (
     IndexRobotsTxtSitemap,
-    PagesXMLSitemap,
+    IndexWebsiteSitemap,
     IndexXMLSitemap,
     InvalidSitemap,
-    IndexWebsiteSitemap,
-)
-
-from usp.objects.page import (
-    SitemapPage,
-    SitemapNewsStory,
-    SitemapPageChangeFrequency,
+    PagesXMLSitemap,
 )
 from usp.tree import sitemap_tree_for_homepage
 

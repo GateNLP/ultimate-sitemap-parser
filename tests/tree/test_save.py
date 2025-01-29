@@ -1,9 +1,10 @@
 import datetime
-from decimal import Decimal
 import os
 import pickle
-from dateutil.tz import tzoffset
+from decimal import Decimal
+
 import pytest
+from dateutil.tz import tzoffset
 
 from tests.tree.base import TreeTestBase
 from usp.tree import sitemap_tree_for_homepage
