@@ -3,6 +3,7 @@
 import datetime
 import gzip as gzip_lib
 import html
+import logging
 import re
 import sys
 import time
@@ -12,7 +13,6 @@ from dateutil.parser import parse as dateutil_parse
 from dateutil.parser import isoparse as dateutil_isoparse
 
 from .exceptions import SitemapException, GunzipException, StripURLToHomepageException
-from .log import create_logger
 from .web_client.abstract_client import (
     AbstractWebClient,
     AbstractWebClientSuccessResponse,
@@ -20,7 +20,7 @@ from .web_client.abstract_client import (
     AbstractWebClientResponse,
 )
 
-log = create_logger(__name__)
+log = logging.getLogger(__name__)
 
 __URL_REGEX = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", re.IGNORECASE)
 """Regular expression to match HTTP(s) URLs."""

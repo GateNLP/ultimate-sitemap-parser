@@ -16,6 +16,8 @@ from .abstract_client import (
 )
 from usp import __version__
 
+log = logging.getLogger(__name__)
+
 
 class RequestsWebClientSuccessResponse(AbstractWebClientSuccessResponse):
     """
@@ -153,7 +155,7 @@ class RequestsWebClient(AbstractWebClient):
                 )
             else:
                 message = f"{response.status_code} {response.reason}"
-                logging.info(f"Response content: {response.text}")
+                log.info(f"Response content: {response.text}")
 
                 if response.status_code in RETRYABLE_HTTP_STATUS_CODES:
                     return RequestsWebClientErrorResponse(
