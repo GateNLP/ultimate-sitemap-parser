@@ -40,9 +40,9 @@ class TestTreeSave(TreeTestBase):
 
         assert len(tree_d["sub_sitemaps"][0]["sub_sitemaps"][0]["pages"]) == 2
         assert "pages" not in tree_d["sub_sitemaps"][0], "index sitemap has pages key"
-        assert (
-            "sub_sitemaps" not in tree_d["sub_sitemaps"][0]["sub_sitemaps"][0]
-        ), "page sitemap has sub_sitemaps key"
+        assert "sub_sitemaps" not in tree_d["sub_sitemaps"][0]["sub_sitemaps"][0], (
+            "page sitemap has sub_sitemaps key"
+        )
 
     def test_page_to_dict(self, tree, tmp_path):
         pages = list(tree.all_pages())
