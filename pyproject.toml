@@ -83,13 +83,20 @@ extend-exclude = ["docs/*"]
 
 [tool.ruff.lint]
 select = [
-    "E4",
-    "E7",
-    "E9",
-    "F",
-    "UP",
-    "PT",
-    "I"
+    "E4",  # pycodestyle Import
+    "E7",  # pycodestyle Statement
+    "E9",  # pycodestyle Runtime
+    "F",   # pyflakes
+    "UP",  # pyupgrde
+    "PT",  # flake8-pytest-style
+    "I",   # isort
+    "T20", # flake8-print
+    "LOG", # flake8-logging
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/*" = [
+    "T20", # Allow print in tests
 ]
 
 [tool.pytest.ini_options]
