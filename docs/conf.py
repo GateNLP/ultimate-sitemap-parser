@@ -56,7 +56,7 @@ html_css_files = [
 ]
 html_theme_options = {
     'source_repository': _gh_root,
-    'source_branch': 'master',
+    'source_branch': 'main',
     'source_directory': 'docs/'
 }
 html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "https://usp-dummy.gate.ac.uk/")
