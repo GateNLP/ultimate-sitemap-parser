@@ -54,11 +54,6 @@ html_title = 'Ultimate Sitemap Parser'
 html_css_files = [
     'css/custom.css',
 ]
-html_theme_options = {
-    'source_repository': _gh_root,
-    'source_branch': 'main',
-    'source_directory': 'docs/'
-}
 html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "https://usp-dummy.gate.ac.uk/")
 
 # -- Extension Config --------------------------------------------------------
