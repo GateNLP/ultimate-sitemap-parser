@@ -7,6 +7,11 @@ v1.1.2 (upcoming)
 **New Features**
 
 - Support passing additional known sitemap paths to ``usp.tree.sitemap_tree_for_homepage`` (:pr:`69`)
+- The requests web client now creates a session object for better performance, which can be overridden by the user (:pr:`70`)
+
+**Documentation**
+
+- Added improved documentation for customising the HTTP client.
 
 v1.1.1 (2025-01-29)
 -------------------
