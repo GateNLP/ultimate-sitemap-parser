@@ -40,6 +40,7 @@ def sitemap_tree_for_homepage(
     web_client: Optional[AbstractWebClient] = None,
     use_robots: bool = True,
     use_known_paths: bool = True,
+    extra_known_paths: Optional[set] = None,
 ) -> AbstractSitemap:
     """
     Using a homepage URL, fetch the tree of sitemaps and pages listed in them.
@@ -49,11 +50,14 @@ def sitemap_tree_for_homepage(
         If ``None``, a :class:`~.RequestsWebClient` will be used.
     :param use_robots: Whether to discover sitemaps through robots.txt.
     :param use_known_paths: Whether to discover sitemaps through common known paths.
+    :param extra_known_paths: Extra paths to check for sitemaps.
     :return: Root sitemap object of the fetched sitemap tree.
     """
 
     if not is_http_url(homepage_url):
         raise SitemapException(f"URL {homepage_url} is not a HTTP(s) URL.")
+
+    extra_known_paths = extra_known_paths or set()
 
     stripped_homepage_url = strip_url_to_homepage(url=homepage_url)
     if homepage_url != stripped_homepage_url:
@@ -82,7 +86,7 @@ def sitemap_tree_for_homepage(
                 sitemap_urls_found_in_robots_txt.add(sub_sitemap.url)
 
     if use_known_paths:
-        for unpublished_sitemap_path in _UNPUBLISHED_SITEMAP_PATHS:
+        for unpublished_sitemap_path in _UNPUBLISHED_SITEMAP_PATHS | extra_known_paths:
             unpublished_sitemap_url = homepage_url + unpublished_sitemap_path
 
             # Don't refetch URLs already found in robots.txt
