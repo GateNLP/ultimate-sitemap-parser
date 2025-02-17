@@ -6,7 +6,7 @@ v1.1.2 (upcoming)
 
 **New Features**
 
-- Support passing additional known sitemap paths to `sitemap_tree_for_homepage` (:pr:`69`)
+- Support passing additional known sitemap paths to ``usp.tree.sitemap_tree_for_homepage`` (:pr:`69`)
 
 v1.1.1 (2025-01-29)
 -------------------
