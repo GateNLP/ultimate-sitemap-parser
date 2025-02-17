@@ -92,18 +92,24 @@ class RequestsWebClient(AbstractWebClient):
     ]
 
     def __init__(
-        self, verify=True, wait: Optional[float] = None, random_wait: bool = False
+        self,
+        verify=True,
+        wait: Optional[float] = None,
+        random_wait: bool = False,
+        session: Optional[requests.Session] = None,
     ):
         """
         :param verify: whether certificates should be verified for HTTPS requests.
         :param wait: time to wait between requests, in seconds.
         :param random_wait: if true, wait time is multiplied by a random number between 0.5 and 1.5.
+        :param session: a custom session object to use, or None to create a new one.
         """
         self.__max_response_data_length = None
         self.__timeout = self.__HTTP_REQUEST_TIMEOUT
         self.__proxies = {}
         self.__verify = verify
         self.__waiter = RequestWaiter(wait, random_wait)
+        self.__session = session or requests.Session()
 
     def set_timeout(self, timeout: Union[int, Tuple[int, int], None]) -> None:
         """Set HTTP request timeout.
@@ -132,7 +138,7 @@ class RequestsWebClient(AbstractWebClient):
     def get(self, url: str) -> AbstractWebClientResponse:
         self.__waiter.wait()
         try:
-            response = requests.get(
+            response = self.__session.get(
                 url,
                 timeout=self.__timeout,
                 stream=True,
