@@ -45,7 +45,11 @@ To entirely replace the requests client, you will need to create subclasses of:
 - :class:`~usp.web_client.abstract_client.AbstractWebClientSuccessResponse` to represent a successful response, implementing the abstract methods to obtain the response content and metadata.
 - :class:`~usp.web_client.abstract_client.WebClientErrorResponse` to represent an error response, which typically will not require any methods to be implemented.
 
+We suggest using the implementations in :mod:`usp.web_client.requests_client` as a reference.
+
 After creating the custom client, instantiate it and pass to the ``web_client`` argument of :func:`~usp.tree.sitemap_tree_for_homepage`.
+
+For example, to implement a client for the `HTTPX <https://www.python-httpx.org/>`_ library:
 
 .. code-block:: python
 
