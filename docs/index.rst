@@ -17,6 +17,7 @@ Ultimate Sitemap Parser
     guides/saving
     guides/performance
     guides/security
+    guides/http-client
 
 .. toctree::
     :hidden:
