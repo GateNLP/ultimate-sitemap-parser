@@ -2,7 +2,7 @@ import argparse
 import sys
 from typing import Iterator
 
-from usp.cli._util import format_help, setup_logging, tabs
+from usp.cli._util import CountAction, format_help, setup_logging, tabs
 from usp.objects.sitemap import AbstractSitemap
 from usp.tree import sitemap_tree_for_homepage
 
@@ -26,7 +26,7 @@ def register(subparsers):
         choices=LS_FORMATS,
         default="tabtree",
         help=format_help(LS_FORMATS, "set output format"),
-        metavar="",
+        metavar="FORMAT",
     )
     ls_parser.add_argument(
         "-r",
@@ -49,10 +49,11 @@ def register(subparsers):
     ls_parser.add_argument(
         "-v",
         "--verbose",
-        action="count",
+        action=CountAction,
         help="increase output verbosity (-v=INFO, -vv=DEBUG)",
         dest="verbosity",
         default=0,
+        max_count=2,
     )
     ls_parser.add_argument(
         "-l",
