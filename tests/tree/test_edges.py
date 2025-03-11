@@ -341,3 +341,49 @@ class TestTreeBasic(TreeTestBase):
         assert f"Recursion detected in URL {self.TEST_BASE_URL}/sitemap_1.xml" in str(
             sub_sitemaps[-1]
         )
+
+    def test_self_pointing_index(self, requests_mock):
+        requests_mock.add_matcher(TreeTestBase.fallback_to_404_not_found_matcher)
+
+        requests_mock.get(
+            self.TEST_BASE_URL + "/robots.txt",
+            headers={"Content-Type": "text/plain"},
+            text=(
+                textwrap.dedent(
+                    f"""
+            User-agent: *
+            Disallow: /whatever
+
+            Sitemap: {self.TEST_BASE_URL}/sitemap.xml
+            """
+                ).strip()
+            ),
+        )
+
+        requests_mock.get(
+            self.TEST_BASE_URL + "/sitemap.xml",
+            headers={"Content-Type": "application/xml"},
+            text=(
+                textwrap.dedent(
+                    f"""
+                <?xml version="1.0" encoding="UTF-8"?>
+                <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                    <sitemap>
+                        <loc>{self.TEST_BASE_URL}/sitemap.xml</loc>
+                        <lastmod>{self.TEST_DATE_STR_ISO8601}</lastmod>
+                    </sitemap>
+                </sitemapindex>
+                """
+                ).strip()
+            ),
+        )
+
+        tree = sitemap_tree_for_homepage(self.TEST_BASE_URL)
+
+        sub_sitemaps = list(tree.all_sitemaps())
+        assert len(sub_sitemaps) == 3  # robots, sitemap.xml, invalid
+        assert all(type(x) is not InvalidSitemap for x in sub_sitemaps[:-1])
+        assert type(sub_sitemaps[-1]) is InvalidSitemap
+        assert f"Recursion detected in URL {self.TEST_BASE_URL}/sitemap.xml" in str(
+            sub_sitemaps[-1]
+        )

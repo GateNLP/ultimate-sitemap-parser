@@ -105,6 +105,7 @@ class SitemapFetcher:
         parent_urls = parent_urls or set()
 
         if url in parent_urls:
+            # Likely a sitemap index points to itself/a higher level index
             raise SitemapException(
                 f"Recursion detected in URL {url} with parent URLs {parent_urls}."
             )
@@ -145,6 +146,7 @@ class SitemapFetcher:
         response_url = response.url()
         log.info(f"Response URL is {response_url}")
         if response_url in self._parent_urls:
+            # Likely a sitemap has redirected to a parent URL
             raise SitemapException(
                 f"Recursion detected when {self._url} redirected to {response_url} with parent URLs {self._parent_urls}."
             )
