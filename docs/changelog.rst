@@ -7,6 +7,7 @@ Upcoming
 **New Features**
 
 - Recursive sitemaps are detected and will return an ``InvalidSitemap`` instead (:pr:`74`)
+- Known sitemap paths will be skipped if they redirect to a sitemap already found (:pr:`77`)
 - The reported URL of a sitemap will now be its actual URL after redirects (:pr:`74`)
 - Log level in CLI can now be changed with the ``-v`` or ``-vv`` flags, and output to a file with ``-l`` (:pr:`76`)
 
