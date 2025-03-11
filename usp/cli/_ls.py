@@ -2,7 +2,7 @@ import argparse
 import sys
 from typing import Iterator
 
-from usp.cli._util import format_help, tabs
+from usp.cli._util import CountAction, format_help, setup_logging, tabs
 from usp.objects.sitemap import AbstractSitemap
 from usp.tree import sitemap_tree_for_homepage
 
@@ -26,7 +26,7 @@ def register(subparsers):
         choices=LS_FORMATS,
         default="tabtree",
         help=format_help(LS_FORMATS, "set output format"),
-        metavar="",
+        metavar="FORMAT",
     )
     ls_parser.add_argument(
         "-r",
@@ -45,6 +45,21 @@ def register(subparsers):
         "--strip-url",
         action="store_true",
         help="strip the supplied URL from each page and sitemap URL",
+    )
+    ls_parser.add_argument(
+        "-v",
+        "--verbose",
+        action=CountAction,
+        help="increase output verbosity (-v=INFO, -vv=DEBUG)",
+        dest="verbosity",
+        default=0,
+        max_count=2,
+    )
+    ls_parser.add_argument(
+        "-l",
+        "--log-file",
+        type=str,
+        help="write log to this file and suppress console output",
     )
     ls_parser.set_defaults(no_robots=False, no_known=False, strip_url=False)
 
@@ -85,6 +100,8 @@ def _output_pages(sitemap: AbstractSitemap, strip_prefix: str = ""):
 
 
 def ls(args):
+    setup_logging(args.verbosity, args.log_file)
+
     tree = sitemap_tree_for_homepage(
         args.url,
         use_robots=not args.no_robots,

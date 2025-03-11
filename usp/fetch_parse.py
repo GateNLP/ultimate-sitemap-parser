@@ -101,7 +101,7 @@ class SitemapFetcher:
                 f"Recursion level exceeded {self.__MAX_RECURSION_LEVEL} for URL {url}."
             )
 
-        log.info(f"Parent URLs is {parent_urls}")
+        log.debug(f"Parent URLs is {parent_urls}")
 
         if not is_http_url(url):
             raise SitemapException(f"URL {url} is not a HTTP(s) URL.")
@@ -148,7 +148,7 @@ class SitemapFetcher:
         assert isinstance(response, AbstractWebClientSuccessResponse)
 
         response_url = response.url()
-        log.info(f"Response URL is {response_url}")
+        log.debug(f"Response URL is {response_url}")
         if response_url in self._parent_urls:
             # Likely a sitemap has redirected to a parent URL
             raise SitemapException(
