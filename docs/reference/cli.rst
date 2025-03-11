@@ -27,7 +27,7 @@ The CLI provides a simple command-line interface to retrieve sitemap data.
 
 .. code-block:: none
 
-    usage: usp ls [-h] [-f FORMAT] [-r] [-k] [-u] [-v] [-l LOG_FILE] url
+    usage: usp ls [-h] [-f FORMAT] [-r] [-k] [-u] [-v/-vv] [-l LOG_FILE] url
 
     download, parse and list the sitemap structure
 
