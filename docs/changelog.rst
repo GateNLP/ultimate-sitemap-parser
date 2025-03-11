@@ -1,6 +1,18 @@
 Changelog
 =========
 
+Upcoming
+--------
+
+**New Features**
+
+- Recursive sitemaps are detected and will return an ``InvalidSitemap`` instead (:pr:`74`)
+- The reported URL of a sitemap will now be its actual URL after redirects (:pr:`74`)
+
+**API Changes**
+
+- Added ``AbstractWebClient.url()`` method to return the actual URL fetched after redirects. Custom web clients will need to implement this method.
+
 v1.2.0 (2025-02-18)
 -------------------
 

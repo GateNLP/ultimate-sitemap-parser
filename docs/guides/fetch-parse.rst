@@ -54,3 +54,7 @@ During the parse process, some de-duplication is performed within each individua
 
 However, this means that if a sub-sitemap is declared in multiple index sitemaps, or a page is declared in multiple page sitemaps, it will be included multiple times.
 
+Recursion is detected in the following cases, and will result in the sitemap being returned as an :class:`~usp.objects.sitemap.InvalidSitemap`:
+
+- A sitemap's URL is identical to any of its ancestor sitemaps' URLs.
+- When fetched, a sitemap redirects to a URL that is identical to any of its ancestor sitemaps' URLs.

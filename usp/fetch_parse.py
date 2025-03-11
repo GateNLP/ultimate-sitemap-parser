@@ -13,7 +13,7 @@ import re
 import xml.parsers.expat
 from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Set
 
 from .exceptions import SitemapException, SitemapXMLParsingException
 from .helpers import (
@@ -43,8 +43,10 @@ from .objects.sitemap import (
 )
 from .web_client.abstract_client import (
     AbstractWebClient,
+    AbstractWebClientResponse,
     AbstractWebClientSuccessResponse,
     LocalWebClient,
+    LocalWebClientSuccessResponse,
     NoWebClientException,
     WebClientErrorResponse,
 )
@@ -64,12 +66,16 @@ class SitemapFetcher:
     Spec says it might be up to 50 MB but let's go for the full 100 MB here."""
 
     __MAX_RECURSION_LEVEL = 11
-    """Max. recursion level in iterating over sub-sitemaps."""
+    """Max. depth level in iterating over sub-sitemaps.
+    
+    Recursive sitemaps (i.e. child sitemaps pointing to their parent) are stopped immediately.
+    """
 
     __slots__ = [
         "_url",
         "_recursion_level",
         "_web_client",
+        "_parent_urls",
     ]
 
     def __init__(
@@ -77,14 +83,17 @@ class SitemapFetcher:
         url: str,
         recursion_level: int,
         web_client: Optional[AbstractWebClient] = None,
+        parent_urls: Optional[Set[str]] = None,
     ):
         """
 
         :param url: URL of the sitemap to fetch and parse.
         :param recursion_level: current recursion level of parser
         :param web_client: Web client to use. If ``None``, a :class:`~.RequestsWebClient` will be used.
+        :param parent_urls: Set of parent URLs that led to this sitemap.
 
         :raises SitemapException: If the maximum recursion depth is exceeded.
+        :raises SitemapException: If the URL is in the parent URLs set.
         :raises SitemapException: If the URL is not an HTTP(S) URL
         """
         if recursion_level > self.__MAX_RECURSION_LEVEL:
@@ -92,8 +101,18 @@ class SitemapFetcher:
                 f"Recursion level exceeded {self.__MAX_RECURSION_LEVEL} for URL {url}."
             )
 
+        log.info(f"Parent URLs is {parent_urls}")
+
         if not is_http_url(url):
             raise SitemapException(f"URL {url} is not a HTTP(s) URL.")
+
+        parent_urls = parent_urls or set()
+
+        if url in parent_urls:
+            # Likely a sitemap index points to itself/a higher level index
+            raise SitemapException(
+                f"Recursion detected in URL {url} with parent URLs {parent_urls}."
+            )
 
         if not web_client:
             web_client = RequestsWebClient()
@@ -103,19 +122,14 @@ class SitemapFetcher:
         self._url = url
         self._web_client = web_client
         self._recursion_level = recursion_level
+        self._parent_urls = parent_urls or set()
 
-    def _fetch(self) -> Union[str, WebClientErrorResponse]:
+    def _fetch(self) -> AbstractWebClientResponse:
         log.info(f"Fetching level {self._recursion_level} sitemap from {self._url}...")
         response = get_url_retry_on_client_errors(
             url=self._url, web_client=self._web_client
         )
-
-        if isinstance(response, WebClientErrorResponse):
-            return response
-
-        assert isinstance(response, AbstractWebClientSuccessResponse)
-
-        return ungzipped_response_content(url=self._url, response=response)
+        return response
 
     def sitemap(self) -> AbstractSitemap:
         """
@@ -124,13 +138,26 @@ class SitemapFetcher:
         :return: the parsed sitemap. Will be a child of :class:`~.AbstractSitemap`.
             If an HTTP error is encountered, or the sitemap cannot be parsed, will be :class:`~.InvalidSitemap`.
         """
-        response_content = self._fetch()
+        response = self._fetch()
 
-        if isinstance(response_content, WebClientErrorResponse):
+        if isinstance(response, WebClientErrorResponse):
             return InvalidSitemap(
                 url=self._url,
-                reason=f"Unable to fetch sitemap from {self._url}: {response_content.message()}",
+                reason=f"Unable to fetch sitemap from {self._url}: {response.message()}",
             )
+        assert isinstance(response, AbstractWebClientSuccessResponse)
+
+        response_url = response.url()
+        log.info(f"Response URL is {response_url}")
+        if response_url in self._parent_urls:
+            # Likely a sitemap has redirected to a parent URL
+            raise SitemapException(
+                f"Recursion detected when {self._url} redirected to {response_url} with parent URLs {self._parent_urls}."
+            )
+
+        self._url = response_url
+
+        response_content = ungzipped_response_content(url=self._url, response=response)
 
         # MIME types returned in Content-Type are unpredictable, so peek into the content instead
         if response_content[:20].strip().startswith("<"):
@@ -140,6 +167,7 @@ class SitemapFetcher:
                 content=response_content,
                 recursion_level=self._recursion_level,
                 web_client=self._web_client,
+                parent_urls=self._parent_urls,
             )
 
         else:
@@ -150,6 +178,7 @@ class SitemapFetcher:
                     content=response_content,
                     recursion_level=self._recursion_level,
                     web_client=self._web_client,
+                    parent_urls=self._parent_urls,
                 )
             else:
                 parser = PlainTextSitemapParser(
@@ -157,6 +186,7 @@ class SitemapFetcher:
                     content=response_content,
                     recursion_level=self._recursion_level,
                     web_client=self._web_client,
+                    parent_urls=self._parent_urls,
                 )
 
         log.info(f"Parsing sitemap from URL {self._url}...")
@@ -186,8 +216,8 @@ class SitemapStrParser(SitemapFetcher):
         )
         self._static_content = static_content
 
-    def _fetch(self) -> Union[str, WebClientErrorResponse]:
-        return self._static_content
+    def _fetch(self) -> AbstractWebClientResponse:
+        return LocalWebClientSuccessResponse(url=self._url, data=self._static_content)
 
 
 class AbstractSitemapParser(metaclass=abc.ABCMeta):
@@ -198,6 +228,7 @@ class AbstractSitemapParser(metaclass=abc.ABCMeta):
         "_content",
         "_web_client",
         "_recursion_level",
+        "_parent_urls",
     ]
 
     def __init__(
@@ -206,11 +237,13 @@ class AbstractSitemapParser(metaclass=abc.ABCMeta):
         content: str,
         recursion_level: int,
         web_client: AbstractWebClient,
+        parent_urls: Set[str],
     ):
         self._url = url
         self._content = content
         self._recursion_level = recursion_level
         self._web_client = web_client
+        self._parent_urls = parent_urls
 
     @abc.abstractmethod
     def sitemap(self) -> AbstractSitemap:
@@ -231,12 +264,14 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
         content: str,
         recursion_level: int,
         web_client: AbstractWebClient,
+        parent_urls: Set[str],
     ):
         super().__init__(
             url=url,
             content=content,
             recursion_level=recursion_level,
             web_client=web_client,
+            parent_urls=parent_urls,
         )
 
         if not self._url.endswith("/robots.txt"):
@@ -271,6 +306,7 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
                     url=sitemap_url,
                     recursion_level=self._recursion_level + 1,
                     web_client=self._web_client,
+                    parent_urls=self._parent_urls | {self._url},
                 )
                 fetched_sitemap = fetcher.sitemap()
             except NoWebClientException:
@@ -333,12 +369,14 @@ class XMLSitemapParser(AbstractSitemapParser):
         content: str,
         recursion_level: int,
         web_client: AbstractWebClient,
+        parent_urls: Set[str],
     ):
         super().__init__(
             url=url,
             content=content,
             recursion_level=recursion_level,
             web_client=web_client,
+            parent_urls=parent_urls,
         )
 
         # Will be initialized when the type of sitemap is known
@@ -432,6 +470,7 @@ class XMLSitemapParser(AbstractSitemapParser):
                     url=self._url,
                     web_client=self._web_client,
                     recursion_level=self._recursion_level,
+                    parent_urls=self._parent_urls,
                 )
 
             elif name == "rss":
@@ -545,14 +584,22 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
         "_recursion_level",
         # List of sub-sitemap URLs found in this index sitemap
         "_sub_sitemap_urls",
+        "_parent_urls",
     ]
 
-    def __init__(self, url: str, web_client: AbstractWebClient, recursion_level: int):
+    def __init__(
+        self,
+        url: str,
+        web_client: AbstractWebClient,
+        recursion_level: int,
+        parent_urls: Set[str],
+    ):
         super().__init__(url=url)
 
         self._web_client = web_client
         self._recursion_level = recursion_level
         self._sub_sitemap_urls = []
+        self._parent_urls = parent_urls
 
     def xml_element_end(self, name: str) -> None:
         if name == "sitemap:loc":
@@ -578,6 +625,7 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
                     url=sub_sitemap_url,
                     recursion_level=self._recursion_level + 1,
                     web_client=self._web_client,
+                    parent_urls=self._parent_urls | {self._url},
                 )
                 fetched_sitemap = fetcher.sitemap()
             except NoWebClientException:

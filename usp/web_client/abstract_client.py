@@ -101,6 +101,15 @@ class AbstractWebClientSuccessResponse(
         """
         raise NotImplementedError("Abstract method.")
 
+    @abc.abstractmethod
+    def url(self) -> str:
+        """
+        Return the actual URL fetched, after any redirects.
+
+        :return: URL fetched.
+        """
+        raise NotImplementedError("Abstract method.")
+
 
 class WebClientErrorResponse(AbstractWebClientResponse, metaclass=abc.ABCMeta):
     """
@@ -189,6 +198,27 @@ class LocalWebClient(AbstractWebClient):
 
     def get(self, url: str) -> AbstractWebClientResponse:
         raise NoWebClientException
+
+
+class LocalWebClientSuccessResponse(AbstractWebClientSuccessResponse):
+    def __init__(self, url: str, data: str):
+        self._url = url
+        self._data = data
+
+    def status_code(self) -> int:
+        return 200
+
+    def status_message(self) -> str:
+        return "OK"
+
+    def header(self, case_insensitive_name: str) -> Optional[str]:
+        return None
+
+    def raw_data(self) -> bytes:
+        return self._data.encode("utf-8")
+
+    def url(self) -> str:
+        return self._url
 
 
 class RequestWaiter:
