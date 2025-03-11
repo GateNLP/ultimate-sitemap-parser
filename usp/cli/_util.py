@@ -1,4 +1,5 @@
-from typing import Dict
+import logging
+from typing import Dict, Optional
 
 
 def format_help(choices: Dict[str, str], opt_help: str) -> str:
@@ -19,3 +20,10 @@ def format_help(choices: Dict[str, str], opt_help: str) -> str:
 def tabs(n: int):
     """Generate n tabs."""
     return "\t" * n
+
+
+def setup_logging(log_level: int, log_path: Optional[str]) -> None:
+    if log_path is not None:
+        logging.basicConfig(level=log_level, filename=log_path)
+    else:
+        logging.basicConfig(level=log_level)

@@ -165,7 +165,7 @@ class RequestsWebClient(AbstractWebClient):
                 )
             else:
                 message = f"{response.status_code} {response.reason}"
-                log.info(f"Response content: {response.text}")
+                log.debug(f"Response content: {response.text}")
 
                 if response.status_code in RETRYABLE_HTTP_STATUS_CODES:
                     return RequestsWebClientErrorResponse(

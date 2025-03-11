@@ -139,7 +139,7 @@ class TestRequestsClient:
         assert response_length == max_length
 
     def test_error_page_log(self, client, requests_mock, caplog):
-        caplog.set_level(logging.INFO)
+        caplog.set_level(logging.DEBUG)
         test_url = self.TEST_BASE_URL + "/error_page.html"
 
         requests_mock.get(
