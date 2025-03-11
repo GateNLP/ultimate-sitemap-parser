@@ -1,5 +1,4 @@
 import argparse
-import logging
 import sys
 from typing import Iterator
 
@@ -50,18 +49,10 @@ def register(subparsers):
     ls_parser.add_argument(
         "-v",
         "--verbose",
-        action="store_const",
-        dest="log_level",
-        const=logging.INFO,
-        help="enable additional logging",
-    )
-    ls_parser.add_argument(
-        "-d",
-        "--debug",
-        action="store_const",
-        dest="log_level",
-        const=logging.DEBUG,
-        help="enable debug logging for developers",
+        action="count",
+        help="increase output verbosity (-v=INFO, -vv=DEBUG)",
+        dest="verbosity",
+        default=0,
     )
     ls_parser.add_argument(
         "-l",
@@ -69,9 +60,7 @@ def register(subparsers):
         type=str,
         help="write log to this file and suppress console output",
     )
-    ls_parser.set_defaults(
-        no_robots=False, no_known=False, strip_url=False, log_level=logging.WARNING
-    )
+    ls_parser.set_defaults(no_robots=False, no_known=False, strip_url=False)
 
     ls_parser.set_defaults(func=ls)
 
@@ -110,7 +99,7 @@ def _output_pages(sitemap: AbstractSitemap, strip_prefix: str = ""):
 
 
 def ls(args):
-    setup_logging(args.log_level, args.log_file)
+    setup_logging(args.verbosity, args.log_file)
 
     tree = sitemap_tree_for_homepage(
         args.url,

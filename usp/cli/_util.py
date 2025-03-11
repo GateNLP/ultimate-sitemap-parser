@@ -22,7 +22,15 @@ def tabs(n: int):
     return "\t" * n
 
 
-def setup_logging(log_level: int, log_path: Optional[str]) -> None:
+_log_levels = {
+    0: logging.WARNING,
+    1: logging.INFO,
+    2: logging.DEBUG,
+}
+
+
+def setup_logging(verbosity: int, log_path: Optional[str]) -> None:
+    log_level = _log_levels.get(verbosity, logging.DEBUG)
     if log_path is not None:
         logging.basicConfig(level=log_level, filename=log_path)
     else:
