@@ -58,3 +58,4 @@ Recursion is detected in the following cases, and will result in the sitemap bei
 
 - A sitemap's URL is identical to any of its ancestor sitemaps' URLs.
 - When fetched, a sitemap redirects to a URL that is identical to any of its ancestor sitemaps' URLs.
+- When fetching known site map locations, a sitemap redirects to a sitemap already parsed from ``robots.txt``.
