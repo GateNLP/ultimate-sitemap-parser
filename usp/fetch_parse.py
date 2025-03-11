@@ -151,8 +151,9 @@ class SitemapFetcher:
         log.debug(f"Response URL is {response_url}")
         if response_url in self._parent_urls:
             # Likely a sitemap has redirected to a parent URL
-            raise SitemapException(
-                f"Recursion detected when {self._url} redirected to {response_url} with parent URLs {self._parent_urls}."
+            return InvalidSitemap(
+                url=self._url,
+                reason=f"Recursion detected when {self._url} redirected to {response_url} with parent URLs {self._parent_urls}.",
             )
 
         self._url = response_url

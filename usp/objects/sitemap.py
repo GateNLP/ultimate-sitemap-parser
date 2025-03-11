@@ -9,6 +9,7 @@
 """
 
 import abc
+import logging
 import os
 import pickle
 import tempfile
@@ -16,6 +17,8 @@ from functools import lru_cache
 from typing import Iterator, List, Tuple
 
 from .page import SitemapPage
+
+log = logging.getLogger(__name__)
 
 
 # TODO: change to functools.cache when dropping py3.8
@@ -153,6 +156,7 @@ class InvalidSitemap(AbstractSitemap):
         """
         super().__init__(url=url)
         self.__reason = reason
+        log.info(f"Invalid sitemap: {url}, reason: {reason}")
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, InvalidSitemap):
