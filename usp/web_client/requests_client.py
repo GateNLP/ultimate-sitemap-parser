@@ -62,6 +62,9 @@ class RequestsWebClientSuccessResponse(AbstractWebClientSuccessResponse):
 
         return data
 
+    def url(self) -> str:
+        return self.__requests_response.url
+
 
 class RequestsWebClientErrorResponse(WebClientErrorResponse):
     """

@@ -19,4 +19,5 @@ class TestTreeOpts(TreeTestBase):
             url="https://example.org/custom_sitemap.xml",
             web_client=mock.ANY,
             recursion_level=0,
+            parent_urls=set(),
         )

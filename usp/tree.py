@@ -75,7 +75,10 @@ def sitemap_tree_for_homepage(
     sitemap_urls_found_in_robots_txt = set()
     if use_robots:
         robots_txt_fetcher = SitemapFetcher(
-            url=robots_txt_url, web_client=web_client, recursion_level=0
+            url=robots_txt_url,
+            web_client=web_client,
+            recursion_level=0,
+            parent_urls=set(),
         )
         robots_txt_sitemap = robots_txt_fetcher.sitemap()
         if not isinstance(robots_txt_sitemap, InvalidSitemap):
@@ -95,6 +98,7 @@ def sitemap_tree_for_homepage(
                     url=unpublished_sitemap_url,
                     web_client=web_client,
                     recursion_level=0,
+                    parent_urls=set(),
                 )
                 unpublished_sitemap = unpublished_sitemap_fetcher.sitemap()
 
