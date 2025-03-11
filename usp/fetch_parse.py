@@ -66,7 +66,10 @@ class SitemapFetcher:
     Spec says it might be up to 50 MB but let's go for the full 100 MB here."""
 
     __MAX_RECURSION_LEVEL = 11
-    """Max. recursion level in iterating over sub-sitemaps."""
+    """Max. depth level in iterating over sub-sitemaps.
+    
+    Recursive sitemaps (i.e. child sitemaps pointing to their parent) are stopped immediately.
+    """
 
     __slots__ = [
         "_url",
@@ -90,6 +93,7 @@ class SitemapFetcher:
         :param parent_urls: Set of parent URLs that led to this sitemap.
 
         :raises SitemapException: If the maximum recursion depth is exceeded.
+        :raises SitemapException: If the URL is in the parent URLs set.
         :raises SitemapException: If the URL is not an HTTP(S) URL
         """
         if recursion_level > self.__MAX_RECURSION_LEVEL:
