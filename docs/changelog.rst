@@ -8,6 +8,11 @@ Upcoming
 
 - Recursive sitemaps are detected and will return an ``InvalidSitemap`` instead (:pr:`74`)
 - The reported URL of a sitemap will now be its actual URL after redirects (:pr:`74`)
+- Log level in CLI can now be changed with the ``-v`` or ``-vv`` flags, and output to a file with ``-l`` (:pr:`76`)
+
+**Bug Fixes**
+
+- Some logging at ``INFO`` level has been changed to ``DEBUG`` (:pr:`76`)
 
 **API Changes**
 
