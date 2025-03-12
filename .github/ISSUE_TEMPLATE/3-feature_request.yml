@@ -1,0 +1,19 @@
+name: "🚀 Feature Request"
+description: Request a new feature in USP
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: feature-request
+    attributes:
+      label: Feature Request
+      description: |
+        A clear and concise description of the feature proposal and why you would like it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: contribution
+    attributes:
+      label: Proposed Contribution
+      description: |
+        If you would like to contribute this feature yourself, you can briefly outline your ideas here. Make sure to read the [contributing guide](https://ultimate-sitemap-parser.readthedocs.io/en/stable/contributing.html)

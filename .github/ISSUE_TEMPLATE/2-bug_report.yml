@@ -1,0 +1,39 @@
+name: "🐛 Bug Report"
+description: File a general bug report in USP. Please use the site report form for site-specific issues.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug in USP. Please provide as much information as possible to help us reproduce this issue.
+        
+        **Note about logging:** If providing logs, it is helpful to set the logging level to `DEBUG` like so:
+        ```python
+        import logging
+        logging.basicConfig(level=logging.DEBUG)
+        # your code here
+        ```
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: Please enter a short description of the issue
+    validations:
+      required: true
+  - type: textarea
+    id: reprod
+    attributes:
+      label: "Reproduction Steps"
+      description: Please enter the steps to reproduce the issue, including a minimal code reproduction or logs if needed
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: "Environment"
+      description: To obtain the version, run `usp -v` in your terminal or see the value of `usp.__version__`
+      value: |
+        - Python version:
+        - USP version:
+    validations:
+      required: true

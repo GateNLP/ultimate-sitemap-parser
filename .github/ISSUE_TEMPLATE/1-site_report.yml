@@ -1,0 +1,49 @@
+name: "🌍 Site Bug Report"
+description: File a bug report parsing the sitemap of a specific site.
+labels: ["site"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting an issue parsing the sitemap of a specific site. Please provide as much information as possible to help us reproduce this issue.
+        
+        The easiest way to report site-specific issues is to use the [`usp` CLI tool](https://ultimate-sitemap-parser.readthedocs.io/en/stable/reference/cli.html), which is installed with the package.
+        
+        Please run the following command in your terminal:
+        ```bash
+        usp ls -vv -l output.log "https://your-url-here.com" > output.txt
+        ```
+  - type: input
+    id: url
+    attributes:
+      label: "Site URL"
+      description: Please enter the URL of the site you are trying to parse
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: Please enter a short description of the issue
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: "Environment"
+      description: To obtain the version, run `usp -v` in your terminal or see the value of `usp.__version__`
+      value: |
+        - Python version:
+        - USP version:
+  - type: markdown
+    attributes:
+      value: |
+        If you ran the command as above, you should have an `output.log` (logs) and `output.txt` (the parsed tree) file. We suggest uploading these as a [GitHub gist](https://gist.github.com/) and linking them here.
+  - type: input
+    id: log-url
+    attributes:
+      label: "Log Gist URL"
+  - type: input
+    id: tree-url
+    attributes:
+      label: "Tree Gist URL"
