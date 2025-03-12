@@ -76,6 +76,7 @@ class SitemapFetcher:
         "_recursion_level",
         "_web_client",
         "_parent_urls",
+        "_quiet_404",
     ]
 
     def __init__(
@@ -84,6 +85,7 @@ class SitemapFetcher:
         recursion_level: int,
         web_client: Optional[AbstractWebClient] = None,
         parent_urls: Optional[Set[str]] = None,
+        quiet_404: bool = False,
     ):
         """
 
@@ -91,6 +93,7 @@ class SitemapFetcher:
         :param recursion_level: current recursion level of parser
         :param web_client: Web client to use. If ``None``, a :class:`~.RequestsWebClient` will be used.
         :param parent_urls: Set of parent URLs that led to this sitemap.
+        :param quiet_404: Whether 404 errors are expected and should be logged at a reduced level, useful for speculative fetching of known URLs.
 
         :raises SitemapException: If the maximum recursion depth is exceeded.
         :raises SitemapException: If the URL is in the parent URLs set.
@@ -123,11 +126,12 @@ class SitemapFetcher:
         self._web_client = web_client
         self._recursion_level = recursion_level
         self._parent_urls = parent_urls or set()
+        self._quiet_404 = quiet_404
 
     def _fetch(self) -> AbstractWebClientResponse:
         log.info(f"Fetching level {self._recursion_level} sitemap from {self._url}...")
         response = get_url_retry_on_client_errors(
-            url=self._url, web_client=self._web_client
+            url=self._url, web_client=self._web_client, quiet_404=self._quiet_404
         )
         return response
 

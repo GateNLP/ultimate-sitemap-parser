@@ -10,6 +10,7 @@ Upcoming
 - Known sitemap paths will be skipped if they redirect to a sitemap already found (:pr:`77`)
 - The reported URL of a sitemap will now be its actual URL after redirects (:pr:`74`)
 - Log level in CLI can now be changed with the ``-v`` or ``-vv`` flags, and output to a file with ``-l`` (:pr:`76`)
+- When fetching known sitemap paths, 404 errors are now logged at a lower level (:pr:`78`)
 
 **Bug Fixes**
 

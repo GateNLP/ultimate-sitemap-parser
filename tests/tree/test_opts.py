@@ -20,4 +20,5 @@ class TestTreeOpts(TreeTestBase):
             web_client=mock.ANY,
             recursion_level=0,
             parent_urls=set(),
+            quiet_404=True,
         )
