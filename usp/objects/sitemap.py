@@ -13,7 +13,7 @@ import logging
 import os
 import pickle
 import tempfile
-from functools import lru_cache
+from functools import cache
 from typing import Iterator, List, Tuple
 
 from .page import SitemapPage
@@ -21,8 +21,7 @@ from .page import SitemapPage
 log = logging.getLogger(__name__)
 
 
-# TODO: change to functools.cache when dropping py3.8
-@lru_cache(maxsize=None)
+@cache
 def _all_slots(target_cls):
     mro = target_cls.__mro__
 
