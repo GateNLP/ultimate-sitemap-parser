@@ -99,6 +99,7 @@ def sitemap_tree_for_homepage(
                     web_client=web_client,
                     recursion_level=0,
                     parent_urls=sitemap_urls_found_in_robots_txt,
+                    quiet_404=True,
                 )
                 unpublished_sitemap = unpublished_sitemap_fetcher.sitemap()
 

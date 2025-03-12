@@ -1,4 +1,6 @@
 import datetime
+import logging
+from typing import Optional
 
 import pytest
 
@@ -8,12 +10,18 @@ from usp.exceptions import (
     StripURLToHomepageException,
 )
 from usp.helpers import (
+    get_url_retry_on_client_errors,
     gunzip,
     html_unescape_strip,
     is_http_url,
     parse_iso8601_date,
     parse_rfc2822_date,
     strip_url_to_homepage,
+)
+from usp.web_client.abstract_client import (
+    AbstractWebClient,
+    AbstractWebClientResponse,
+    WebClientErrorResponse,
 )
 
 
@@ -208,3 +216,37 @@ def test_gunzip():
     with pytest.raises(GunzipException):
         # noinspection PyTypeChecker
         gunzip(b"foo")
+
+
+class MockWebClientErrorResponse(WebClientErrorResponse):
+    pass
+
+
+@pytest.mark.parametrize(
+    ("quiet_404_value", "expected_log_level"),
+    [(True, logging.INFO), (False, logging.WARNING)],
+)
+def test_url_retry_on_client_errors_quiet_404(
+    caplog, quiet_404_value, expected_log_level
+):
+    class MockWebClient404s(AbstractWebClient):
+        def set_max_response_data_length(
+            self, max_response_data_length: Optional[int]
+        ) -> None:
+            pass
+
+        def get(self, url: str) -> AbstractWebClientResponse:
+            return MockWebClientErrorResponse("404 Not Found", False)
+
+    caplog.set_level(expected_log_level)
+    get_url_retry_on_client_errors(
+        url="http://example.com",
+        web_client=MockWebClient404s(),
+        quiet_404=quiet_404_value,
+    )
+
+    assert (
+        "usp.helpers",
+        expected_log_level,
+        "Request for URL http://example.com failed: 404 Not Found",
+    ) in caplog.record_tuples

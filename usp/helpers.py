@@ -7,6 +7,7 @@ import logging
 import re
 import sys
 import time
+from http import HTTPStatus
 from typing import Optional
 from urllib.parse import unquote_plus, urlparse, urlunparse
 
@@ -130,11 +131,15 @@ def parse_rfc2822_date(date_string: str) -> Optional[datetime.datetime]:
         return None
 
 
+_404_log_message = f"{HTTPStatus.NOT_FOUND} {HTTPStatus.NOT_FOUND.phrase}"
+
+
 def get_url_retry_on_client_errors(
     url: str,
     web_client: AbstractWebClient,
     retry_count: int = 5,
     sleep_between_retries: int = 1,
+    quiet_404: bool = False,
 ) -> AbstractWebClientResponse:
     """
     Fetch URL, retry on retryable errors.
@@ -143,6 +148,8 @@ def get_url_retry_on_client_errors(
     :param web_client: Web client object to use for fetching.
     :param retry_count: How many times to retry fetching the same URL.
     :param sleep_between_retries: How long to sleep between retries, in seconds.
+    :param quiet_404: Whether to log 404 errors at a lower level.
+
     :return: Web client response object.
     """
     assert retry_count > 0, "Retry count must be positive."
@@ -153,7 +160,11 @@ def get_url_retry_on_client_errors(
         response = web_client.get(url)
 
         if isinstance(response, WebClientErrorResponse):
-            log.warning(f"Request for URL {url} failed: {response.message()}")
+            if quiet_404 and response.message() == _404_log_message:
+                log_level = logging.INFO
+            else:
+                log_level = logging.WARNING
+            log.log(log_level, f"Request for URL {url} failed: {response.message()}")
 
             if response.retryable():
                 log.info(f"Retrying URL {url} in {sleep_between_retries} seconds...")
