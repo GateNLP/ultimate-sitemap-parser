@@ -1,5 +1,5 @@
 name: "🌍 Site Bug Report"
-description: File a bug report parsing the sitemap of a specific site.
+description: For issues encountered when parsing a specific site with USP
 labels: ["site"]
 body:
   - type: markdown
@@ -38,12 +38,12 @@ body:
   - type: markdown
     attributes:
       value: |
-        If you ran the command as above, you should have an `output.log` (logs) and `output.txt` (the parsed tree) file. We suggest uploading these as a [GitHub gist](https://gist.github.com/) and linking them here.
-  - type: input
-    id: log-url
+        If you ran the command as above, you should have an `output.log` (logs) and `output.txt` (the parsed tree) file. Please upload these files in the text area below (or use [GitHub Gist](https://gist.github.com/) if they are too large).
+  - type: textarea
+    id: files
     attributes:
-      label: "Log Gist URL"
-  - type: input
-    id: tree-url
-    attributes:
-      label: "Tree Gist URL"
+      label: "Log and Output Files"
+      description: Upload the `output.log` and `output.txt` files here
+      value: |
+        - Output log:
+        - Output text:

@@ -1,5 +1,5 @@
 name: "🐛 Bug Report"
-description: File a general bug report in USP. Please use the site report form for site-specific issues.
+description: For general bugs in USP
 labels: ["bug"]
 body:
   - type: markdown
@@ -13,6 +13,7 @@ body:
         logging.basicConfig(level=logging.DEBUG)
         # your code here
         ```
+        For large logs, consider passing `filename='output.log'` to the `logging.basicConfig` function to save the logs to a file, and uploading the file below.
   - type: textarea
     id: description
     attributes:
