@@ -4,6 +4,8 @@ Changelog
 Upcoming
 --------
 
+*This release drops support for Python 3.8. The minimum supported version is now Python 3.9.*
+
 **New Features**
 
 - Recursive sitemaps are detected and will return an ``InvalidSitemap`` instead (:pr:`74`)
