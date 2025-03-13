@@ -6,7 +6,7 @@ from usp.objects.sitemap import IndexXMLSitemap, InvalidSitemap, PagesXMLSitemap
 from usp.tree import sitemap_from_str
 
 
-class TestSitemapFromStrStr(TreeTestBase):
+class TestSitemapFromStr(TreeTestBase):
     def test_xml_pages(self):
         parsed = sitemap_from_str(
             content=textwrap.dedent(

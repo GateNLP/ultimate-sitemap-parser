@@ -7,7 +7,7 @@ from usp.objects.sitemap import (
 from usp.tree import sitemap_tree_for_homepage
 
 
-class TestTreeBasic(TreeTestBase):
+class TestTreeEdgeCases(TreeTestBase):
     def test_sitemap_tree_for_homepage_utf8_bom(self, requests_mock):
         """Test sitemap_tree_for_homepage() with UTF-8 BOM in both robots.txt and sitemap."""
 
