@@ -15,7 +15,7 @@ from usp.objects.sitemap import (
 from usp.tree import sitemap_tree_for_homepage
 
 
-class TestTreeBasic(TreeTestBase):
+class TestTreeRssAtom(TreeTestBase):
     def test_sitemap_tree_for_homepage_rss_atom(self, requests_mock):
         """Test sitemap_tree_for_homepage() with RSS 2.0 / Atom 0.3 / Atom 1.0 feeds."""
 

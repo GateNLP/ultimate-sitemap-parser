@@ -52,7 +52,7 @@ class TestTreeSave(TreeTestBase):
 
         assert pages_d == [
             {
-                "url": "http://test_ultimate-sitemap-parser.com/about.html",
+                "url": f"{self.TEST_BASE_URL}/about.html",
                 "priority": Decimal("0.8"),
                 "last_modified": datetime.datetime(
                     2009, 12, 17, 12, 4, 56, tzinfo=tzoffset(None, 7200)
@@ -62,7 +62,7 @@ class TestTreeSave(TreeTestBase):
                 "news_story": None,
             },
             {
-                "url": "http://test_ultimate-sitemap-parser.com/contact.html",
+                "url": f"{self.TEST_BASE_URL}/contact.html",
                 "priority": Decimal("0.5"),
                 "last_modified": datetime.datetime(
                     2009, 12, 17, 12, 4, 56, tzinfo=tzoffset(None, 7200)
@@ -72,7 +72,7 @@ class TestTreeSave(TreeTestBase):
                 "news_story": None,
             },
             {
-                "url": "http://test_ultimate-sitemap-parser.com/news/foo.html",
+                "url": f"{self.TEST_BASE_URL}/news/foo.html",
                 "priority": Decimal("0.5"),
                 "last_modified": None,
                 "change_frequency": None,
@@ -91,7 +91,7 @@ class TestTreeSave(TreeTestBase):
                 },
             },
             {
-                "url": "http://test_ultimate-sitemap-parser.com/news/bar.html",
+                "url": f"{self.TEST_BASE_URL}/news/bar.html",
                 "priority": Decimal("0.5"),
                 "last_modified": None,
                 "change_frequency": None,
@@ -110,7 +110,7 @@ class TestTreeSave(TreeTestBase):
                 },
             },
             {
-                "url": "http://test_ultimate-sitemap-parser.com/news/bar.html",
+                "url": f"{self.TEST_BASE_URL}/news/bar.html",
                 "priority": Decimal("0.5"),
                 "last_modified": None,
                 "change_frequency": None,
@@ -129,7 +129,7 @@ class TestTreeSave(TreeTestBase):
                 },
             },
             {
-                "url": "http://test_ultimate-sitemap-parser.com/news/baz.html",
+                "url": f"{self.TEST_BASE_URL}/news/baz.html",
                 "priority": Decimal("0.5"),
                 "last_modified": None,
                 "change_frequency": None,
