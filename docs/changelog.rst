@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Upcoming
---------
+v1.3.0 (2025-03-17)
+-------------------
 
 *This release drops support for Python 3.8. The minimum supported version is now Python 3.9.*
 
