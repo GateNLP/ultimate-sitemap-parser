@@ -1,12 +1,12 @@
 Changelog
 =========
 
-Upcoming
---------
+v1.3.1 (2025-03-31)
+-------------------
 
 **Bug Fixes**
 
-- Fixed handling of temporary files, which caused errors when run on Windows (:pr:`84`)
+- Fixed an issue with temporary file handling, which would cause USP to always crash on Windows (:pr:`84`)
 
 v1.3.0 (2025-03-17)
 -------------------
