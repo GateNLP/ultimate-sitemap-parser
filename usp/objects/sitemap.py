@@ -225,8 +225,8 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         self._dump_pages(pages)
 
     def _dump_pages(self, pages: List[SitemapPage]):
-        temp_file, self.__pages_temp_file_path = tempfile.mkstemp()
-        with open(self.__pages_temp_file_path, "wb") as tmp:
+        fd, self.__pages_temp_file_path = tempfile.mkstemp()
+        with os.fdopen(fd, "wb") as tmp:
             pickle.dump(pages, tmp, protocol=pickle.HIGHEST_PROTOCOL)
 
     def __del__(self):

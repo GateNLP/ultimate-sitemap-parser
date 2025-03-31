@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Upcoming
+--------
+
+**Bug Fixes**
+
+- Fixed handling of temporary files, which caused errors when run on Windows (:pr:`84`)
+
 v1.3.0 (2025-03-17)
 -------------------
 
