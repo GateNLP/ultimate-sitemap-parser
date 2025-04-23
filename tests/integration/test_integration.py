@@ -19,3 +19,4 @@ def test_sitemap_parse(site_url, cassette_path):
     for page in sitemap.all_pages():
         page_count += 1
     log.critical(f"Site {site_url} has {page_count} pages")
+    assert page_count > 0

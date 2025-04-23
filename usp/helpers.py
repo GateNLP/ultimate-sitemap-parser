@@ -194,12 +194,10 @@ def __response_is_gzipped_data(
     uri = urlparse(url)
     url_path = unquote_plus(uri.path)
     content_type = response.header("content-type") or ""
-    content_encoding = response.header("content-encoding") or ""
 
     if (
         url_path.lower().endswith(".gz")
         or "gzip" in content_type.lower()
-        or "gzip" in content_encoding.lower()
     ):
         return True
 
@@ -260,7 +258,7 @@ def ungzipped_response_content(
         except GunzipException as ex:
             # In case of an error, just assume that it's one of the non-gzipped sitemaps with ".gz" extension
             log.warning(
-                f"Unable to gunzip response {response}, maybe it's a non-gzipped sitemap: {ex}"
+                f"Unable to gunzip response for {url}, maybe it's a non-gzipped sitemap: {ex}"
             )
 
     # FIXME other encodings

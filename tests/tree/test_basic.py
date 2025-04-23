@@ -132,7 +132,7 @@ class TestTreeBasic(TreeTestBase):
         assert len(list(actual_sitemap_tree.all_pages())) == 6
         assert len(list(actual_sitemap_tree.all_sitemaps())) == 7
 
-    def test_sitemap_tree_for_homepage_gzip(self, requests_mock):
+    def test_sitemap_tree_for_homepage_gzip(self, requests_mock, caplog):
         """Test sitemap_tree_for_homepage() with gzipped sitemaps."""
 
         requests_mock.add_matcher(TreeTestBase.fallback_to_404_not_found_matcher)
@@ -153,6 +153,7 @@ class TestTreeBasic(TreeTestBase):
                 Sitemap: {self.TEST_BASE_URL}/sitemap_1.gz
                 Sitemap: {self.TEST_BASE_URL}/sitemap_2.dat
                 Sitemap: {self.TEST_BASE_URL}/sitemap_3.xml.gz
+                Sitemap: {self.TEST_BASE_URL}/sitemap_4.xml
             """
             ).strip(),
         )
@@ -235,6 +236,31 @@ class TestTreeBasic(TreeTestBase):
             ).strip(),
         )
 
+        # Sitemap encoded as gzip for transport by the web server
+        requests_mock.get(
+            self.TEST_BASE_URL + "/sitemap_4.xml",
+            headers={"Content-Type": "application/xml", "Content-Encoding": "gzip"},
+            content=gzip(textwrap.dedent(
+                f"""
+                <?xml version="1.0" encoding="UTF-8"?>
+                <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+                        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+                    <url>
+                        <loc>{self.TEST_BASE_URL}/news/baz.html</loc>
+                        <news:news>
+                            <news:publication>
+                                <news:name>{self.TEST_PUBLICATION_NAME}</news:name>
+                                <news:language>{self.TEST_PUBLICATION_LANGUAGE}</news:language>
+                            </news:publication>
+                            <news:publication_date>{self.TEST_DATE_STR_ISO8601}</news:publication_date>
+                            <news:title><![CDATA[Bąž]]></news:title>    <!-- CDATA and UTF-8 -->
+                        </news:news>
+                    </url>
+                </urlset>
+            """
+            ).strip()),
+        )
+
         actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
 
         # Don't do an in-depth check, we just need to make sure that gunzip works
@@ -243,7 +269,7 @@ class TestTreeBasic(TreeTestBase):
 
         assert isinstance(actual_sitemap_tree.sub_sitemaps[0], IndexRobotsTxtSitemap)
         # noinspection PyUnresolvedReferences
-        assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 3
+        assert len(actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps) == 4
 
         # noinspection PyUnresolvedReferences
         sitemap_1 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[0]
@@ -259,6 +285,18 @@ class TestTreeBasic(TreeTestBase):
         sitemap_3 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[2]
         assert isinstance(sitemap_3, PagesXMLSitemap)
         assert len(sitemap_3.pages) == 1
+
+        sitemap_4 = actual_sitemap_tree.sub_sitemaps[0].sub_sitemaps[3]
+        assert isinstance(sitemap_4, PagesXMLSitemap)
+        assert len(sitemap_4.pages) == 1
+
+        # Check that only sitemap_3 caused a gunzip error
+        assert len([
+            record
+            for record in caplog.records
+            if "Unable to gunzip response" in record.message
+        ]) == 1
+        assert f"Unable to gunzip response for {self.TEST_BASE_URL}/sitemap_3.xml.gz" in caplog.text
 
     def test_sitemap_tree_for_homepage_huge_sitemap(self, requests_mock):
         """Test sitemap_tree_for_homepage() with a huge sitemap (mostly for profiling)."""
