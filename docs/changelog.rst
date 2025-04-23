@@ -8,6 +8,11 @@ Upcoming
 
 - Support parsing sitemaps when a proper XML namespace is not declared (:pr:`87`)
 
+**Bug Fixes**
+
+- Fix incorrect logic in gunzip behaviour which attempted to gunzip responses that were already gunzipped by requests (:pr:`89`)
+- Change log output for gunzip failures to include the URL instead of request response object (:pr:`89`)
+
 v1.3.1 (2025-03-31)
 -------------------
 
