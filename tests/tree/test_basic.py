@@ -240,8 +240,9 @@ class TestTreeBasic(TreeTestBase):
         requests_mock.get(
             self.TEST_BASE_URL + "/sitemap_4.xml",
             headers={"Content-Type": "application/xml", "Content-Encoding": "gzip"},
-            content=gzip(textwrap.dedent(
-                f"""
+            content=gzip(
+                textwrap.dedent(
+                    f"""
                 <?xml version="1.0" encoding="UTF-8"?>
                 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
                         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
@@ -258,7 +259,8 @@ class TestTreeBasic(TreeTestBase):
                     </url>
                 </urlset>
             """
-            ).strip()),
+                ).strip()
+            ),
         )
 
         actual_sitemap_tree = sitemap_tree_for_homepage(homepage_url=self.TEST_BASE_URL)
@@ -291,12 +293,20 @@ class TestTreeBasic(TreeTestBase):
         assert len(sitemap_4.pages) == 1
 
         # Check that only sitemap_3 caused a gunzip error
-        assert len([
-            record
-            for record in caplog.records
-            if "Unable to gunzip response" in record.message
-        ]) == 1
-        assert f"Unable to gunzip response for {self.TEST_BASE_URL}/sitemap_3.xml.gz" in caplog.text
+        assert (
+            len(
+                [
+                    record
+                    for record in caplog.records
+                    if "Unable to gunzip response" in record.message
+                ]
+            )
+            == 1
+        )
+        assert (
+            f"Unable to gunzip response for {self.TEST_BASE_URL}/sitemap_3.xml.gz"
+            in caplog.text
+        )
 
     def test_sitemap_tree_for_homepage_huge_sitemap(self, requests_mock):
         """Test sitemap_tree_for_homepage() with a huge sitemap (mostly for profiling)."""
