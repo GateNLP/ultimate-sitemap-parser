@@ -13,6 +13,8 @@ CASSETTE_REPO = "https://github.com/GateNLP/usp-test-cassettes"
 MANIFEST_FILE = f"{CASSETTE_REPO}/raw/main/manifest.json"
 CASSETTE_ROOT = Path(__file__).parent / "cassettes"
 
+log = logging.getLogger(__name__)
+
 
 def download_manifest():
     r = requests.get(MANIFEST_FILE, allow_redirects=True)
@@ -39,7 +41,7 @@ def find_new(manifest, current_hashes):
 
     for url, data in manifest.items():
         if current_hashes.get(url, {}) != data["hash"]:
-            logging.info(f"{url} is out-of-date")
+            log.info(f"{url} is out-of-date")
             to_dl.append(url)
 
     return to_dl
@@ -52,7 +54,7 @@ def calc_hash(path):
 
 def dl_cassette(data):
     dl_gz_path = CASSETTE_ROOT / "download" / f"{data['name']}.gz"
-    logging.info(f"Downloading {data['url']} to {dl_gz_path}")
+    log.info(f"Downloading {data['url']} to {dl_gz_path}")
     with requests.get(data["url"], allow_redirects=True, stream=True) as r:
         r.raise_for_status()
 
@@ -64,12 +66,12 @@ def dl_cassette(data):
     dl_hash = calc_hash(dl_gz_path)
 
     if dl_hash != data["hash"]:
-        logging.error(
+        log.error(
             f"Downloaded file hash {dl_hash} does not match expected hash {data['hash']}"
         )
         exit(1)
 
-    logging.info(f"Download completed, extracting to {cassette_path}")
+    log.info(f"Download completed, extracting to {cassette_path}")
 
     with gzip.open(dl_gz_path, "rb") as f_gz:
         with open(cassette_path, "wb") as f_cassette:
@@ -109,12 +111,12 @@ def cleanup_files(data, confirm=True):
         sys.stdout.write("\n\n")
         resp = input("Confirm deletion? [y/N] ")
         if resp.lower() != "y":
-            logging.info("Skipped deletion")
+            log.info("Skipped deletion")
             return
 
-    logging.info(f"Deleting {len(to_delete)} outdated files")
+    log.info(f"Deleting {len(to_delete)} outdated files")
     for file in to_delete:
-        logging.info(f"Deleting {file}")
+        log.info(f"Deleting {file}")
         file.unlink()
 
 
@@ -124,13 +126,13 @@ def main(force: bool = False, force_delete=False):
     (CASSETTE_ROOT / "download").mkdir(exist_ok=True)
 
     manifest = download_manifest()
-    logging.info(f"Downloaded manifest with {len(manifest)} cassettes")
+    log.info(f"Downloaded manifest with {len(manifest)} cassettes")
     current_hashes = load_hashes()
     if force:
         to_dl = list(manifest.keys())
     else:
         to_dl = find_new(manifest, current_hashes)
-    logging.info(f"Downloaded {len(to_dl)} cassettes")
+    log.info(f"Downloaded {len(to_dl)} cassettes")
 
     for url in to_dl:
         dl_cassette(manifest[url])
