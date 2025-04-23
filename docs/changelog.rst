@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Upcoming
+--------
+
+**New Features**
+
+- Support parsing sitemaps when a proper XML namespace is not declared (:pr:`87`)
+
 v1.3.1 (2025-03-31)
 -------------------
 

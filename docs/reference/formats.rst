@@ -92,10 +92,11 @@ Supports the following non-standard features:
 - Truncated files (perhaps because the web server timed out while serving the file) will be parsed as much as possible
 - Any unexpected tags are ignored
 - Timestamps are :ref:`parsed flexibly <xml date>`
+- Sitemaps without an XML namespace will be parsed as if it was there, so long as there is still a root ``<sitemapindex>`` or ``<urlset>`` element.
 
 .. note::
 
-    Namespaces must be declared to parse the sitemap and any extensions correctly. Any unrecognised namespaces will be ignored.
+    Namespaces must be declared to parse extensions correctly. Any unrecognised namespaces will be ignored.
 
 .. _xml sitemap extensions:
 
@@ -150,7 +151,6 @@ The Google Image extension provides additional information to describe images on
 
 If the page contains Google Image data, it is stored as a list of :class:`~usp.objects.page.SitemapImage` objects in :attr:`SitemapPage.images <usp.objects.page.SitemapPage.images>`.
 
-.. _xml date:
 
 Additional Features
 ^^^^^^^^^^^^^^^^^^^
@@ -172,6 +172,8 @@ Alternate Localised Pages
         :language: xml
 
 Alternate localised pages specified with the ``<link>`` tag will be stored as a list in :attr:`SitemapPage.alternates <usp.objects.page.SitemapPage.alternates>`. Language codes are not validated.
+
+.. _xml date:
 
 Date Time Parsing
 ^^^^^^^^^^^^^^^^^
@@ -204,7 +206,7 @@ Implementation details:
 
 - Per the specification, ``<item>`` elements without a ``<title>`` or ``<description>`` are invalid and ignored.
 - Although the specification states ``<link>`` is optional, we ignore an ``<item>`` if it does not contain one
-- Dates are parsed flexibly
+- Dates are :ref:`parsed flexibly <rss date>`
 
 .. note::
 
@@ -244,7 +246,8 @@ Atom 0.3/1.0
 Implementation details:
 
 - The same parser is used for 0.3 and 1.0, and it does not attempt to detect the version, therefore it can accept invalid feeds which are a mixture of both
-- Dates are parsed flexibly
+- Dates are :ref:`parsed flexibly <atom date>`
+- The XML namespace is not required, any XML document with a root element of ``<feed>`` will be parsed as Atom
 
 .. _atom date:
 

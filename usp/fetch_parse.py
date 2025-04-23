@@ -366,6 +366,7 @@ class XMLSitemapParser(AbstractSitemapParser):
 
     __slots__ = [
         "_concrete_parser",
+        "_is_non_ns_sitemap",
     ]
 
     def __init__(
@@ -386,6 +387,8 @@ class XMLSitemapParser(AbstractSitemapParser):
 
         # Will be initialized when the type of sitemap is known
         self._concrete_parser = None
+        # Whether this is a malformed sitemap with no namespace
+        self._is_non_ns_sitemap = False
 
     def sitemap(self) -> AbstractSitemap:
         parser = xml.parsers.expat.ParserCreate(
@@ -411,8 +414,7 @@ class XMLSitemapParser(AbstractSitemapParser):
 
         return self._concrete_parser.sitemap()
 
-    @classmethod
-    def __normalize_xml_element_name(cls, name: str):
+    def __normalize_xml_element_name(self, name: str):
         """
         Replace the namespace URL in the argument element name with internal namespace.
 
@@ -428,7 +430,7 @@ class XMLSitemapParser(AbstractSitemapParser):
         :return: Internal namespace name plus element name, e.g. "sitemap loc"
         """
 
-        name_parts = name.split(cls.__XML_NAMESPACE_SEPARATOR)
+        name_parts = name.split(self.__XML_NAMESPACE_SEPARATOR)
 
         if len(name_parts) == 1:
             namespace_url = ""
@@ -451,6 +453,19 @@ class XMLSitemapParser(AbstractSitemapParser):
             name = f"image:{name}"
         elif "/sitemap-video/" in namespace_url:
             name = f"video:{name}"
+        elif name in {"urlset", "sitemapindex"}:
+            # XML sitemap root tag but namespace is not set
+            self._is_non_ns_sitemap = True
+            log.warning(
+                f'XML sitemap root tag {name} detected without expected xmlns (value is "{namespace_url}"), '
+                f"assuming is an XML sitemap."
+            )
+            name = f"sitemap:{name}"
+        elif self._is_non_ns_sitemap:
+            # Flag has previously been set and no other namespace matched,
+            # assume this should be in the sitemap namespace
+            log.debug(f"Assuming {name} should be in sitemap namespace")
+            name = f"sitemap:{name}"
         else:
             # We don't care about the rest of the namespaces, so just keep the plain element name
             pass
