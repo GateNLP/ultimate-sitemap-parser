@@ -79,7 +79,7 @@ class RequestsWebClient(AbstractWebClient):
 
     __USER_AGENT = f"ultimate_sitemap_parser/{__version__}"
 
-    __HTTP_REQUEST_TIMEOUT = 60
+    __HTTP_REQUEST_TIMEOUT = (9.05, 60)
     """
     HTTP request timeout.
 
@@ -114,7 +114,7 @@ class RequestsWebClient(AbstractWebClient):
         self.__waiter = RequestWaiter(wait, random_wait)
         self.__session = session or requests.Session()
 
-    def set_timeout(self, timeout: Union[int, Tuple[int, int], None]) -> None:
+    def set_timeout(self, timeout: Optional[Union[float, Tuple[float, float]]]) -> None:
         """Set HTTP request timeout.
 
         See also: `Requests timeout docs <https://requests.readthedocs.io/en/latest/user/advanced/#timeouts>`__
