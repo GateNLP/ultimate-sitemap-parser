@@ -1,12 +1,12 @@
 Changelog
 =========
 
-Upcoming
---------
+v1.5.0 (2025-08-11)
+-------------------
 
 **Bug Fixes**
 
-- Set different timeouts for HTTP request connection and read to lower maximum request length. Instead of 60s for each, it is now 10s for connection and 60s for read. (:pr:`95`)
+- Set different timeouts for HTTP request connection and read to lower maximum request length. Instead of 60s for each, it is now 9.05s for connection and 60s for read. (:pr:`95`)
 
 v1.4.0 (2025-04-23)
 -------------------
