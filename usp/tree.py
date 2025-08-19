@@ -1,7 +1,7 @@
 """Helpers to generate a sitemap tree."""
 
 import logging
-from typing import Optional
+from typing import Callable, Optional, Set
 
 from .exceptions import SitemapException
 from .fetch_parse import SitemapFetcher, SitemapStrParser
@@ -41,6 +41,7 @@ def sitemap_tree_for_homepage(
     use_robots: bool = True,
     use_known_paths: bool = True,
     extra_known_paths: Optional[set] = None,
+    recurse_callback: Optional[Callable[[str, int, Set[str]], bool]] = None,
 ) -> AbstractSitemap:
     """
     Using a homepage URL, fetch the tree of sitemaps and pages listed in them.
@@ -51,6 +52,7 @@ def sitemap_tree_for_homepage(
     :param use_robots: Whether to discover sitemaps through robots.txt.
     :param use_known_paths: Whether to discover sitemaps through common known paths.
     :param extra_known_paths: Extra paths to check for sitemaps.
+    :param recurse_callback: Optional callback function to control recursion into a sub-sitemap. If provided, it should be a function that takes the subsitemap URL, the current recursion level, and the set of parent URLs as arguments, and returns a boolean indicating whether to recurse into the subsitemap.
     :return: Root sitemap object of the fetched sitemap tree.
     """
 
@@ -79,6 +81,7 @@ def sitemap_tree_for_homepage(
             web_client=web_client,
             recursion_level=0,
             parent_urls=set(),
+            recurse_callback=recurse_callback,
         )
         robots_txt_sitemap = robots_txt_fetcher.sitemap()
         if not isinstance(robots_txt_sitemap, InvalidSitemap):
@@ -100,6 +103,7 @@ def sitemap_tree_for_homepage(
                     recursion_level=0,
                     parent_urls=sitemap_urls_found_in_robots_txt,
                     quiet_404=True,
+                    recurse_callback=recurse_callback,
                 )
                 unpublished_sitemap = unpublished_sitemap_fetcher.sitemap()
 
