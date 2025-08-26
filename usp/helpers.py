@@ -8,7 +8,7 @@ import re
 import sys
 import time
 from http import HTTPStatus
-from typing import Optional
+from typing import Callable, List, Optional, Set
 from urllib.parse import unquote_plus, urlparse, urlunparse
 
 from dateutil.parser import isoparse as dateutil_isoparse
@@ -28,6 +28,9 @@ __URL_REGEX = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", re.IGNORECASE)
 """Regular expression to match HTTP(s) URLs."""
 
 HAS_DATETIME_NEW_ISOPARSER = sys.version_info >= (3, 11)
+
+RecurseCallbackType = Callable[[str, int, Set[str]], bool]
+RecurseListCallbackType = Callable[[List[str], int, Set[str]], List[str]]
 
 
 def is_http_url(url: str) -> bool:

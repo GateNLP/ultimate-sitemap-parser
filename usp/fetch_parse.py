@@ -13,10 +13,12 @@ import re
 import xml.parsers.expat
 from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
-from typing import Callable, Dict, Optional, Set
+from typing import Dict, Optional, Set
 
 from .exceptions import SitemapException, SitemapXMLParsingException
 from .helpers import (
+    RecurseCallbackType,
+    RecurseListCallbackType,
     get_url_retry_on_client_errors,
     html_unescape_strip,
     is_http_url,
@@ -88,10 +90,8 @@ class SitemapFetcher:
         web_client: Optional[AbstractWebClient] = None,
         parent_urls: Optional[Set[str]] = None,
         quiet_404: bool = False,
-        recurse_callback: Optional[Callable[[str, int, Set[str]], bool]] = None,
-        recurse_list_callback: Optional[
-            Callable[[list[str], int, Set[str]], list[str]]
-        ] = None,
+        recurse_callback: Optional[RecurseCallbackType] = None,
+        recurse_list_callback: Optional[RecurseListCallbackType] = None,
     ):
         """
 
@@ -260,10 +260,8 @@ class AbstractSitemapParser(metaclass=abc.ABCMeta):
         recursion_level: int,
         web_client: AbstractWebClient,
         parent_urls: Set[str],
-        recurse_callback: Optional[Callable[[str, int, Set[str]], bool]] = None,
-        recurse_list_callback: Optional[
-            Callable[[list[str], int, Set[str]], list[str]]
-        ] = None,
+        recurse_callback: Optional[RecurseCallbackType] = None,
+        recurse_list_callback: Optional[RecurseListCallbackType] = None,
     ):
         self._url = url
         self._content = content
@@ -301,10 +299,8 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
         recursion_level: int,
         web_client: AbstractWebClient,
         parent_urls: Set[str],
-        recurse_callback: Optional[Callable[[str, int, Set[str]], bool]] = None,
-        recurse_list_callback: Optional[
-            Callable[[list[str], int, Set[str]], list[str]]
-        ] = None,
+        recurse_callback: Optional[RecurseCallbackType] = None,
+        recurse_list_callback: Optional[RecurseListCallbackType] = None,
     ):
         super().__init__(
             url=url,
@@ -426,10 +422,8 @@ class XMLSitemapParser(AbstractSitemapParser):
         recursion_level: int,
         web_client: AbstractWebClient,
         parent_urls: Set[str],
-        recurse_callback: Optional[Callable[[str, int, Set[str]], bool]] = None,
-        recurse_list_callback: Optional[
-            Callable[[list[str], int, Set[str]], list[str]]
-        ] = None,
+        recurse_callback: Optional[RecurseCallbackType] = None,
+        recurse_list_callback: Optional[RecurseListCallbackType] = None,
     ):
         super().__init__(
             url=url,
@@ -601,10 +595,8 @@ class AbstractXMLSitemapParser(metaclass=abc.ABCMeta):
     def __init__(
         self,
         url: str,
-        recurse_callback: Optional[Callable[[str, int, Set[str]], bool]] = None,
-        recurse_list_callback: Optional[
-            Callable[[list[str], int, Set[str]], list[str]]
-        ] = None,
+        recurse_callback: Optional[RecurseCallbackType] = None,
+        recurse_list_callback: Optional[RecurseListCallbackType] = None,
     ):
         self._url = url
         self._last_char_data = ""
@@ -690,10 +682,8 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
         web_client: AbstractWebClient,
         recursion_level: int,
         parent_urls: Set[str],
-        recurse_callback: Optional[Callable[[str, int, Set[str]], bool]] = None,
-        recurse_list_callback: Optional[
-            Callable[[list[str], int, Set[str]], list[str]]
-        ] = None,
+        recurse_callback: Optional[RecurseCallbackType] = None,
+        recurse_list_callback: Optional[RecurseListCallbackType] = None,
     ):
         super().__init__(
             url=url,

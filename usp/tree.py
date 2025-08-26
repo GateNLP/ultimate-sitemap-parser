@@ -1,11 +1,16 @@
 """Helpers to generate a sitemap tree."""
 
 import logging
-from typing import Callable, Optional, Set
+from typing import Optional
 
 from .exceptions import SitemapException
 from .fetch_parse import SitemapFetcher, SitemapStrParser
-from .helpers import is_http_url, strip_url_to_homepage
+from .helpers import (
+    RecurseCallbackType,
+    RecurseListCallbackType,
+    is_http_url,
+    strip_url_to_homepage,
+)
 from .objects.sitemap import (
     AbstractSitemap,
     IndexRobotsTxtSitemap,
@@ -41,10 +46,8 @@ def sitemap_tree_for_homepage(
     use_robots: bool = True,
     use_known_paths: bool = True,
     extra_known_paths: Optional[set] = None,
-    recurse_callback: Optional[Callable[[str, int, Set[str]], bool]] = None,
-    recurse_list_callback: Optional[
-        Callable[[list[str], int, Set[str]], list[str]]
-    ] = None,
+    recurse_callback: Optional[RecurseCallbackType] = None,
+    recurse_list_callback: Optional[RecurseListCallbackType] = None,
 ) -> AbstractSitemap:
     """
     Using a homepage URL, fetch the tree of sitemaps and pages listed in them.
