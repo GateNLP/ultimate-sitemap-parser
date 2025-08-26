@@ -357,9 +357,7 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
                     )
                     fetched_sitemap = fetcher.sitemap()
                 else:
-                    fetched_sitemap = InvalidSitemap(
-                        url=sitemap_url, reason="Skipped child sitemap"
-                    )
+                    continue
             except NoWebClientException:
                 fetched_sitemap = InvalidSitemap(
                     url=sitemap_url, reason="Un-fetched child sitemap"
@@ -733,9 +731,7 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
                     )
                     fetched_sitemap = fetcher.sitemap()
                 else:
-                    fetched_sitemap = InvalidSitemap(
-                        url=sub_sitemap_url, reason="Skipped child sitemap"
-                    )
+                    continue
             except NoWebClientException:
                 fetched_sitemap = InvalidSitemap(
                     url=sub_sitemap_url, reason="Un-fetched child sitemap"
