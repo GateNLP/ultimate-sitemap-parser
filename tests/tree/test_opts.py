@@ -21,4 +21,6 @@ class TestTreeOpts(TreeTestBase):
             recursion_level=0,
             parent_urls=set(),
             quiet_404=True,
+            recurse_callback=None,
+            recurse_list_callback=None,
         )
