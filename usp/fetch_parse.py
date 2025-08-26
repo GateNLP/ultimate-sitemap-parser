@@ -100,8 +100,8 @@ class SitemapFetcher:
         :param web_client: Web client to use. If ``None``, a :class:`~.RequestsWebClient` will be used.
         :param parent_urls: Set of parent URLs that led to this sitemap.
         :param quiet_404: Whether 404 errors are expected and should be logged at a reduced level, useful for speculative fetching of known URLs.
-        :param recurse_callback: Optional callback to filter out a sub-sitemap.
-        :param recurse_list_callback: Optional callback to filter the list of sub-sitemaps.
+        :param recurse_callback: Optional callback to filter out a sub-sitemap. See :data:`~.RecurseCallbackType`.
+        :param recurse_list_callback: Optional callback to filter the list of sub-sitemaps. See :data:`~.RecurseListCallbackType`.
 
         :raises SitemapException: If the maximum recursion depth is exceeded.
         :raises SitemapException: If the URL is in the parent URLs set.

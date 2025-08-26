@@ -58,8 +58,8 @@ def sitemap_tree_for_homepage(
     :param use_robots: Whether to discover sitemaps through robots.txt.
     :param use_known_paths: Whether to discover sitemaps through common known paths.
     :param extra_known_paths: Extra paths to check for sitemaps.
-    :param recurse_callback: Optional callback function to control recursion into a sub-sitemap. If provided, it should be a function that takes the subsitemap URL, the current recursion level, and the set of parent URLs as arguments, and returns a boolean indicating whether to recurse into the subsitemap.
-    :param recurse_list_callback: Optional callback function to control the list of URLs to recurse into. If provided, it should be a function that takes the list of URLs, the current recursion level, and the set of parent URLs as arguments, and returns a filtered list of URLs to recurse into.
+    :param recurse_callback: Optional callback function to determine if a sub-sitemap should be recursed into. See :data:`~.RecurseCallbackType`.
+    :param recurse_list_callback: Optional callback function to filter the list of sub-sitemaps to recurse into. See :data:`~.RecurseListCallbackType`.
     :return: Root sitemap object of the fetched sitemap tree.
     """
 
