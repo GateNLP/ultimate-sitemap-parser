@@ -42,7 +42,9 @@ def sitemap_tree_for_homepage(
     use_known_paths: bool = True,
     extra_known_paths: Optional[set] = None,
     recurse_callback: Optional[Callable[[str, int, Set[str]], bool]] = None,
-    recurse_list_callback: Optional[Callable[[list[str], int, Set[str]], list[str]]] = None,
+    recurse_list_callback: Optional[
+        Callable[[list[str], int, Set[str]], list[str]]
+    ] = None,
 ) -> AbstractSitemap:
     """
     Using a homepage URL, fetch the tree of sitemaps and pages listed in them.
