@@ -104,3 +104,6 @@ junit_suite_name = "ultimate-sitemap-parser"
 junit_duration_report = "call"
 log_cli = true
 log_cli_level = "DEBUG"
+filterwarnings = [
+    "error::pytest.PytestUnraisableExceptionWarning"
+]

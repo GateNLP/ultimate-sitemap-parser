@@ -230,7 +230,10 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
             pickle.dump(pages, tmp, protocol=pickle.HIGHEST_PROTOCOL)
 
     def __del__(self):
-        os.unlink(self.__pages_temp_file_path)
+        try:
+            os.unlink(self.__pages_temp_file_path)
+        except FileNotFoundError as e:
+            log.warning("Unable to remove temp file", exc_info=e)
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, AbstractPagesSitemap):

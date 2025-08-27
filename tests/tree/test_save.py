@@ -45,7 +45,7 @@ class TestTreeSave(TreeTestBase):
             "page sitemap has sub_sitemaps key"
         )
 
-    def test_page_to_dict(self, tree, tmp_path):
+    def test_page_to_dict(self, tree):
         pages = list(tree.all_pages())
 
         pages_d = [page.to_dict() for page in pages]
