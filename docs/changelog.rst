@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Upcoming
+--------
+
+**New Features**
+
+- Added ``recurse_callback`` and ``recurse_list_callback`` parameters to ``usp.tree.sitemap_tree_for_homepage`` to filter which sub-sitemaps are recursed into (:pr:`106` by :user:`nicolas-popsize`)
+
 v1.5.0 (2025-08-11)
 -------------------
 

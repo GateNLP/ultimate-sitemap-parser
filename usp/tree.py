@@ -5,7 +5,12 @@ from typing import Optional
 
 from .exceptions import SitemapException
 from .fetch_parse import SitemapFetcher, SitemapStrParser
-from .helpers import is_http_url, strip_url_to_homepage
+from .helpers import (
+    RecurseCallbackType,
+    RecurseListCallbackType,
+    is_http_url,
+    strip_url_to_homepage,
+)
 from .objects.sitemap import (
     AbstractSitemap,
     IndexRobotsTxtSitemap,
@@ -41,6 +46,8 @@ def sitemap_tree_for_homepage(
     use_robots: bool = True,
     use_known_paths: bool = True,
     extra_known_paths: Optional[set] = None,
+    recurse_callback: Optional[RecurseCallbackType] = None,
+    recurse_list_callback: Optional[RecurseListCallbackType] = None,
 ) -> AbstractSitemap:
     """
     Using a homepage URL, fetch the tree of sitemaps and pages listed in them.
@@ -51,6 +58,8 @@ def sitemap_tree_for_homepage(
     :param use_robots: Whether to discover sitemaps through robots.txt.
     :param use_known_paths: Whether to discover sitemaps through common known paths.
     :param extra_known_paths: Extra paths to check for sitemaps.
+    :param recurse_callback: Optional callback function to determine if a sub-sitemap should be recursed into. See :data:`~.RecurseCallbackType`.
+    :param recurse_list_callback: Optional callback function to filter the list of sub-sitemaps to recurse into. See :data:`~.RecurseListCallbackType`.
     :return: Root sitemap object of the fetched sitemap tree.
     """
 
@@ -79,6 +88,8 @@ def sitemap_tree_for_homepage(
             web_client=web_client,
             recursion_level=0,
             parent_urls=set(),
+            recurse_callback=recurse_callback,
+            recurse_list_callback=recurse_list_callback,
         )
         robots_txt_sitemap = robots_txt_fetcher.sitemap()
         if not isinstance(robots_txt_sitemap, InvalidSitemap):
@@ -100,6 +111,8 @@ def sitemap_tree_for_homepage(
                     recursion_level=0,
                     parent_urls=sitemap_urls_found_in_robots_txt,
                     quiet_404=True,
+                    recurse_callback=recurse_callback,
+                    recurse_list_callback=recurse_list_callback,
                 )
                 unpublished_sitemap = unpublished_sitemap_fetcher.sitemap()
 

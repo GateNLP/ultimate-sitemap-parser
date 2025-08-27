@@ -17,6 +17,8 @@ from typing import Dict, Optional, Set
 
 from .exceptions import SitemapException, SitemapXMLParsingException
 from .helpers import (
+    RecurseCallbackType,
+    RecurseListCallbackType,
     get_url_retry_on_client_errors,
     html_unescape_strip,
     is_http_url,
@@ -77,6 +79,8 @@ class SitemapFetcher:
         "_web_client",
         "_parent_urls",
         "_quiet_404",
+        "_recurse_callback",
+        "_recurse_list_callback",
     ]
 
     def __init__(
@@ -86,6 +90,8 @@ class SitemapFetcher:
         web_client: Optional[AbstractWebClient] = None,
         parent_urls: Optional[Set[str]] = None,
         quiet_404: bool = False,
+        recurse_callback: Optional[RecurseCallbackType] = None,
+        recurse_list_callback: Optional[RecurseListCallbackType] = None,
     ):
         """
 
@@ -94,6 +100,8 @@ class SitemapFetcher:
         :param web_client: Web client to use. If ``None``, a :class:`~.RequestsWebClient` will be used.
         :param parent_urls: Set of parent URLs that led to this sitemap.
         :param quiet_404: Whether 404 errors are expected and should be logged at a reduced level, useful for speculative fetching of known URLs.
+        :param recurse_callback: Optional callback to filter out a sub-sitemap. See :data:`~.RecurseCallbackType`.
+        :param recurse_list_callback: Optional callback to filter the list of sub-sitemaps. See :data:`~.RecurseListCallbackType`.
 
         :raises SitemapException: If the maximum recursion depth is exceeded.
         :raises SitemapException: If the URL is in the parent URLs set.
@@ -127,6 +135,9 @@ class SitemapFetcher:
         self._recursion_level = recursion_level
         self._parent_urls = parent_urls or set()
         self._quiet_404 = quiet_404
+
+        self._recurse_callback = recurse_callback
+        self._recurse_list_callback = recurse_list_callback
 
     def _fetch(self) -> AbstractWebClientResponse:
         log.info(f"Fetching level {self._recursion_level} sitemap from {self._url}...")
@@ -173,6 +184,8 @@ class SitemapFetcher:
                 recursion_level=self._recursion_level,
                 web_client=self._web_client,
                 parent_urls=self._parent_urls,
+                recurse_callback=self._recurse_callback,
+                recurse_list_callback=self._recurse_list_callback,
             )
 
         else:
@@ -184,6 +197,8 @@ class SitemapFetcher:
                     recursion_level=self._recursion_level,
                     web_client=self._web_client,
                     parent_urls=self._parent_urls,
+                    recurse_callback=self._recurse_callback,
+                    recurse_list_callback=self._recurse_list_callback,
                 )
             else:
                 parser = PlainTextSitemapParser(
@@ -234,6 +249,8 @@ class AbstractSitemapParser(metaclass=abc.ABCMeta):
         "_web_client",
         "_recursion_level",
         "_parent_urls",
+        "_recurse_callback",
+        "_recurse_list_callback",
     ]
 
     def __init__(
@@ -243,12 +260,24 @@ class AbstractSitemapParser(metaclass=abc.ABCMeta):
         recursion_level: int,
         web_client: AbstractWebClient,
         parent_urls: Set[str],
+        recurse_callback: Optional[RecurseCallbackType] = None,
+        recurse_list_callback: Optional[RecurseListCallbackType] = None,
     ):
         self._url = url
         self._content = content
         self._recursion_level = recursion_level
         self._web_client = web_client
         self._parent_urls = parent_urls
+
+        if recurse_callback is None:  # Always allow child recursion
+            self._recurse_callback = lambda url, level, parent_urls: True
+        else:
+            self._recurse_callback = recurse_callback
+
+        if recurse_list_callback is None:  # Always allow child recursion
+            self._recurse_list_callback = lambda urls, level, parent_urls: urls
+        else:
+            self._recurse_list_callback = recurse_list_callback
 
     @abc.abstractmethod
     def sitemap(self) -> AbstractSitemap:
@@ -270,6 +299,8 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
         recursion_level: int,
         web_client: AbstractWebClient,
         parent_urls: Set[str],
+        recurse_callback: Optional[RecurseCallbackType] = None,
+        recurse_list_callback: Optional[RecurseListCallbackType] = None,
     ):
         super().__init__(
             url=url,
@@ -277,6 +308,8 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
             recursion_level=recursion_level,
             web_client=web_client,
             parent_urls=parent_urls,
+            recurse_callback=recurse_callback,
+            recurse_list_callback=recurse_list_callback,
         )
 
         if not self._url.endswith("/robots.txt"):
@@ -304,16 +337,27 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
                     )
 
         sub_sitemaps = []
+        parent_urls = self._parent_urls | {self._url}
 
-        for sitemap_url in sitemap_urls.keys():
+        filtered_sitemap_urls = self._recurse_list_callback(
+            list(sitemap_urls.keys()), self._recursion_level, parent_urls
+        )
+        for sitemap_url in filtered_sitemap_urls:
             try:
-                fetcher = SitemapFetcher(
-                    url=sitemap_url,
-                    recursion_level=self._recursion_level + 1,
-                    web_client=self._web_client,
-                    parent_urls=self._parent_urls | {self._url},
-                )
-                fetched_sitemap = fetcher.sitemap()
+                if self._recurse_callback(
+                    sitemap_url, self._recursion_level, parent_urls
+                ):
+                    fetcher = SitemapFetcher(
+                        url=sitemap_url,
+                        recursion_level=self._recursion_level + 1,
+                        web_client=self._web_client,
+                        parent_urls=parent_urls,
+                        recurse_callback=self._recurse_callback,
+                        recurse_list_callback=self._recurse_list_callback,
+                    )
+                    fetched_sitemap = fetcher.sitemap()
+                else:
+                    continue
             except NoWebClientException:
                 fetched_sitemap = InvalidSitemap(
                     url=sitemap_url, reason="Un-fetched child sitemap"
@@ -376,6 +420,8 @@ class XMLSitemapParser(AbstractSitemapParser):
         recursion_level: int,
         web_client: AbstractWebClient,
         parent_urls: Set[str],
+        recurse_callback: Optional[RecurseCallbackType] = None,
+        recurse_list_callback: Optional[RecurseListCallbackType] = None,
     ):
         super().__init__(
             url=url,
@@ -383,6 +429,8 @@ class XMLSitemapParser(AbstractSitemapParser):
             recursion_level=recursion_level,
             web_client=web_client,
             parent_urls=parent_urls,
+            recurse_callback=recurse_callback,
+            recurse_list_callback=recurse_list_callback,
         )
 
         # Will be initialized when the type of sitemap is known
@@ -491,6 +539,8 @@ class XMLSitemapParser(AbstractSitemapParser):
                     web_client=self._web_client,
                     recursion_level=self._recursion_level,
                     parent_urls=self._parent_urls,
+                    recurse_callback=self._recurse_callback,
+                    recurse_list_callback=self._recurse_list_callback,
                 )
 
             elif name == "rss":
@@ -536,12 +586,29 @@ class AbstractXMLSitemapParser(metaclass=abc.ABCMeta):
         # Last encountered character data
         "_last_char_data",
         "_last_handler_call_was_xml_char_data",
+        "_recurse_callback",
+        "_recurse_list_callback",
     ]
 
-    def __init__(self, url: str):
+    def __init__(
+        self,
+        url: str,
+        recurse_callback: Optional[RecurseCallbackType] = None,
+        recurse_list_callback: Optional[RecurseListCallbackType] = None,
+    ):
         self._url = url
         self._last_char_data = ""
         self._last_handler_call_was_xml_char_data = False
+
+        if recurse_callback is None:  # Always allow child recursion
+            self._recurse_callback = lambda url, level, parent_urls: True
+        else:
+            self._recurse_callback = recurse_callback
+
+        if recurse_list_callback is None:  # Always allow child recursion
+            self._recurse_list_callback = lambda urls, level, parent_urls: urls
+        else:
+            self._recurse_list_callback = recurse_list_callback
 
     def xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
         """Concrete parser handler when the start of an element is encountered.
@@ -613,8 +680,14 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
         web_client: AbstractWebClient,
         recursion_level: int,
         parent_urls: Set[str],
+        recurse_callback: Optional[RecurseCallbackType] = None,
+        recurse_list_callback: Optional[RecurseListCallbackType] = None,
     ):
-        super().__init__(url=url)
+        super().__init__(
+            url=url,
+            recurse_callback=recurse_callback,
+            recurse_list_callback=recurse_list_callback,
+        )
 
         self._web_client = web_client
         self._recursion_level = recursion_level
@@ -638,16 +711,27 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
     def sitemap(self) -> AbstractSitemap:
         sub_sitemaps = []
 
-        for sub_sitemap_url in self._sub_sitemap_urls:
+        parent_urls = self._parent_urls | {self._url}
+        filtered_sitemap_urls = self._recurse_list_callback(
+            list(self._sub_sitemap_urls), self._recursion_level, parent_urls
+        )
+        for sub_sitemap_url in filtered_sitemap_urls:
             # URL might be invalid, or recursion limit might have been reached
             try:
-                fetcher = SitemapFetcher(
-                    url=sub_sitemap_url,
-                    recursion_level=self._recursion_level + 1,
-                    web_client=self._web_client,
-                    parent_urls=self._parent_urls | {self._url},
-                )
-                fetched_sitemap = fetcher.sitemap()
+                if self._recurse_callback(
+                    sub_sitemap_url, self._recursion_level, parent_urls
+                ):
+                    fetcher = SitemapFetcher(
+                        url=sub_sitemap_url,
+                        recursion_level=self._recursion_level + 1,
+                        web_client=self._web_client,
+                        parent_urls=parent_urls,
+                        recurse_callback=self._recurse_callback,
+                        recurse_list_callback=self._recurse_list_callback,
+                    )
+                    fetched_sitemap = fetcher.sitemap()
+                else:
+                    continue
             except NoWebClientException:
                 fetched_sitemap = InvalidSitemap(
                     url=sub_sitemap_url, reason="Un-fetched child sitemap"

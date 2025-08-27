@@ -45,6 +45,53 @@ Tree Construction
 
 Each parser instance returns an object inheriting from :class:`~usp.objects.sitemap.AbstractSitemap` after the parse process (including any child fetch-and-parses), constructing the tree from the bottom up. The top :class:`~usp.objects.sitemap.IndexWebsiteSitemap` is then created to act as the parent of ``robots.txt`` and all well-known-path discovered sitemaps.
 
+Tree Filtering
+--------------
+
+To avoid fetching parts of the sitemap tree that are unwanted, callback functions to filter sub-sitemaps to retrieve can be passed to :func:`~usp.tree.sitemap_tree_for_homepage`.
+
+If a ``recurse_callback`` is passed, it will be called with the sub-sitemap URLs one at a time and should return ``True`` to fetch or ``False`` to skip.
+
+For example, on a multi-lingual site where the language is specified in the URL path, to filter to a specific language:
+
+.. code-block:: py
+
+    from usp.tree import sitemap_tree_for_homepage
+
+    def filter_callback(url: str, recursion_level: int, parent_urls: Set[str]) -> bool:
+        return '/en/' in url
+
+    tree = sitemap_tree_for_homepage(
+        'https://www.example.org/',
+        recurse_callback=filter_callback,
+    )
+
+
+If ``recurse_list_callback`` is passed, it will be called with the list of sub-sitemap URLs in an index sitemap and should return a filtered list of URLs to fetch.
+
+For example, to only fetch sub-sitemaps if the index sitemap contains both a "blog" and "products" sub-sitemap:
+
+.. code-block:: py
+
+    from usp.tree import sitemap_tree_for_homepage
+
+    def filter_list_callback(urls: List[str], recursion_level: int, parent_urls: Set[str]) -> List[str]:
+        if any('blog' in url for url in urls) and any('products' in url for url in urls):
+            return urls
+        return []
+
+    tree = sitemap_tree_for_homepage(
+        'https://www.example.org/',
+        recurse_list_callback=filter_list_callback,
+    )
+
+If either callback is not supplied, the default behaviour is to fetch all sub-sitemaps.
+
+.. note::
+
+    Both callbacks can be used together, and are applied in the order ``recurse_list_callback`` then ``recurse_callback``. Therefore if a sub-sitemap URL is filtered out by ``recurse_list_callback``, it will not be fetched even if ``recurse_callback`` would return ``True``.
+
+
 .. _process_dedup:
 
 Deduplication
