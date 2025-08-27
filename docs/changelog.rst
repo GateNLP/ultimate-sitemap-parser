@@ -8,6 +8,12 @@ Upcoming
 
 - Added ``recurse_callback`` and ``recurse_list_callback`` parameters to ``usp.tree.sitemap_tree_for_homepage`` to filter which sub-sitemaps are recursed into (:pr:`106` by :user:`nicolas-popsize`)
 
+
+**Bug Fixes**
+
+- If a `FileNotFoundError` is encountered when cleaning up a sitemap page temporary file, it will now be caught and logged as a warning. (:pr:`108`)
+  - This resolves an error which we believe only occurs on Windows in complex environments (e.g. when running the full Pytest suite)
+
 v1.5.0 (2025-08-11)
 -------------------
 
