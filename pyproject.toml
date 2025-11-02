@@ -57,13 +57,16 @@ perf = [
     "pyinstrument>=4.7.2,<5",
 ]
 docs = [
-    "sphinx>=8.0.2,<9 ; python_version ~= '3.10'",
-    "sphinx-autobuild>=2024.4.16,<2025 ; python_version ~= '3.10'",
-    "sphinx-design>=0.6.1,<0.7 ; python_version ~= '3.10'",
-    "furo>=2024.8.6,<2025 ; python_version ~= '3.10'",
-    "sphinxext-opengraph>=0.9.1,<0.10 ; python_version ~= '3.10'",
-    "sphinx-copybutton>=0.5.2,<0.6 ; python_version ~= '3.10'",
+    "sphinx>=8.2.3,<9",
+    "sphinx-autobuild>=2025.8.25",
+    "sphinx-design>=0.6.1",
+    "furo>=2025.9.25",
+    "sphinxext-opengraph>=0.13.0",
+    "sphinx-copybutton>=0.5.2",
 ]
+
+[tool.uv.dependency-groups]
+docs = { requires-python = ">=3.13"}
 
 [build-system]
 requires = ["uv_build>=0.9.6,<0.10.0"]

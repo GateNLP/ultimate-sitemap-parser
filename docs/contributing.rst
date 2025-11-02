@@ -4,9 +4,11 @@ Contributing
 Get Started
 -----------
 
-To install USP for development, you'll need `Poetry <https://python-poetry.org/>`_ to automatically manage the virtual environment.
+To install USP for development, you'll need `uv <https://docs.astral.sh/uv/>`_ to manage dependencies.
 
-Fork and clone the repo, then run ``poetry install --with dev``. This will install all the dependencies and the package itself as an editable install. The remainder of this guide assumes you have activated the Poetry shell with ``poetry shell`` or will prefix each command with ``poetry run``.
+Fork and clone the repo, then run ``uv sync`` to install dependencies in a local environment.
+
+Generally, development is done with the lowest-supported Python version (currently 3.10). You may need to instruct uv to use this version by running ``uv venv --python 3.10``, or ``uv venv --python /path/to/python3.10``.
 
 It's best practice to make an issue, or comment on an existing one, before working on your PR.
 
@@ -17,8 +19,8 @@ We use `Ruff <https://docs.astral.sh/ruff/>`_ to lint USP. This is done in two s
 
 .. code-block:: bash
 
-    poetry run ruff check --fix
-    poetry run ruff format
+    uv run ruff check --fix
+    uv run ruff format
 
 Testing
 -------
@@ -30,7 +32,11 @@ When contributing please make sure that:
 * any bugfixes include a test that fails without the fix
 * any new functionality includes appropriate tests
 
-To run tests, use ``pytest`` or ``make test``.
+To run tests:
+
+.. code-block:: bash
+
+    uv run pytest
 
 Integration Tests
 -----------------
@@ -50,19 +56,19 @@ To download and test against all cassettes, run:
 
 .. code-block:: bash
 
-    python tests/integration/download.py
-    pytest --integration tests/integration
+    uv run tests/integration/download.py
+    uv run pytest --integration tests/integration
 
 Memory Profiling
 ~~~~~~~~~~~~~~~~
 
-Ensure you have installed the extra ``perf`` dependency group with ``poetry install --with perf``.
+Ensure you have installed the extra ``perf`` dependency group with ``uv sync --group perf``.
 
 To profile memory during integration tests, run the test command with ``--memray``.
 
 .. code-block:: bash
 
-    pytest --integration [--memray-bin-path memray] tests/integration --memray
+    uv run pytest --integration [--memray-bin-path memray] tests/integration --memray
 
 Without the ``--memray-bin-path`` argument, this will measure memory usage and report at the end of the test run.
 With the argument, it will output the memory usage reports to the *memray* directory, which can then be used to generate reports e.g. `a flamegraph <https://bloomberg.github.io/memray/flamegraph.html>`_.
@@ -70,19 +76,19 @@ With the argument, it will output the memory usage reports to the *memray* direc
 Performance Profiling
 ~~~~~~~~~~~~~~~~~~~~~
 
-Ensure you have installed the extra ``perf`` dependency group with ``poetry install --with perf``.
+Ensure you have installed the extra ``perf`` dependency group with ``uv sync --group perf``.
 
 To profile performance during tests, run through the pyinstrument CLI:
 
 .. code-block:: bash
 
-    pyinstrument -m pytest --integration tests/integration
+    uv run pyinstrument -m pytest --integration tests/integration
 
 Pyinstrument does not distinguish between tests, so you may want to filter to a specific test at a time with ``-k``. For example, to only run the bbc.co.uk test:
 
 .. code-block:: bash
 
-    pyinstrument -m pytest --integration -k bbc tests/integration
+    uv run pyinstrument -m pytest --integration -k bbc tests/integration
 
 This can be viewed as an interactive HTML report by passing ``-r html`` to ``pyinstrument`` initially, or using the ``--load-prev`` command output at the end of the test run.
 
@@ -91,12 +97,12 @@ Documentation
 
 This documentation is built with Sphinx.
 
-To build documentation, install the extra ``docs`` dependency group with ``poetry install --with docs``, then:
+To build documentation, install the extra ``docs`` dependency group with ``uv sync --with docs``, then:
 
 .. code-block:: bash
 
     cd docs
-    make livehtml
+    uv run make livehtml
 
 This will start a live build of the docs at ``http://localhost:8000``.
 

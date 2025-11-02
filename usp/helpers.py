@@ -10,6 +10,7 @@ import time
 from collections.abc import Callable
 from http import HTTPStatus
 from urllib.parse import unquote_plus, urlparse, urlunparse
+from typing import TypeAlias
 
 from dateutil.parser import isoparse as dateutil_isoparse
 from dateutil.parser import parse as dateutil_parse
@@ -30,12 +31,12 @@ __URL_REGEX = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", re.IGNORECASE)
 HAS_DATETIME_NEW_ISOPARSER = sys.version_info >= (3, 11)
 
 # TODO: Convert to TypeAlias when Python3.9 support is dropped.
-RecurseCallbackType = Callable[[str, int, set[str]], bool]
+RecurseCallbackType: TypeAlias = Callable[[str, int, set[str]], bool]
 """Type for the callback function used to decide whether to recurse into a sitemap.
 
 A function that takes the sub-sitemap URL, the current recursion level, and the set of parent URLs as arguments, and returns a boolean indicating whether to recurse into the sub-sitemap.
 """
-RecurseListCallbackType = Callable[[list[str], int, set[str]], list[str]]
+RecurseListCallbackType: TypeAlias = Callable[[list[str], int, set[str]], list[str]]
 """Type for the callback function used to filter the list of sitemaps to recurse into.
 
 A function that takes the list of sub-sitemap URLs, the current recursion level, and the set of parent URLs as arguments, and returns a list of sub-sitemap URLs to recurse into.
