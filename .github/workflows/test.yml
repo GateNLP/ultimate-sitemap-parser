@@ -28,18 +28,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install Poetry
-        run: pipx install poetry==2.0.1
-      - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Setup uv and Python
+        uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "poetry"
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root
-      - name: Install Project
-        run: poetry install --no-interaction
-      - name: Poetry Build
-        run: poetry build
+        run: uv sync --locked --group dev
+      - name: Package Build
+        run: uv build
       - name: Run tests
-        run: poetry run pytest
+        run: uv run pytest
