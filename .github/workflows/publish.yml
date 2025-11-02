@@ -13,13 +13,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install Poetry
-        run: pipx install poetry==2.0.1
       - name: Set up Python 3.9
+        id: setup-python
         uses: actions/setup-python@v5
         with:
           python-version: "3.9"
           cache: "poetry"
+      - name: Install Poetry
+        run: pipx install poetry==2.0.1 --python '${{ steps.setup-python.outputs.python-path }}'
       - name: Install Python dependencies
         run: poetry install --no-interaction --no-root
       - name: Build
