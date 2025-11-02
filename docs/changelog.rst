@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Upcoming
+--------
+
+**Dependencies**
+
+* Dropped support for Python 3.9
+
 v1.6.0 (2025-09-10)
 -------------------
 
