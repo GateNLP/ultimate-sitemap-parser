@@ -9,8 +9,8 @@ import sys
 import time
 from collections.abc import Callable
 from http import HTTPStatus
-from urllib.parse import unquote_plus, urlparse, urlunparse
 from typing import TypeAlias
+from urllib.parse import unquote_plus, urlparse, urlunparse
 
 from dateutil.parser import isoparse as dateutil_isoparse
 from dateutil.parser import parse as dateutil_parse
