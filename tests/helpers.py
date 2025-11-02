@@ -1,8 +1,7 @@
 import gzip as gzip_lib
-from typing import Union
 
 
-def gzip(data: Union[str, bytes]) -> bytes:
+def gzip(data: str | bytes) -> bytes:
     """Gzip data."""
 
     if data is None:

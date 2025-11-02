@@ -4,7 +4,6 @@ import abc
 import random
 import time
 from http import HTTPStatus
-from typing import Optional
 
 RETRYABLE_HTTP_STATUS_CODES = {
     # Some servers return "400 Bad Request" initially but upon retry start working again, no idea why
@@ -83,7 +82,7 @@ class AbstractWebClientSuccessResponse(
         raise NotImplementedError("Abstract method.")
 
     @abc.abstractmethod
-    def header(self, case_insensitive_name: str) -> Optional[str]:
+    def header(self, case_insensitive_name: str) -> str | None:
         """
         Return HTTP header value for a given case-insensitive name, or None if such header wasn't set.
 
@@ -156,7 +155,7 @@ class AbstractWebClient(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def set_max_response_data_length(
-        self, max_response_data_length: Optional[int]
+        self, max_response_data_length: int | None
     ) -> None:
         """
         Set the maximum number of bytes that the web client will fetch.
@@ -192,7 +191,7 @@ class LocalWebClient(AbstractWebClient):
     """
 
     def set_max_response_data_length(
-        self, max_response_data_length: Optional[int]
+        self, max_response_data_length: int | None
     ) -> None:
         pass
 
@@ -211,7 +210,7 @@ class LocalWebClientSuccessResponse(AbstractWebClientSuccessResponse):
     def status_message(self) -> str:
         return "OK"
 
-    def header(self, case_insensitive_name: str) -> Optional[str]:
+    def header(self, case_insensitive_name: str) -> str | None:
         return None
 
     def raw_data(self) -> bytes:
@@ -226,7 +225,7 @@ class RequestWaiter:
     Manages waiting between requests.
     """
 
-    def __init__(self, wait: Optional[float] = None, random_wait: bool = True):
+    def __init__(self, wait: float | None = None, random_wait: bool = True):
         """
         :param wait: time to wait between requests, in seconds.
         :param random_wait: if true, wait time is multiplied by a random number between 0.5 and 1.5.

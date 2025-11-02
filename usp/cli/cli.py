@@ -1,11 +1,10 @@
 from argparse import ArgumentParser
-from typing import Optional
 
 from usp import __version__
 from usp.cli import _ls as ls_cmd
 
 
-def parse_args(arg_list: Optional[list[str]]):
+def parse_args(arg_list: list[str] | None):
     parser = ArgumentParser(prog="usp", description="Ultimate Sitemap Parser")
     parser.add_argument(
         "-v", "--version", action="version", version=f"%(prog)s v{__version__}"
@@ -18,7 +17,7 @@ def parse_args(arg_list: Optional[list[str]]):
     return args, parser
 
 
-def main(arg_list: Optional[list[str]] = None):
+def main(arg_list: list[str] | None = None):
     args, parser = parse_args(arg_list)
 
     if "func" in args:

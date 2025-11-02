@@ -1,7 +1,6 @@
 """Helpers to generate a sitemap tree."""
 
 import logging
-from typing import Optional
 
 from .exceptions import SitemapException
 from .fetch_parse import SitemapFetcher, SitemapStrParser
@@ -42,12 +41,12 @@ _UNPUBLISHED_SITEMAP_PATHS = {
 
 def sitemap_tree_for_homepage(
     homepage_url: str,
-    web_client: Optional[AbstractWebClient] = None,
+    web_client: AbstractWebClient | None = None,
     use_robots: bool = True,
     use_known_paths: bool = True,
-    extra_known_paths: Optional[set] = None,
-    recurse_callback: Optional[RecurseCallbackType] = None,
-    recurse_list_callback: Optional[RecurseListCallbackType] = None,
+    extra_known_paths: set | None = None,
+    recurse_callback: RecurseCallbackType | None = None,
+    recurse_list_callback: RecurseListCallbackType | None = None,
 ) -> AbstractSitemap:
     """
     Using a homepage URL, fetch the tree of sitemaps and pages listed in them.

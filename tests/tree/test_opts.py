@@ -1,5 +1,4 @@
 import re
-from typing import List, Set
 from unittest import mock
 
 import pytest
@@ -31,7 +30,7 @@ class TestTreeOpts(TreeTestBase):
         self.init_basic_sitemap(requests_mock)
 
         def recurse_callback(
-            url: str, recursion_level: int, parent_urls: Set[str]
+            url: str, recursion_level: int, parent_urls: set[str]
         ) -> bool:
             return re.search(r"news_\d", url) is None
 
@@ -47,8 +46,8 @@ class TestTreeOpts(TreeTestBase):
         self.init_basic_sitemap(requests_mock)
 
         def recurse_list_callback(
-            urls: List[str], recursion_level: int, parent_urls: Set[str]
-        ) -> List[str]:
+            urls: list[str], recursion_level: int, parent_urls: set[str]
+        ) -> list[str]:
             return [url for url in urls if re.search(r"news_\d", url) is None]
 
         tree = sitemap_tree_for_homepage(
