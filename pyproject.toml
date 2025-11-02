@@ -69,13 +69,6 @@ docs = [
 requires = ["uv_build>=0.9.6,<0.10.0"]
 build-backend = "uv_build"
 
-[tool.uv]
-default-groups = [
-    "dev",
-    "perf",
-    "docs",
-]
-
 [tool.uv.build-backend]
 module-name = "usp"
 module-root = ""
