@@ -46,6 +46,8 @@ packages = [
     { include = "usp" }
 ]
 
+include = ["usp/py.typed"]
+
 [tool.poetry.dependencies]
 # Specify upper bound for locking
 python = ">=3.9,<4.0"
