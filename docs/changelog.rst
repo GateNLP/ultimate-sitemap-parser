@@ -4,6 +4,10 @@ Changelog
 Upcoming
 --------
 
+**Packaging**
+
+* USP now includes a ``py.typed`` file to indicate its type information should be used when checking (:issue:`115` by :user:`aran-martin`)
+
 **Dependencies**
 
 * Dropped support for Python 3.9
