@@ -1,9 +1,8 @@
 import logging
 from argparse import Action
-from typing import Dict, Optional
 
 
-def format_help(choices: Dict[str, str], opt_help: str) -> str:
+def format_help(choices: dict[str, str], opt_help: str) -> str:
     """Generate help text for argparse choices.
 
     :param choices: Dictionary of choices {choice: help}
@@ -69,7 +68,7 @@ class CountAction(Action):
         return "/".join(usages)
 
 
-def setup_logging(verbosity: int, log_path: Optional[str]) -> None:
+def setup_logging(verbosity: int, log_path: str | None) -> None:
     log_level = _log_levels.get(verbosity, logging.DEBUG)
     if log_path is not None:
         logging.basicConfig(level=log_level, filename=log_path)

@@ -3,7 +3,6 @@
 import datetime
 from decimal import Decimal
 from enum import Enum, unique
-from typing import List, Optional, Tuple
 
 SITEMAP_PAGE_DEFAULT_PRIORITY = Decimal("0.5")
 """Default sitemap page priority, as per the spec."""
@@ -29,12 +28,12 @@ class SitemapNewsStory:
         self,
         title: str,
         publish_date: datetime.datetime,
-        publication_name: Optional[str] = None,
-        publication_language: Optional[str] = None,
-        access: Optional[str] = None,
-        genres: List[str] = None,
-        keywords: List[str] = None,
-        stock_tickers: List[str] = None,
+        publication_name: str | None = None,
+        publication_language: str | None = None,
+        access: str | None = None,
+        genres: list[str] = None,
+        keywords: list[str] = None,
+        stock_tickers: list[str] = None,
     ):
         """
         Initialize a new Google News story.
@@ -148,12 +147,12 @@ class SitemapNewsStory:
         return self.__publish_date
 
     @property
-    def publication_name(self) -> Optional[str]:
+    def publication_name(self) -> str | None:
         """Get the name of the news publication in which the article appears."""
         return self.__publication_name
 
     @property
-    def publication_language(self) -> Optional[str]:
+    def publication_language(self) -> str | None:
         """Get the primary language of the news publication in which the article appears.
 
         It should be an ISO 639 Language Code (either 2 or 3 letters).
@@ -161,7 +160,7 @@ class SitemapNewsStory:
         return self.__publication_language
 
     @property
-    def access(self) -> Optional[str]:
+    def access(self) -> str | None:
         """Get the accessibility of the article.
 
         :return: Accessibility of the article.
@@ -169,7 +168,7 @@ class SitemapNewsStory:
         return self.__access
 
     @property
-    def genres(self) -> List[str]:
+    def genres(self) -> list[str]:
         """Get list of genres characterizing the content of the article.
 
         Genres will be one "PressRelease", "Satire", "Blog", "OpEd", "Opinion", "UserGenerated"
@@ -177,12 +176,12 @@ class SitemapNewsStory:
         return self.__genres
 
     @property
-    def keywords(self) -> List[str]:
+    def keywords(self) -> list[str]:
         """Get list of keywords describing the topic of the article."""
         return self.__keywords
 
     @property
-    def stock_tickers(self) -> List[str]:
+    def stock_tickers(self) -> list[str]:
         """Get stock tickers that are the main subject of the article.
 
         Each ticker must be prefixed by the name of its stock exchange, and must match its entry in Google Finance.
@@ -208,10 +207,10 @@ class SitemapImage:
     def __init__(
         self,
         loc: str,
-        caption: Optional[str] = None,
-        geo_location: Optional[str] = None,
-        title: Optional[str] = None,
-        license_: Optional[str] = None,
+        caption: str | None = None,
+        geo_location: str | None = None,
+        title: str | None = None,
+        license_: str | None = None,
     ):
         """Initialise a Google Image.
 
@@ -283,22 +282,22 @@ class SitemapImage:
         return self.__loc
 
     @property
-    def caption(self) -> Optional[str]:
+    def caption(self) -> str | None:
         """Get the caption of the image."""
         return self.__caption
 
     @property
-    def geo_location(self) -> Optional[str]:
+    def geo_location(self) -> str | None:
         """Get the geographic location of the image."""
         return self.__geo_location
 
     @property
-    def title(self) -> Optional[str]:
+    def title(self) -> str | None:
         """Get the title of the image."""
         return self.__title
 
     @property
-    def license(self) -> Optional[str]:
+    def license(self) -> str | None:
         """Get a URL to the license of the image."""
         return self.__license
 
@@ -338,11 +337,11 @@ class SitemapPage:
         self,
         url: str,
         priority: Decimal = SITEMAP_PAGE_DEFAULT_PRIORITY,
-        last_modified: Optional[datetime.datetime] = None,
-        change_frequency: Optional[SitemapPageChangeFrequency] = None,
-        news_story: Optional[SitemapNewsStory] = None,
-        images: Optional[List[SitemapImage]] = None,
-        alternates: Optional[List[Tuple[str, str]]] = None,
+        last_modified: datetime.datetime | None = None,
+        change_frequency: SitemapPageChangeFrequency | None = None,
+        news_story: SitemapNewsStory | None = None,
+        images: list[SitemapImage] | None = None,
+        alternates: list[tuple[str, str]] | None = None,
     ):
         """
         Initialize a new sitemap-derived page.
@@ -437,17 +436,17 @@ class SitemapPage:
         return self.__priority
 
     @property
-    def last_modified(self) -> Optional[datetime.datetime]:
+    def last_modified(self) -> datetime.datetime | None:
         """Get the date of last modification of the URL."""
         return self.__last_modified
 
     @property
-    def change_frequency(self) -> Optional[SitemapPageChangeFrequency]:
+    def change_frequency(self) -> SitemapPageChangeFrequency | None:
         """Get the change frequency of a sitemap URL."""
         return self.__change_frequency
 
     @property
-    def news_story(self) -> Optional[SitemapNewsStory]:
+    def news_story(self) -> SitemapNewsStory | None:
         """Get the Google News story attached to the URL.
 
         See :ref:`google-news-ext` reference
@@ -455,7 +454,7 @@ class SitemapPage:
         return self.__news_story
 
     @property
-    def images(self) -> Optional[List[SitemapImage]]:
+    def images(self) -> list[SitemapImage] | None:
         """Get the images attached to the URL.
 
         See :ref:`google-image-ext` reference
@@ -463,7 +462,7 @@ class SitemapPage:
         return self.__images
 
     @property
-    def alternates(self) -> Optional[List[Tuple[str, str]]]:
+    def alternates(self) -> list[tuple[str, str]] | None:
         """Get the alternate URLs for the URL.
 
         A tuple of (language code, URL) for each ``<xhtml:link>`` element with ``rel="alternate"`` attribute.

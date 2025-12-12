@@ -13,7 +13,6 @@ import re
 import xml.parsers.expat
 from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
-from typing import Dict, Optional, Set
 
 from .exceptions import SitemapException, SitemapXMLParsingException
 from .helpers import (
@@ -87,11 +86,11 @@ class SitemapFetcher:
         self,
         url: str,
         recursion_level: int,
-        web_client: Optional[AbstractWebClient] = None,
-        parent_urls: Optional[Set[str]] = None,
+        web_client: AbstractWebClient | None = None,
+        parent_urls: set[str] | None = None,
         quiet_404: bool = False,
-        recurse_callback: Optional[RecurseCallbackType] = None,
-        recurse_list_callback: Optional[RecurseListCallbackType] = None,
+        recurse_callback: RecurseCallbackType | None = None,
+        recurse_list_callback: RecurseListCallbackType | None = None,
     ):
         """
 
@@ -259,9 +258,9 @@ class AbstractSitemapParser(metaclass=abc.ABCMeta):
         content: str,
         recursion_level: int,
         web_client: AbstractWebClient,
-        parent_urls: Set[str],
-        recurse_callback: Optional[RecurseCallbackType] = None,
-        recurse_list_callback: Optional[RecurseListCallbackType] = None,
+        parent_urls: set[str],
+        recurse_callback: RecurseCallbackType | None = None,
+        recurse_list_callback: RecurseListCallbackType | None = None,
     ):
         self._url = url
         self._content = content
@@ -298,9 +297,9 @@ class IndexRobotsTxtSitemapParser(AbstractSitemapParser):
         content: str,
         recursion_level: int,
         web_client: AbstractWebClient,
-        parent_urls: Set[str],
-        recurse_callback: Optional[RecurseCallbackType] = None,
-        recurse_list_callback: Optional[RecurseListCallbackType] = None,
+        parent_urls: set[str],
+        recurse_callback: RecurseCallbackType | None = None,
+        recurse_list_callback: RecurseListCallbackType | None = None,
     ):
         super().__init__(
             url=url,
@@ -419,9 +418,9 @@ class XMLSitemapParser(AbstractSitemapParser):
         content: str,
         recursion_level: int,
         web_client: AbstractWebClient,
-        parent_urls: Set[str],
-        recurse_callback: Optional[RecurseCallbackType] = None,
-        recurse_list_callback: Optional[RecurseListCallbackType] = None,
+        parent_urls: set[str],
+        recurse_callback: RecurseCallbackType | None = None,
+        recurse_list_callback: RecurseListCallbackType | None = None,
     ):
         super().__init__(
             url=url,
@@ -520,7 +519,7 @@ class XMLSitemapParser(AbstractSitemapParser):
 
         return name
 
-    def _xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
+    def _xml_element_start(self, name: str, attrs: dict[str, str]) -> None:
         name = self.__normalize_xml_element_name(name)
 
         if self._concrete_parser:
@@ -593,8 +592,8 @@ class AbstractXMLSitemapParser(metaclass=abc.ABCMeta):
     def __init__(
         self,
         url: str,
-        recurse_callback: Optional[RecurseCallbackType] = None,
-        recurse_list_callback: Optional[RecurseListCallbackType] = None,
+        recurse_callback: RecurseCallbackType | None = None,
+        recurse_list_callback: RecurseListCallbackType | None = None,
     ):
         self._url = url
         self._last_char_data = ""
@@ -610,7 +609,7 @@ class AbstractXMLSitemapParser(metaclass=abc.ABCMeta):
         else:
             self._recurse_list_callback = recurse_list_callback
 
-    def xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
+    def xml_element_start(self, name: str, attrs: dict[str, str]) -> None:
         """Concrete parser handler when the start of an element is encountered.
 
         See :external+python:meth:`xmlparser.StartElementHandler <xml.parsers.expat.xmlparser.StartElementHandler>`
@@ -679,9 +678,9 @@ class IndexXMLSitemapParser(AbstractXMLSitemapParser):
         url: str,
         web_client: AbstractWebClient,
         recursion_level: int,
-        parent_urls: Set[str],
-        recurse_callback: Optional[RecurseCallbackType] = None,
-        recurse_list_callback: Optional[RecurseListCallbackType] = None,
+        parent_urls: set[str],
+        recurse_callback: RecurseCallbackType | None = None,
+        recurse_list_callback: RecurseListCallbackType | None = None,
     ):
         super().__init__(
             url=url,
@@ -822,7 +821,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
                 )
             )
 
-        def page(self) -> Optional[SitemapPage]:
+        def page(self) -> SitemapPage | None:
             """Return constructed sitemap page if one has been completed, otherwise None."""
 
             # Required
@@ -941,7 +940,7 @@ class PagesXMLSitemapParser(AbstractXMLSitemapParser):
         self._page_urls = set()
         self._current_image = None
 
-    def xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
+    def xml_element_start(self, name: str, attrs: dict[str, str]) -> None:
         super().xml_element_start(name=name, attrs=attrs)
 
         if name == "sitemap:url":
@@ -1106,7 +1105,7 @@ class PagesRSSSitemapParser(AbstractXMLSitemapParser):
                 )
             )
 
-        def page(self) -> Optional[SitemapPage]:
+        def page(self) -> SitemapPage | None:
             """Return constructed sitemap page if one has been completed, otherwise None."""
 
             # Required
@@ -1142,7 +1141,7 @@ class PagesRSSSitemapParser(AbstractXMLSitemapParser):
         self._pages = []
         self._page_links = set()
 
-    def xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
+    def xml_element_start(self, name: str, attrs: dict[str, str]) -> None:
         super().xml_element_start(name=name, attrs=attrs)
 
         if name == "item":
@@ -1239,7 +1238,7 @@ class PagesAtomSitemapParser(AbstractXMLSitemapParser):
                 )
             )
 
-        def page(self) -> Optional[SitemapPage]:
+        def page(self) -> SitemapPage | None:
             """Return constructed sitemap page if one has been completed, otherwise None."""
 
             # Required
@@ -1281,7 +1280,7 @@ class PagesAtomSitemapParser(AbstractXMLSitemapParser):
         self._page_links = set()
         self._last_link_rel_self_href = None
 
-    def xml_element_start(self, name: str, attrs: Dict[str, str]) -> None:
+    def xml_element_start(self, name: str, attrs: dict[str, str]) -> None:
         super().xml_element_start(name=name, attrs=attrs)
 
         if name == "entry":

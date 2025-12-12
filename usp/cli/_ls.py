@@ -1,6 +1,6 @@
 import argparse
 import sys
-from typing import Iterator
+from collections.abc import Iterator
 
 from usp.cli._util import CountAction, format_help, setup_logging, tabs
 from usp.objects.sitemap import AbstractSitemap

@@ -13,8 +13,8 @@ import logging
 import os
 import pickle
 import tempfile
+from collections.abc import Iterator
 from functools import cache
-from typing import Iterator, List, Tuple
 
 from .page import SitemapPage
 
@@ -99,7 +99,7 @@ class AbstractSitemap(metaclass=abc.ABCMeta):
 
     @property
     @abc.abstractmethod
-    def pages(self) -> List[SitemapPage]:
+    def pages(self) -> list[SitemapPage]:
         """
         Return a list of pages found in a sitemap (if any).
 
@@ -120,7 +120,7 @@ class AbstractSitemap(metaclass=abc.ABCMeta):
 
     @property
     @abc.abstractmethod
-    def sub_sitemaps(self) -> List["AbstractSitemap"]:
+    def sub_sitemaps(self) -> list["AbstractSitemap"]:
         """
         Return a list of sub-sitemaps of this sitemap (if any).
 
@@ -188,7 +188,7 @@ class InvalidSitemap(AbstractSitemap):
         return self.__reason
 
     @property
-    def pages(self) -> List[SitemapPage]:
+    def pages(self) -> list[SitemapPage]:
         """
         Return an empty list of pages, as invalid sitemaps have no pages.
 
@@ -197,7 +197,7 @@ class InvalidSitemap(AbstractSitemap):
         return []
 
     @property
-    def sub_sitemaps(self) -> List["AbstractSitemap"]:
+    def sub_sitemaps(self) -> list["AbstractSitemap"]:
         """
         Return an empty list of sub-sitemaps, as invalid sitemaps have no sub-sitemaps.
 
@@ -213,7 +213,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         "__pages_temp_file_path",
     ]
 
-    def __init__(self, url: str, pages: List[SitemapPage]):
+    def __init__(self, url: str, pages: list[SitemapPage]):
         """
         Initialize new pages sitemap.
 
@@ -224,7 +224,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
 
         self._dump_pages(pages)
 
-    def _dump_pages(self, pages: List[SitemapPage]):
+    def _dump_pages(self, pages: list[SitemapPage]):
         fd, self.__pages_temp_file_path = tempfile.mkstemp()
         with os.fdopen(fd, "wb") as tmp:
             pickle.dump(pages, tmp, protocol=pickle.HIGHEST_PROTOCOL)
@@ -250,7 +250,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
     def __repr__(self):
         return f"{self.__class__.__name__}(url={self.url}, pages={self.pages})"
 
-    def __getstate__(self) -> Tuple[None, dict]:
+    def __getstate__(self) -> tuple[None, dict]:
         # Load slots of this class and its parents (mangling if appropriate)
         obj_slots = {slot: getattr(self, slot) for slot in _all_slots(self.__class__)}
         # Replace temp file path with actual content
@@ -279,7 +279,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         return obj
 
     @property
-    def pages(self) -> List[SitemapPage]:
+    def pages(self) -> list[SitemapPage]:
         """
         Load pages from disk swap file and return them.
 
@@ -290,7 +290,7 @@ class AbstractPagesSitemap(AbstractSitemap, metaclass=abc.ABCMeta):
         return pages
 
     @property
-    def sub_sitemaps(self) -> List["AbstractSitemap"]:
+    def sub_sitemaps(self) -> list["AbstractSitemap"]:
         """
         Return an empty list of sub-sitemaps, as pages sitemaps have no sub-sitemaps.
 
@@ -341,7 +341,7 @@ class AbstractIndexSitemap(AbstractSitemap):
         "__sub_sitemaps",
     ]
 
-    def __init__(self, url: str, sub_sitemaps: List[AbstractSitemap]):
+    def __init__(self, url: str, sub_sitemaps: list[AbstractSitemap]):
         """
         Initialize index sitemap.
 
@@ -381,11 +381,11 @@ class AbstractIndexSitemap(AbstractSitemap):
         }
 
     @property
-    def sub_sitemaps(self) -> List["AbstractSitemap"]:
+    def sub_sitemaps(self) -> list["AbstractSitemap"]:
         return self.__sub_sitemaps
 
     @property
-    def pages(self) -> List[SitemapPage]:
+    def pages(self) -> list[SitemapPage]:
         """
         Return an empty list of pages, as index sitemaps have no pages.
 

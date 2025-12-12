@@ -2,7 +2,6 @@
 
 import logging
 from http import HTTPStatus
-from typing import Dict, Optional, Tuple, Union
 
 import requests
 
@@ -33,7 +32,7 @@ class RequestsWebClientSuccessResponse(AbstractWebClientSuccessResponse):
     def __init__(
         self,
         requests_response: requests.Response,
-        max_response_data_length: Optional[int] = None,
+        max_response_data_length: int | None = None,
     ):
         """
         :param requests_response: Response data
@@ -51,7 +50,7 @@ class RequestsWebClientSuccessResponse(AbstractWebClientSuccessResponse):
             message = HTTPStatus(self.status_code()).phrase
         return message
 
-    def header(self, case_insensitive_name: str) -> Optional[str]:
+    def header(self, case_insensitive_name: str) -> str | None:
         return self.__requests_response.headers.get(case_insensitive_name.lower(), None)
 
     def raw_data(self) -> bytes:
@@ -97,9 +96,9 @@ class RequestsWebClient(AbstractWebClient):
     def __init__(
         self,
         verify=True,
-        wait: Optional[float] = None,
+        wait: float | None = None,
         random_wait: bool = False,
-        session: Optional[requests.Session] = None,
+        session: requests.Session | None = None,
     ):
         """
         :param verify: whether certificates should be verified for HTTPS requests.
@@ -114,7 +113,7 @@ class RequestsWebClient(AbstractWebClient):
         self.__waiter = RequestWaiter(wait, random_wait)
         self.__session = session or requests.Session()
 
-    def set_timeout(self, timeout: Optional[Union[float, Tuple[float, float]]]) -> None:
+    def set_timeout(self, timeout: float | tuple[float, float] | None) -> None:
         """Set HTTP request timeout.
 
         See also: `Requests timeout docs <https://requests.readthedocs.io/en/latest/user/advanced/#timeouts>`__
@@ -125,7 +124,7 @@ class RequestsWebClient(AbstractWebClient):
         # Used mostly for testing
         self.__timeout = timeout
 
-    def set_proxies(self, proxies: Dict[str, str]) -> None:
+    def set_proxies(self, proxies: dict[str, str]) -> None:
         """
         Set a proxy for the request.
 

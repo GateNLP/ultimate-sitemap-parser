@@ -1,6 +1,5 @@
 import datetime
 import logging
-from typing import Optional
 
 import pytest
 
@@ -231,7 +230,7 @@ def test_url_retry_on_client_errors_quiet_404(
 ):
     class MockWebClient404s(AbstractWebClient):
         def set_max_response_data_length(
-            self, max_response_data_length: Optional[int]
+            self, max_response_data_length: int | None
         ) -> None:
             pass
 
