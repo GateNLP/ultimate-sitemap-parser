@@ -10,6 +10,7 @@ authors = [
 requires-python = ">=3.10"
 readme = "README.rst"
 license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
 maintainers = [{ name = "Freddy Heppell", email = "f.heppell@sheffield.ac.uk" }]
 keywords = [
     "sitemap",
