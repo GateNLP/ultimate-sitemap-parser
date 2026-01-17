@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v1.7.0.post1 (2025-01-17)
+-------------------------
+
+* Corrected missing LICENSE file in the v1.7.0 release package
+
 v1.7.0 (2025-01-11)
 -------------------
 
