@@ -31,11 +31,12 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
     "Topic :: Text Processing :: Indexing",
     "Topic :: Text Processing :: Markup :: XML",
-    "Classifier: Programming Language :: Python :: 3",
-    "Classifier: Programming Language :: Python :: 3.10",
-    "Classifier: Programming Language :: Python :: 3.11",
-    "Classifier: Programming Language :: Python :: 3.12",
-    "Classifier: Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
     "python-dateutil (>=2.7,<3.0.0)",
