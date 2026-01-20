@@ -31,7 +31,6 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
     "Topic :: Text Processing :: Indexing",
     "Topic :: Text Processing :: Markup :: XML",
-    "Classifier: Programming Language :: Python",
     "Classifier: Programming Language :: Python :: 3",
     "Classifier: Programming Language :: Python :: 3.10",
     "Classifier: Programming Language :: Python :: 3.11",
