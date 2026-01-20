@@ -10,7 +10,7 @@ authors = [
 requires-python = ">=3.10"
 readme = "README.rst"
 license = "GPL-3.0-or-later"
-license-files = ["LICENSE"]
+license-files = ["LICENSE", "NOTICE"]
 maintainers = [{ name = "Freddy Heppell", email = "f.heppell@sheffield.ac.uk" }]
 keywords = [
     "sitemap",
@@ -31,6 +31,12 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
     "Topic :: Text Processing :: Indexing",
     "Topic :: Text Processing :: Markup :: XML",
+    "Classifier: Programming Language :: Python",
+    "Classifier: Programming Language :: Python :: 3",
+    "Classifier: Programming Language :: Python :: 3.10",
+    "Classifier: Programming Language :: Python :: 3.11",
+    "Classifier: Programming Language :: Python :: 3.12",
+    "Classifier: Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     "python-dateutil (>=2.7,<3.0.0)",

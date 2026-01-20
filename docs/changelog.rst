@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v1.7.0.post2 (2025-01-20)
+-------------------------
+
+* Corrected missing NOTICE file and trove classifiers in the v1.7.0 release package, as a result of moving to the uv build system
+
 v1.7.0.post1 (2025-01-17)
 -------------------------
 
