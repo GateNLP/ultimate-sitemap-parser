@@ -61,7 +61,7 @@ def sitemap_tree_for_homepage(
     :param recurse_callback: Optional callback function to determine if a sub-sitemap should be recursed into. See :data:`~.RecurseCallbackType`.
     :param recurse_list_callback: Optional callback function to filter the list of sub-sitemaps to recurse into. See :data:`~.RecurseListCallbackType`.
     :param normalize_homepage_url: Whether to normalize the provided homepage URL to the domain root (default: True),
-        e.g. "http://www.example.com/page.html" -> "http://www.example.com/".
+        e.g. "http://www.example.com/xxx/yyy/" -> "http://www.example.com/".
         Disabling this may prevent sitemap discovery via robots.txt, as robots.txt is typically only available at the domain root.
 
     :return: Root sitemap object of the fetched sitemap tree.
