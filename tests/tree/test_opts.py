@@ -57,3 +57,91 @@ class TestTreeOpts(TreeTestBase):
         # robots, pages, news_index_1, news_index_2, missing
         assert len(list(tree.all_sitemaps())) == 5
         assert all("/news/" not in page.url for page in tree.all_pages())
+
+    def test_normalize_homepage_url_default_enabled(self, mock_fetcher):
+        """
+        By default, the homepage URL is normalized to the domain root.
+        robots.txt should be requested from the domain root.
+        """
+        sitemap_tree_for_homepage("https://example.org/foo/bar")
+
+        mock_fetcher.assert_any_call(
+            url="https://example.org/robots.txt",
+            web_client=mock.ANY,
+            recursion_level=0,
+            parent_urls=set(),
+            recurse_callback=None,
+            recurse_list_callback=None,
+        )
+
+    def test_normalize_homepage_url_disabled(self, mock_fetcher):
+        """
+        When normalize_homepage_url=False, the provided path is preserved.
+        robots.txt should be requested relative to the original path.
+        """
+        sitemap_tree_for_homepage(
+            "https://example.org/foo/bar",
+            normalize_homepage_url=False,
+        )
+
+        mock_fetcher.assert_any_call(
+            url="https://example.org/foo/bar/robots.txt",
+            web_client=mock.ANY,
+            recursion_level=0,
+            parent_urls=set(),
+            recurse_callback=None,
+            recurse_list_callback=None,
+        )
+
+    def test_normalize_homepage_url_with_extra_known_paths(self, mock_fetcher):
+        """
+        When normalize_homepage_url=False, extra_known_paths are correctly appended
+        to the provided path instead of the domain root.
+        """
+        sitemap_tree_for_homepage(
+            "https://example.org/foo/bar",
+            normalize_homepage_url=False,
+            extra_known_paths={"custom_sitemap.xml", "another/path.xml"},
+        )
+
+        mock_fetcher.assert_any_call(
+            url="https://example.org/foo/bar/custom_sitemap.xml",
+            web_client=mock.ANY,
+            recursion_level=0,
+            parent_urls=set(),
+            quiet_404=True,
+            recurse_callback=None,
+            recurse_list_callback=None,
+        )
+
+        mock_fetcher.assert_any_call(
+            url="https://example.org/foo/bar/another/path.xml",
+            web_client=mock.ANY,
+            recursion_level=0,
+            parent_urls=set(),
+            quiet_404=True,
+            recurse_callback=None,
+            recurse_list_callback=None,
+        )
+
+    def test_skip_robots_txt(self, mock_fetcher):
+        """
+        When use_robots=False, robots.txt is not fetched at all.
+        Sitemaps should be discovered relative to the provided homepage URL.
+        """
+        sitemap_tree_for_homepage(
+            "https://example.org/foo/bar",
+            use_robots=False,
+            normalize_homepage_url=False,
+        )
+
+        # extra_known_paths should still be requested relative to the original path
+        mock_fetcher.assert_any_call(
+            url="https://example.org/foo/bar/sitemap.xml",
+            web_client=mock.ANY,
+            recursion_level=0,
+            parent_urls=set(),
+            quiet_404=True,
+            recurse_callback=None,
+            recurse_list_callback=None,
+        )
