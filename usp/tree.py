@@ -47,6 +47,7 @@ def sitemap_tree_for_homepage(
     extra_known_paths: set | None = None,
     recurse_callback: RecurseCallbackType | None = None,
     recurse_list_callback: RecurseListCallbackType | None = None,
+    normalize_homepage_url: bool = True,
 ) -> AbstractSitemap:
     """
     Using a homepage URL, fetch the tree of sitemaps and pages listed in them.
@@ -59,6 +60,10 @@ def sitemap_tree_for_homepage(
     :param extra_known_paths: Extra paths to check for sitemaps.
     :param recurse_callback: Optional callback function to determine if a sub-sitemap should be recursed into. See :data:`~.RecurseCallbackType`.
     :param recurse_list_callback: Optional callback function to filter the list of sub-sitemaps to recurse into. See :data:`~.RecurseListCallbackType`.
+    :param normalize_homepage_url: Whether to normalize the provided homepage URL to the domain root (default: True),
+        e.g. "http://www.example.com/page.html" -> "http://www.example.com/".
+        Disabling this may prevent sitemap discovery via robots.txt, as robots.txt is typically only available at the domain root.
+
     :return: Root sitemap object of the fetched sitemap tree.
     """
 
@@ -67,12 +72,13 @@ def sitemap_tree_for_homepage(
 
     extra_known_paths = extra_known_paths or set()
 
-    stripped_homepage_url = strip_url_to_homepage(url=homepage_url)
-    if homepage_url != stripped_homepage_url:
-        log.warning(
-            f"Assuming that the homepage of {homepage_url} is {stripped_homepage_url}"
-        )
-        homepage_url = stripped_homepage_url
+    if normalize_homepage_url:
+        stripped_homepage_url = strip_url_to_homepage(url=homepage_url)
+        if homepage_url != stripped_homepage_url:
+            log.warning(
+                f"Assuming that the homepage of {homepage_url} is {stripped_homepage_url}"
+            )
+            homepage_url = stripped_homepage_url
 
     if not homepage_url.endswith("/"):
         homepage_url += "/"
