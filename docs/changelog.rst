@@ -4,9 +4,9 @@ Changelog
 v1.8.0 (2026-01-25)
 -------------------
 
-**New Feature**
+**New Features**
 
-* Added optional ``normalize_homepage_url`` parameter to ``sitemap_tree_for_homepage`` to optionally allow homepage normalization to be disabled (:pr:`c00k1ez` by :user:`c00k1ez`)
+* Added optional ``normalize_homepage_url`` parameter to ``sitemap_tree_for_homepage`` to optionally allow homepage normalization to be disabled (:pr:`130` by :user:`c00k1ez`)
 
 v1.7.0.post2 (2026-01-20)
 -------------------------
