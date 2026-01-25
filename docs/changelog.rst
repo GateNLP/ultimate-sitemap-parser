@@ -1,17 +1,24 @@
 Changelog
 =========
 
-v1.7.0.post2 (2025-01-20)
+v1.8.0 (2026-01-25)
+-------------------
+
+**New Features**
+
+* Added optional ``normalize_homepage_url`` parameter to ``sitemap_tree_for_homepage`` to optionally allow homepage normalization to be disabled (:pr:`130` by :user:`c00k1ez`)
+
+v1.7.0.post2 (2026-01-20)
 -------------------------
 
 * Corrected missing NOTICE file and trove classifiers in the v1.7.0 release package, as a result of moving to the uv build system
 
-v1.7.0.post1 (2025-01-17)
+v1.7.0.post1 (2026-01-17)
 -------------------------
 
 * Corrected missing LICENSE file in the v1.7.0 release package
 
-v1.7.0 (2025-01-11)
+v1.7.0 (2026-01-11)
 -------------------
 
 **Packaging**

@@ -1119,7 +1119,7 @@ wheels = [
 
 [[package]]
 name = "ultimate-sitemap-parser"
-version = "1.7.0.post2"
+version = "1.8.0"
 source = { editable = "." }
 dependencies = [
     { name = "python-dateutil" },
