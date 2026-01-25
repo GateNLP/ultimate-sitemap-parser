@@ -64,7 +64,7 @@ perf = [
     "pyinstrument>=4.7.2,<5",
 ]
 docs = [
-    "sphinx>=8.2.3,<9",
+    "sphinx>=9.0.0,<10",
     "sphinx-autobuild>=2025.8.25",
     "sphinx-design>=0.6.1",
     "furo>=2025.9.25",
