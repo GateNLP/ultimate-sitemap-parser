@@ -17,4 +17,9 @@ USP minimally parses documents, so should avoid many of the risks seen in more c
     >>> pyexpat.EXPAT_VERSION
     'expat_2.4.7'
 
-It is recommended to use a version greater than 2.4.0, which should be included in all recent Python versions.
+Billion Laughs Attack
+---------------------
+
+To harden against the Billion Laughs attack, USP will not parse XML documents that contain a ``DOCTYPE`` or ``ENTITY`` declaration, which should never appear in a sitemap. 
+
+Expat versions greater than 2.4.0 are resistent to most Billion Laughs attacks, although some variants are possible in versions below 2.7.2.
