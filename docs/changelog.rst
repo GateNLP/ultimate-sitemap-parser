@@ -1,6 +1,14 @@
 Changelog
 =========
 
+v1.8.1 (2026-06-16)
+-------------------
+
+**Security**
+
+* Hardened XML parsing against the Billion Laughs attack by refusing to parse XML documents containing DOCTYPE or ENTITY declarations (which should not be present in valid sitemaps) (:ghsa:`GHSA-p5wc-9w9r-m232` by :user:`EQSTLab`)
+* Hardened GZIP compression against decompression bomb attacks by decompressing only up to the configured maximum sitemap size (:ghsa:`GHSA-8823-qg2x-pv9f` by :user:`EQSTLab`)
+
 v1.8.0 (2026-01-25)
 -------------------
 

@@ -71,6 +71,7 @@ extlinks = {
     'pr': (f'{_gh_root}/pull/%s', '#%s'),
     'user': (f'https://github.com/%s', '@%s'),
     'commit': (f'{_gh_root}/commit/%s', '%.7s'),
+    'ghsa': (f'{_gh_root}/security/advisories/%s', '%s'),
 }
 
 graphviz_output_format = 'svg'
