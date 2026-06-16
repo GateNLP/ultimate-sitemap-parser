@@ -3,6 +3,7 @@ import logging
 
 import pytest
 
+from tests.helpers import gzip
 from usp.exceptions import (
     GunzipException,
     SitemapException,
@@ -215,6 +216,19 @@ def test_gunzip():
     with pytest.raises(GunzipException):
         # noinspection PyTypeChecker
         gunzip(b"foo")
+
+    assert gunzip(gzip("foo"), max_output_bytes=512 * 1024) == b"foo"
+
+
+def test_gunzip_above_max_output_bytes():
+    # Create a gzip-compressed byte string that exceeds the max_output_bytes limit
+    original_data = b"A" * 1024 * 1024  # 1 MB of data
+    compressed_data = gzip(original_data)
+
+    with pytest.raises(GunzipException) as exc_info:
+        gunzip(compressed_data, max_output_bytes=512 * 1024)  # Limit to 512 KB
+
+    assert "Gunzipped data exceeds maximum output size" in str(exc_info.value)
 
 
 class MockWebClientErrorResponse(WebClientErrorResponse):

@@ -3,6 +3,7 @@
 import datetime
 import gzip as gzip_lib
 import html
+import io
 import logging
 import re
 import sys
@@ -215,7 +216,7 @@ def __response_is_gzipped_data(
         return False
 
 
-def gunzip(data: bytes) -> bytes:
+def gunzip(data: bytes, max_output_bytes: int | None = None) -> bytes:
     """
     Gunzip data.
 
@@ -236,7 +237,16 @@ def gunzip(data: bytes) -> bytes:
         )
 
     try:
-        gunzipped_data = gzip_lib.decompress(data)
+        chunks, total = [], 0
+        with gzip_lib.GzipFile(fileobj=io.BytesIO(data)) as gz:
+            while chunk := gz.read(1024 * 1024):
+                total += len(chunk)
+                if max_output_bytes is not None and total > max_output_bytes:
+                    raise GunzipException(
+                        f"Gunzipped data exceeds maximum output size of {max_output_bytes} bytes."
+                    )
+                chunks.append(chunk)
+        gunzipped_data = b"".join(chunks)
     except Exception as ex:
         raise GunzipException(f"Unable to gunzip data: {str(ex)}")
 
@@ -250,7 +260,9 @@ def gunzip(data: bytes) -> bytes:
 
 
 def ungzipped_response_content(
-    url: str, response: AbstractWebClientSuccessResponse
+    url: str,
+    response: AbstractWebClientSuccessResponse,
+    max_uncompressed_bytes: int | None = None,
 ) -> str:
     """
     Return HTTP response's decoded content, gunzip it if necessary.
@@ -264,7 +276,7 @@ def ungzipped_response_content(
 
     if __response_is_gzipped_data(url=url, response=response):
         try:
-            data = gunzip(data)
+            data = gunzip(data, max_output_bytes=max_uncompressed_bytes)
         except GunzipException as ex:
             # In case of an error, just assume that it's one of the non-gzipped sitemaps with ".gz" extension
             log.warning(

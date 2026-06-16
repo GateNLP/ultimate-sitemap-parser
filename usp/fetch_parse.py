@@ -172,7 +172,11 @@ class SitemapFetcher:
 
         self._url = response_url
 
-        response_content = ungzipped_response_content(url=self._url, response=response)
+        response_content = ungzipped_response_content(
+            url=self._url,
+            response=response,
+            max_uncompressed_bytes=self.__MAX_SITEMAP_SIZE,
+        )
 
         # MIME types returned in Content-Type are unpredictable, so peek into the content instead
         if response_content[:20].strip().startswith("<"):
