@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v1.8.2 (2026-11-25)
+-------------------
+
+* Relax ``python-dateutil`` version constraint to allow newer versions (:pr:`136` by :user:`itzzdev09`)
+
 v1.8.1 (2026-06-16)
 -------------------
 
