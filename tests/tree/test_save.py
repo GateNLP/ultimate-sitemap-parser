@@ -7,7 +7,8 @@ import pytest
 from dateutil.tz import tzoffset
 
 from tests.tree.base import TreeTestBase
-from usp.tree import sitemap_tree_for_homepage
+from usp.objects.page import SitemapPage
+from usp.tree import sitemap_from_str, sitemap_tree_for_homepage
 
 
 class TestTreeSave(TreeTestBase):
@@ -59,6 +60,7 @@ class TestTreeSave(TreeTestBase):
                 ),
                 "change_frequency": "monthly",
                 "images": None,
+                "alternates": None,
                 "news_story": None,
             },
             {
@@ -69,6 +71,7 @@ class TestTreeSave(TreeTestBase):
                 ),
                 "change_frequency": "always",
                 "images": None,
+                "alternates": None,
                 "news_story": None,
             },
             {
@@ -77,6 +80,7 @@ class TestTreeSave(TreeTestBase):
                 "last_modified": None,
                 "change_frequency": None,
                 "images": None,
+                "alternates": None,
                 "news_story": {
                     "title": "Foo <foo>",
                     "publish_date": datetime.datetime(
@@ -96,6 +100,7 @@ class TestTreeSave(TreeTestBase):
                 "last_modified": None,
                 "change_frequency": None,
                 "images": None,
+                "alternates": None,
                 "news_story": {
                     "title": "Bar & bar",
                     "publish_date": datetime.datetime(
@@ -115,6 +120,7 @@ class TestTreeSave(TreeTestBase):
                 "last_modified": None,
                 "change_frequency": None,
                 "images": None,
+                "alternates": None,
                 "news_story": {
                     "title": "Bar & bar",
                     "publish_date": datetime.datetime(
@@ -134,6 +140,7 @@ class TestTreeSave(TreeTestBase):
                 "last_modified": None,
                 "change_frequency": None,
                 "images": None,
+                "alternates": None,
                 "news_story": {
                     "title": "Bąž",
                     "publish_date": datetime.datetime(
@@ -148,3 +155,34 @@ class TestTreeSave(TreeTestBase):
                 },
             },
         ]
+
+    def test_parsed_alternates_to_dict(self):
+        tree = sitemap_from_str(
+            f"""
+            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+                    xmlns:xhtml="http://www.w3.org/1999/xhtml">
+              <url>
+                <loc>{self.TEST_BASE_URL}/en/page</loc>
+                <xhtml:link rel="alternate" hreflang="fr-FR"
+                            href="{self.TEST_BASE_URL}/fr/page"/>
+                <xhtml:link rel="alternate" hreflang="x-default"
+                            href="{self.TEST_BASE_URL}/en/page"/>
+              </url>
+            </urlset>
+            """
+        )
+        expected = [
+            ("fr-FR", f"{self.TEST_BASE_URL}/fr/page"),
+            ("x-default", f"{self.TEST_BASE_URL}/en/page"),
+        ]
+        page = next(tree.all_pages())
+
+        assert page.alternates == expected
+        assert page.to_dict()["alternates"] == expected
+        assert tree.to_dict()["pages"][0]["alternates"] == expected
+
+    @pytest.mark.parametrize("alternates", [None, []])
+    def test_page_to_dict_empty_alternates(self, alternates):
+        page = SitemapPage(url=self.TEST_BASE_URL, alternates=alternates)
+
+        assert page.to_dict()["alternates"] == alternates
