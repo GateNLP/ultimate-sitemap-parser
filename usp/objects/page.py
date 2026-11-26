@@ -423,6 +423,7 @@ class SitemapPage:
             "images": [image.to_dict() for image in self.images]
             if self.images
             else None,
+            "alternates": self.alternates,
         }
 
     @property
